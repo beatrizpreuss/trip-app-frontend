@@ -1,14 +1,15 @@
-import { useState } from 'react'
-import './App.css'
-import NavBar from './components/NavBar'
+import { Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout'
+import Home from './components/Home'
 
 function App() {
 
   return (
-    <>
-      <NavBar />
-      <h1 className='underline text-2xl bg-red-400'>Testing Tailwind</h1>
-    </>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+      </Route>
+    </Routes>
   )
 }
 
