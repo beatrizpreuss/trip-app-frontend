@@ -4,10 +4,13 @@ import Footer from "./Footer"
 
 export default function Layout() {
     return (
-        <>
+        <div className="bg-zinc-100 dark:bg-zinc-900"> 
+        {/* these classNames above are redundant. Decide if I keep them here on in the components */}
             <NavBar />
-                <Outlet />
+                <main className="pt-16">
+                    <Outlet />
+                </main>
             <Footer />
-        </>
+        </div>
     )
 }

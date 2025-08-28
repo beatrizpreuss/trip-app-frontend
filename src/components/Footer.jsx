@@ -11,13 +11,16 @@ export default function Footer() {
                             <a href="#" className="hover:underline me-4 md:me-6">About</a>
                         </li>
                         <li>
+                            <a href="#" className="hover:underline me-4 md:me-6">FAQ</a>
+                        </li>
+                        <li>
                             <a href="#" className="hover:underline me-4 md:me-6">Privacy Policy</a>
                         </li>
                         <li>
-                            <a href="#" className="hover:underline me-4 md:me-6">Licensing</a>
+                            <a href="#" className="hover:underline me-4 md:me-6">Sign up</a>
                         </li>
                         <li>
-                            <a href="#" className="hover:underline">Contact</a>
+                            <a href="#" className="hover:underline">Login</a>
                         </li>
                     </ul>
                 </div>
