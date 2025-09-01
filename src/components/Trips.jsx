@@ -31,7 +31,7 @@ export default function Trips() {
                 body: JSON.stringify({ name: "Untitled Trip", image: null })
             })
             const newTrip = await res.json()
-            navigate(`https://wander-wise-backend-t1wv.onrender.com/trips/${newTrip.id}`)
+            navigate(`/trips/${newTrip.trip.id}`)
         }
         return (
             <button
@@ -79,7 +79,7 @@ export default function Trips() {
 
                         {/* Trip name overlay */}
                         <div className="relative flex items-center justify-center h-full">
-                            <span className="font-medium text-zinc-900 group-hover:scale-110 transition dark:text-zinc-100">
+                            <span className="font-medium text-center text-zinc-900 group-hover:scale-110 transition dark:text-zinc-100">
                                 {trip.name}
                             </span>
                         </div>
