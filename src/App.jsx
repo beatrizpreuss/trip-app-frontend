@@ -23,7 +23,7 @@ function App() {
           <Route path="map" element={<TripMap />}/>
         </Route>
 
-        <Route path="/find-destination" element={<FormAI />}/>
+        <Route path="/find-destinations" element={<FormAI />}/>
         <Route path="/suggestions" element={<Suggestions />}/>
         <Route path="*" element={<NotFound />}/>
       </Route>
