@@ -1,12 +1,15 @@
 import { useState } from "react"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { FaTrash } from "react-icons/fa"
+import { Link } from "react-router-dom"
 
 
 export default function TripDetails() {
 
     const { tripId } = useParams()
+    const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true)
     const [tripName, setTripName] = useState("")
@@ -118,7 +121,7 @@ export default function TripDetails() {
         ])
     }
 
-    // DELETE A ROW OF THE TABLE
+    // DELETE A ROW FROM THE TABLE
 
     const deleteAccommodation = (accId) => {
         setAccommodations(prev =>
@@ -144,7 +147,7 @@ export default function TripDetails() {
         )
     }
 
-    // SAVE ALL TABLES AT ONCE (saves all changes to the backend)
+    // SAVE ALL TABLES AT ONCE (saves all changes to the backend - update)
 
     const saveChanges = () => {
         // Match the names to the backend to send data
@@ -196,6 +199,23 @@ export default function TripDetails() {
                 console.log("Saved", data)
             })
             .catch(err => console.error("Error saving data", err))
+    }
+
+    const deleteTrip = async () => {
+        if (!window.confirm("Are you sure you want to delete this trip?")) return
+
+        try {
+            const res = await fetch(`https://wander-wise-backend-t1wv.onrender.com/trips/${tripId}`, {
+                method: "DELETE"
+            })
+            if (res.ok) {
+                navigate("/trips")
+            } else {
+                console.error("Failed to delete trip")
+            }
+        } catch (err) {
+            console.error("Error deleting trip:", err)
+        }
     }
 
     if (loading) {
@@ -531,14 +551,32 @@ export default function TripDetails() {
                     ➕ Add Point of Interest
                 </button>
             </div>
-
-            <button
-                onClick={saveChanges}
-                className="my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+            <div className="flex flex-row justify-between">
+                <div className="flex flex-row">
+                    <button
+                        onClick={saveChanges}
+                        className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
-                Save Changes
-            </button>
+                        Save Changes
+                    </button>
+                    <Link to="map">
+                        <button
+                            className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                        focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                        dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                            Open Map
+                        </button>
+                    </Link>
+                </div>
+                <button
+                        onClick={deleteTrip}
+                        className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
+                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                    dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
+                        Delete entire trip
+                    </button>
+            </div>
         </div>
     )
 }
