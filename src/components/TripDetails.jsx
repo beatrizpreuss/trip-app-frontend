@@ -13,6 +13,9 @@ export default function TripDetails() {
     const [accommodations, setAccommodations] = useState([])
     const [foods, setFoods] = useState([])
     const [pointsOfInterest, setPointsOfInterest] = useState([])
+    const [showAccommodations, setShowAccommodations] = useState(true)
+    const [showFoods, setShowFoods] = useState(true)
+    const [showPointsOfInterest, setShowPointsOfInterest] = useState(true)
 
     // GET DATA FROM BACKEND
 
@@ -216,12 +219,27 @@ export default function TripDetails() {
             {/* Accommodations Table */}
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
-                        List of Accommodations
-                        <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
-                        >Make a list with all the hotels, camping sites or any other accommodation places
-                            <br /> relevant to your trip. Include all details and stay organized.</p>
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                        <div className="flex flex-col">
+                            <div className="flex flex-row">
+                                <button onClick={() => setShowAccommodations(prev => !prev)}>
+                                    {showAccommodations ?
+                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
+                                        </svg> :
+                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
+                                        </svg>
+                                    }
+                                </button>
+                                <span>List of Accommodations</span>
+                            </div>
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            >Make a list with all the hotels, camping sites or any other accommodation places
+                                <br /> relevant to your trip. Include all details and stay organized.</p>
+                        </div>
                     </caption>
+
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th className="px-6 py-3">Type</th>
@@ -236,70 +254,72 @@ export default function TripDetails() {
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {accommodations
-                            .filter(acc => !acc.deleted)
-                            .map((item, index) => (
-                                <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.type || ""}
-                                            onChange={(event) => handleAccommodationsChange(index, "type", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.status || ""}
-                                            onChange={(event) => handleAccommodationsChange(index, "status", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.price || ""}
-                                            onChange={(event) => handleAccommodationsChange(index, "price", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.address || ""}
-                                            onChange={(event) => handleAccommodationsChange(index, "address", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.latLong || ""}
-                                            onChange={(event) => handleAccommodationsChange(index, "latLong", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.url || ""}
-                                            onChange={(event) => handleAccommodationsChange(index, "url", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.comments || ""}
-                                            onChange={(event) => handleAccommodationsChange(index, "comments", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => deleteAccommodation(item.id)}
-                                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                            <FaTrash />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
+                    {showAccommodations && (
+                        <tbody>
+                            {accommodations
+                                .filter(acc => !acc.deleted)
+                                .map((item, index) => (
+                                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.type || ""}
+                                                onChange={(event) => handleAccommodationsChange(index, "type", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.status || ""}
+                                                onChange={(event) => handleAccommodationsChange(index, "status", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.price || ""}
+                                                onChange={(event) => handleAccommodationsChange(index, "price", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.address || ""}
+                                                onChange={(event) => handleAccommodationsChange(index, "address", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.latLong || ""}
+                                                onChange={(event) => handleAccommodationsChange(index, "latLong", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.url || ""}
+                                                onChange={(event) => handleAccommodationsChange(index, "url", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.comments || ""}
+                                                onChange={(event) => handleAccommodationsChange(index, "comments", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => deleteAccommodation(item.id)}
+                                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                <FaTrash />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    )}
                 </table>
                 <button
                     onClick={() => addAccommodation()}
@@ -313,11 +333,25 @@ export default function TripDetails() {
             {/* Foods Table */}
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
-                        List of Foods
-                        <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
-                        >Make a list of the restaurants you would like to try, and of possible
-                            <br /> markets and stores you that can he helpfull to your trip.</p>
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                        <div className="flex flex-col">
+                            <div className="flex flex-row">
+                                <button onClick={() => setShowFoods(prev => !prev)}>
+                                    {showFoods ?
+                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
+                                        </svg> :
+                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
+                                        </svg>
+                                    }
+                                </button>
+                                <span>List of Foods</span>
+                            </div>
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            >Make a list of the restaurants you would like to try, and of possible
+                                <br /> markets and stores you that can he helpfull to your trip.</p>
+                        </div>
                     </caption>
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
@@ -331,56 +365,58 @@ export default function TripDetails() {
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {foods
-                            .filter(food => !food.deleted)
-                            .map((item, index) => (
-                                <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.type || ""}
-                                            onChange={(event) => handleFoodsChange(index, "type", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.address || ""}
-                                            onChange={(event) => handleFoodsChange(index, "address", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.latLong || ""}
-                                            onChange={(event) => handleFoodsChange(index, "latLong", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.url || ""}
-                                            onChange={(event) => handleFoodsChange(index, "url", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.comments || ""}
-                                            onChange={(event) => handleFoodsChange(index, "comments", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => deleteFood(item.id)}
-                                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                            <FaTrash />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
+                    {showFoods && (
+                        <tbody>
+                            {foods
+                                .filter(food => !food.deleted)
+                                .map((item, index) => (
+                                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.type || ""}
+                                                onChange={(event) => handleFoodsChange(index, "type", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.address || ""}
+                                                onChange={(event) => handleFoodsChange(index, "address", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.latLong || ""}
+                                                onChange={(event) => handleFoodsChange(index, "latLong", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.url || ""}
+                                                onChange={(event) => handleFoodsChange(index, "url", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.comments || ""}
+                                                onChange={(event) => handleFoodsChange(index, "comments", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => deleteFood(item.id)}
+                                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                <FaTrash />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    )}
                 </table>
                 <button
                     onClick={() => addFood()}
@@ -394,11 +430,25 @@ export default function TripDetails() {
             {/* Points of Interest Table */}
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
-                        List of Points of Interest
-                        <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
-                        >List all the places you would like to see, like museums, monuments,
-                            <br /> parks, nature attractions, hiking trails, etc. </p>
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                        <div className="flex flex-col">
+                            <div className="flex flex-row">
+                                <button onClick={() => setShowPointsOfInterest(prev => !prev)}>
+                                    {showPointsOfInterest ?
+                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
+                                        </svg> :
+                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
+                                        </svg>
+                                    }
+                                </button>
+                                <span>List of Points of Interest</span>
+                            </div>
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            >List all the places you would like to see, like museums, monuments,
+                                <br /> parks, nature attractions, hiking trails, etc. </p>
+                        </div>
                     </caption>
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
@@ -413,71 +463,73 @@ export default function TripDetails() {
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {pointsOfInterest
-                            .filter(poi => !poi.deleted)
-                            .map((item, index) => (
-                                <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.name || ""}
-                                            onChange={(event) => handlePointsOfInterestChange(index, "name", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.price || ""}
-                                            onChange={(event) => handlePointsOfInterestChange(index, "price", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.address || ""}
-                                            onChange={(event) => handlePointsOfInterestChange(index, "address", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.latLong || ""}
-                                            onChange={(event) => handlePointsOfInterestChange(index, "latLong", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.url || ""}
-                                            onChange={(event) => handlePointsOfInterestChange(index, "url", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <input
-                                            type="text"
-                                            value={item.comments || ""}
-                                            onChange={(event) => handlePointsOfInterestChange(index, "comments", event.target.value)}
-                                        />
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => deletePointOfInterest(item.id)}
-                                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                            <FaTrash />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
+                    {showPointsOfInterest && (
+                        <tbody>
+                            {pointsOfInterest
+                                .filter(poi => !poi.deleted)
+                                .map((item, index) => (
+                                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.name || ""}
+                                                onChange={(event) => handlePointsOfInterestChange(index, "name", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.price || ""}
+                                                onChange={(event) => handlePointsOfInterestChange(index, "price", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.address || ""}
+                                                onChange={(event) => handlePointsOfInterestChange(index, "address", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.latLong || ""}
+                                                onChange={(event) => handlePointsOfInterestChange(index, "latLong", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.url || ""}
+                                                onChange={(event) => handlePointsOfInterestChange(index, "url", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <input
+                                                type="text"
+                                                value={item.comments || ""}
+                                                onChange={(event) => handlePointsOfInterestChange(index, "comments", event.target.value)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => deletePointOfInterest(item.id)}
+                                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                <FaTrash />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    )}
                 </table>
-                    <button
+                <button
                     onClick={() => addPointOfInterest()}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
                     ➕ Add Point of Interest
-                    </button>
+                </button>
             </div>
 
             <button
