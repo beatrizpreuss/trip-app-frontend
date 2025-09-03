@@ -570,12 +570,12 @@ export default function TripDetails() {
                     </Link>
                 </div>
                 <button
-                        onClick={deleteTrip}
-                        className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
+                    onClick={deleteTrip}
+                    className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
-                        Delete entire trip
-                    </button>
+                    Delete entire trip
+                </button>
             </div>
         </div>
     )
