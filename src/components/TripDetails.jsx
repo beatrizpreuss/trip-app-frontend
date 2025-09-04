@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import { FaTrash } from "react-icons/fa"
 import { Link } from "react-router-dom"
+import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 
 
 export default function TripDetails() {
@@ -23,8 +24,7 @@ export default function TripDetails() {
     // GET DATA FROM BACKEND
 
     useEffect(() => {
-        fetch(`https://wander-wise-backend-t1wv.onrender.com/trips/${tripId}`)
-            .then(res => res.json())
+        getTripById(tripId)
             .then(data => {
                 setTripName(data.trip.name)
                 setAccommodations(
@@ -184,39 +184,28 @@ export default function TripDetails() {
             deleted: poi.deleted || false
         }))
 
-        fetch(`https://wander-wise-backend-t1wv.onrender.com/trips/${tripId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: tripName,
-                foods: mappedFoods,
-                points_of_interest: mappedPointsOfInterest,
-                accommodations: mappedAccommodations
-            })
-        })
-            .then(res => res.json())
+        updateTripById(tripId, tripName, mappedFoods, mappedPointsOfInterest, mappedAccommodations)
             .then(data => {
                 console.log("Saved", data)
             })
             .catch(err => console.error("Error saving data", err))
     }
 
+    // DELETE ENTIRE TRIP FROM DATABASE
+
     const deleteTrip = async () => {
         if (!window.confirm("Are you sure you want to delete this trip?")) return
 
         try {
-            const res = await fetch(`https://wander-wise-backend-t1wv.onrender.com/trips/${tripId}`, {
-                method: "DELETE"
-            })
-            if (res.ok) {
-                navigate("/trips")
-            } else {
-                console.error("Failed to delete trip")
-            }
+            await deleteTripById(tripId)
+            console.log("Deleted", tripId)
+            navigate("/trips")
         } catch (err) {
             console.error("Error deleting trip:", err)
         }
     }
+
+    // RENDERING STARTS HERE
 
     if (loading) {
         return <p className="text-center text-lg">Loading trip details...</p>
@@ -244,11 +233,11 @@ export default function TripDetails() {
                             <div className="flex flex-row">
                                 <button onClick={() => setShowAccommodations(prev => !prev)}>
                                     {showAccommodations ?
-                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
@@ -332,7 +321,7 @@ export default function TripDetails() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => deleteAccommodation(item.id)}
-                                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-500 hover:underline">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -358,11 +347,11 @@ export default function TripDetails() {
                             <div className="flex flex-row">
                                 <button onClick={() => setShowFoods(prev => !prev)}>
                                     {showFoods ?
-                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
@@ -429,7 +418,7 @@ export default function TripDetails() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => deleteFood(item.id)}
-                                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-500 hover:underline">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -455,11 +444,11 @@ export default function TripDetails() {
                             <div className="flex flex-row">
                                 <button onClick={() => setShowPointsOfInterest(prev => !prev)}>
                                     {showPointsOfInterest ?
-                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg class="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
@@ -534,7 +523,7 @@ export default function TripDetails() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => deletePointOfInterest(item.id)}
-                                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-500 hover:underline">
                                                 <FaTrash />
                                             </button>
                                         </td>

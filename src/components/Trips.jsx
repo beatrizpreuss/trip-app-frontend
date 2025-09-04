@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { getAllTrips, createNewTrip } from "../util/apiCalls"
 
 
 export default function Trips() {
@@ -9,8 +10,7 @@ export default function Trips() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch("https://wander-wise-backend-t1wv.onrender.com/trips")
-            .then(res => res.json())
+        getAllTrips()
             .then(data => {
                 setTrips(data)
                 setLoading(false)
@@ -25,12 +25,7 @@ export default function Trips() {
         const navigate = useNavigate()
 
         const handleNewTrip = async () => {
-            const res = await fetch("https://wander-wise-backend-t1wv.onrender.com/trips", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: "Untitled Trip", image: null })
-            })
-            const newTrip = await res.json()
+            const newTrip = await createNewTrip()
             navigate(`/trips/${newTrip.trip.id}`)
         }
         return (
