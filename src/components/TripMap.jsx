@@ -4,18 +4,18 @@ import { useEffect, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import { Icon } from "leaflet"
+import { useTrip } from "./TripContext"
 import accommodationIconImage from "../assets/images/placeholder1.png"
 import foodIconImage from "../assets/images/placeholder1.png"
 import pointsOfInterestIconImage from "../assets/images/placeholder1.png"
 
 
 export default function TripMap() {
-
+    //Pulling state from Context
+    const { tripName, setTripName, accommodations, setAccommodations, foods, setFoods, pointsOfInterest, setPointsOfInterest } = useTrip()
+    
     const { tripId } = useParams()
-    const [tripName, setTripName] = useState("")
-    const [accommodations, setAccommodations] = useState([])
-    const [foods, setFoods] = useState([])
-    const [pointsOfInterest, setPointsOfInterest] = useState([])
+    
     const [loading, setLoading] = useState(true)
 
     // State for the dropdown inside the map (let's the user choose the category of the next marker to be added)

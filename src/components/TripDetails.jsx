@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
+import { useTrip } from "./TripContext"
 import { useNavigate } from "react-router-dom"
 import { FaTrash } from "react-icons/fa"
 import { Link } from "react-router-dom"
@@ -8,15 +9,13 @@ import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 
 
 export default function TripDetails() {
-
+    //Pulling state from Context
+    const { tripName, setTripName, accommodations, setAccommodations, foods, setFoods, pointsOfInterest, setPointsOfInterest } = useTrip()
+        
     const { tripId } = useParams()
     const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true)
-    const [tripName, setTripName] = useState("")
-    const [accommodations, setAccommodations] = useState([])
-    const [foods, setFoods] = useState([])
-    const [pointsOfInterest, setPointsOfInterest] = useState([])
     const [showAccommodations, setShowAccommodations] = useState(true)
     const [showFoods, setShowFoods] = useState(true)
     const [showPointsOfInterest, setShowPointsOfInterest] = useState(true)
