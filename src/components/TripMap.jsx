@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
-import { Icon } from "leaflet"
+import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
 import { useTrip } from "./TripContext"
 import { updateTripById } from "../util/apiCalls"
 import accommodationIconImage from "../assets/images/placeholder1.png"
@@ -19,8 +19,49 @@ export default function TripMap() {
 
     const [loading, setLoading] = useState(true)
 
-    // State for the dropdown inside the map (let's the user choose the category of the next marker to be added)
-    const [activeCategory, setActiveCategory] = useState("accommodation")
+    // State for the dropdown inside the map (lets the user choose the category of the next marker to be added)
+    const [activeCategory, setActiveCategory] = useState("")
+
+    // MAP DESIGN
+    // Category Dropdown - lets the user choose the category of the next marker to be added
+    function CategoryDropdown({activeCategory, setActiveCategory}) {
+        const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
+        
+        useEffect(() => {
+            const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for the dropdown
+            const select = L.DomUtil.create("select", "", controlDiv) //creates a select element inside the controlDiv
+            select.innerHTML = `
+                <option value="" disabled selected>Add Marker</option> <!-- placeholder -->
+                <option value="accommodation">Accommodation</option>
+                <option value="food">Food</option>
+                <option value="pointOfInterest">Point of Interest</option>
+            `
+            
+            select.value = activeCategory //sets the selected option
+            
+            
+            select.addEventListener("change", (e) => {
+                setActiveCategory(e.target.value)
+            }) //updates state when a new category is selected
+            
+            // Stop clicks from propagating to the map
+            L.DomEvent.disableClickPropagation(controlDiv)
+            L.DomEvent.disableScrollPropagation(controlDiv)
+
+            const customControl = L.Control.extend({ //creates a custom control class
+                onAdd: () => controlDiv, //how it should be added to the map
+                onRemove: () => {} //no need for removal
+            })
+
+            const instance = new customControl({position: "topright"}) //creates an instance of the control
+            map.addControl(instance) //adds it to the map
+
+            return () => map.removeControl(instance) //cleanup function when useEffect re-runs or component unmounts
+
+        }, [map, activeCategory, setActiveCategory]) //dependencies
+        
+        return null
+    }
 
     // GET DATA FROM BACKEND
     useEffect(() => {
@@ -115,8 +156,25 @@ export default function TripMap() {
     }
 
     // Component that helps the click event happen
-    function AddMarkerOnClick({ onClick }) {
-        useMapEvent("click", onClick)
+    function AddMarkerOnClick({ activeCategory, onClick }) {
+        const map = useMap() //get map instance
+
+        useMapEvent("click", (e) => {
+            if (!activeCategory) {
+                const tempTooltip = L.tooltip({
+                    permanent: false,
+                    direction: "top",
+                    className: "bg-red-200 text-red-800 p-1 rounded shadow"
+                })
+                .setLatLng(e.latlng)
+                .setContent("Please select a category first")
+
+                tempTooltip.addTo(map)
+                setTimeout(() => map.removeLayer(tempTooltip), 2000) //remove tooltip after 2 seconds
+                return
+            }
+            onClick(e)
+        })
         return null
     }
 
@@ -128,7 +186,7 @@ export default function TripMap() {
             ))
         } else if (category === "food") {
             setFoods(foods.map(food =>
-                food.id === id ? { ...acc, [field]: value } : food
+                food.id === id ? { ...food, [field]: value } : food
             ))
         } else {
             setPointsOfInterest(pointsOfInterest.map(poi =>
@@ -221,9 +279,9 @@ export default function TripMap() {
                     )
                 }
 
-                if (data.pointsOfInterest) {
+                if (data.points_of_interest) {
                     setPointsOfInterest(
-                        data.pointsOfInterest.map(poi => ({
+                        data.points_of_interest.map(poi => ({
                             ...poi,
                             latLong: poi.lat_long ? poi.lat_long.split(",").map(Number) : null,
                             url: poi.external_url,
@@ -300,16 +358,6 @@ export default function TripMap() {
         <div className="m-25 mx-15">
             <div className="flex flex-col justify-center items-center dark:text-zinc-100">
                 <h1 className="mb-25 text-4xl font-bold">{tripName}</h1>
-                {/* Dropdown to pick category */}
-                <select
-                    value={activeCategory}
-                    onChange={(e) => setActiveCategory(e.target.value)}
-                    className="mb-5 p-2 border rounded"
-                >
-                    <option value="accommodation">Accommodation</option>
-                    <option value="food">Food</option>
-                    <option value="pointOfInterest">Point of Interest</option>
-                </select>
             </div>
             <MapContainer className="h-[500px] w-full" zoom={5}>
                 <FitBounds allMarkers={allMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
@@ -317,7 +365,14 @@ export default function TripMap() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <AddMarkerOnClick onClick={handleMapClick} />
+                <AddMarkerOnClick 
+                    activeCategory={activeCategory}
+                    onClick={handleMapClick} />
+                {/* Control - Dropdown to pick category of next marker to be added*/}
+                <CategoryDropdown 
+                    activeCategory={activeCategory}
+                    setActiveCategory={setActiveCategory}
+                />
 
                 {accommodationMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
@@ -394,7 +449,9 @@ export default function TripMap() {
                                     </label>
                                     <button
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
-                                        onClick={() => handleDeleteMarker("accommodation", marker.id)}
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteMarker("accommodation", marker.id)}}
                                     >
                                         Delete
                                     </button>
@@ -460,7 +517,9 @@ export default function TripMap() {
                                     </label>
                                     <button
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
-                                        onClick={() => handleDeleteMarker("food", marker.id)}
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteMarker("food", marker.id)}}
                                     >
                                         Delete
                                     </button>
@@ -535,7 +594,9 @@ export default function TripMap() {
                                     </label>
                                     <button
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
-                                        onClick={() => handleDeleteMarker("pointOfInterest", marker.id)}
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteMarker("pointOfInterest", marker.id)}}
                                     >
                                         Delete
                                     </button>
