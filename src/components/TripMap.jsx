@@ -9,6 +9,8 @@ import { updateTripById } from "../util/apiCalls"
 import accommodationIconImage from "../assets/images/placeholder1.png"
 import foodIconImage from "../assets/images/placeholder2.png"
 import pointsOfInterestIconImage from "../assets/images/placeholder3.png"
+import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
+import "leaflet-geosearch/dist/geosearch.css"; 
 
 
 export default function TripMap() {
@@ -63,6 +65,32 @@ export default function TripMap() {
         return null
     }
 
+    //Search Control - lets the user search for places, like in Google Maps
+    function SearchControl() {
+        const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
+
+        useEffect(() => {
+            const provider = new OpenStreetMapProvider() //geocode provider
+
+            const searchControl = new GeoSearchControl({ //create the search bar
+                provider,
+                style: "bar",
+                showMarker: true,
+                showPopup: true,
+                marker: {
+                    icon: new L.Icon.Default(),
+                    draggable: false
+                }
+            })
+            map.addControl(searchControl) //add the search bar to the map
+            return () => map.removeControl(searchControl) //clean up after unmount or re-render
+        }, [map])
+
+        return null
+    }
+
+
+    // MAP DATA
     // GET DATA FROM BACKEND
     useEffect(() => {
         getTripById(tripId)
@@ -343,7 +371,7 @@ export default function TripMap() {
         ...pointOfInterestMarkers
     ]
 
-    // Helper function to make the map automatically open on my markers, not on a fixed location
+    // Make the map automatically open on my markers, not on a fixed location
     function FitBounds({ allMarkers }) {
         const map = useMap()
 
@@ -365,6 +393,7 @@ export default function TripMap() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+                <SearchControl /> {/* Search bar */}
                 <AddMarkerOnClick 
                     activeCategory={activeCategory}
                     onClick={handleMapClick} />
