@@ -1,10 +1,10 @@
 import "leaflet/dist/leaflet.css"
 import { useParams } from "react-router-dom"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
-import { useTrip } from "./TripContext"
+import { useTrip } from "./TripContext" //Context that is passed through TripLayout (all the trip states)
 import { updateTripById } from "../util/apiCalls"
 import accommodationIconImage from "../assets/images/placeholder1.png"
 import foodIconImage from "../assets/images/placeholder2.png"
@@ -17,8 +17,10 @@ export default function TripMap() {
     //Pulling state from Context
     const { tripName, setTripName, accommodations, setAccommodations, foods, setFoods, pointsOfInterest, setPointsOfInterest } = useTrip()
 
+    // State for the search bar result
     const [searchResult, setSearchResult] = useState(null)
 
+    // Extract dinamic URL parameter
     const { tripId } = useParams()
 
     const [loading, setLoading] = useState(true)
@@ -40,9 +42,7 @@ export default function TripMap() {
                 <option value="food">Food</option>
                 <option value="pointOfInterest">Point of Interest</option>
             `
-
             select.value = activeCategory //sets the selected option
-
 
             select.addEventListener("change", (e) => {
                 setActiveCategory(e.target.value)
@@ -52,12 +52,12 @@ export default function TripMap() {
             L.DomEvent.disableClickPropagation(controlDiv)
             L.DomEvent.disableScrollPropagation(controlDiv)
 
-            const customControl = L.Control.extend({ //creates a custom control class
+            const categoryControl = L.Control.extend({ //creates a custom control class
                 onAdd: () => controlDiv, //how it should be added to the map
                 onRemove: () => { } //no need for removal
             })
 
-            const instance = new customControl({ position: "topright" }) //creates an instance of the control
+            const instance = new categoryControl({ position: "topright" }) //creates an instance of the control
             map.addControl(instance) //adds it to the map
 
             return () => map.removeControl(instance) //cleanup function when useEffect re-runs or component unmounts
@@ -156,43 +156,30 @@ export default function TripMap() {
         iconSize: [38, 38]
     })
 
-    // Create a new marker with temporary info)
-    function getNewMarker(category, latLong) {
-        const basic = {
+    // Create and add a new marker to state when there is a map click
+    function addMarker(event) {
+        const latLong = [event.latlng.lat, event.latlng.lng] // gets lat and long from the map and turns it into latLong
+        let newMarker = {
             id: `temp-${Date.now()}`, // Temporary id, just until the data is sent to the backend
             latLong,
             address: "",
             comments: ""
         }
-        if (category === "accommodation") {
-            return { ...basic, type: "New accommodation item", status: "planned", price: "unknown" }
-        }
-        if (category === "food") {
-            return { ...basic, type: "New food item" }
-        }
-        if (category === "pointOfInterest") {
-            return { ...basic, name: "New POI", price: "unknown" }
-        }
-    }
-
-
-    // Add a new marker to state when there is a map click
-    function handleMapClick(event) {
-        const latLong = [event.latlng.lat, event.latlng.lng] // gets lat and long from the map and turns it into latLong
-        const newMarker = getNewMarker(activeCategory, latLong)
-
         //add the new marker to the state
         if (activeCategory === "accommodation") {
+            newMarker = {...newMarker, type: "New accommodation item", status: "planned", price: "unknown"}
             setAccommodations([...accommodations, newMarker])
         } else if (activeCategory === "food") {
+            newMarker = {...newMarker, type: "New food item" }
             setFoods([...foods, newMarker])
         } else {
+            newMarker = { ...newMarker, name: "New POI", price: "unknown" }
             setPointsOfInterest([...pointsOfInterest, newMarker])
         }
     }
 
-    // Component that helps the click event happen
-    function AddMarkerOnClick({ activeCategory, onClick }) {
+    // Component that helps the click event happen (wrapper for addMarker that listens to click events)
+    function AddMarkerOnClick({ activeCategory, onClick }) { //onClick = addMarker
         const map = useMap() //get map instance
 
         useMapEvent("click", (e) => {
@@ -290,7 +277,7 @@ export default function TripMap() {
                 if (map.hasLayer(tempMarker)) { // remove temporary marker
                     map.removeLayer(tempMarker)
                 }
-                handleMapClick({ latlng: { lat, lng } }) // reuse this function to add permanent marker
+                addMarker({ latlng: { lat, lng } }) // reuse this function to add permanent marker
                 setSearchResult(null) // clear results to unmount this component
             }
 
@@ -459,7 +446,7 @@ export default function TripMap() {
                 {searchResult && <SearchResultHandler result={searchResult} />} {/* Add marker from search upon click */}
                 <AddMarkerOnClick
                     activeCategory={activeCategory}
-                    onClick={handleMapClick} />
+                    onClick={addMarker} />
                 {/* Control - Dropdown to pick category of next marker to be added*/}
                 <CategoryDropdown
                     activeCategory={activeCategory}
