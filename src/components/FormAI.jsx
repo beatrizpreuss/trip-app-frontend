@@ -9,7 +9,7 @@ export default function FormAI() {
                 </h3>
             </div>
 
-            {/* THIS CODE DOESN'T INCLUDE DARK MODE CSS, DO IT LATER*/}
+            {/* THIS CODE DOESN'T INCLUDE DARK MODE CSS, DON'T FORGET TO DO IT*/}
             <div className="bg-zinc-100 rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl 
                  relative shadow dark:shadow-zinc-500 overflow-hidden group">
                 <h2 className="text-l font-bold">Let's find you a destination!</h2>
@@ -125,7 +125,7 @@ export default function FormAI() {
                             </div>
                         </div>
 
-                        <div className="mb-4">
+                        <div className="my-4">
                             <label className="block text-zinc-900 mb-2">How much time do you have?</label>
                             <div className="flex flex-wrap -mx-2">
                                 <div className="px-2 w-1/3">
@@ -158,7 +158,7 @@ export default function FormAI() {
 
 
                         <div className="mb-4">
-                            <label className="block text-zinc-900 mb-2">How would you like to reach your destination</label>
+                            <label className="block text-zinc-900 mb-2">How would you like to reach your destination?</label>
                             <div className="flex flex-wrap -mx-2">
                                 <div className="px-2 w-1/3">
                                     <label for="length-weekend" className="block text-zinc-900 mb-2">

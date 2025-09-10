@@ -16,6 +16,8 @@ export default function TripDetails() {
     const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true)
+
+    //States that toggle showing each table
     const [showAccommodations, setShowAccommodations] = useState(true)
     const [showFoods, setShowFoods] = useState(true)
     const [showPointsOfInterest, setShowPointsOfInterest] = useState(true)

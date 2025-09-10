@@ -65,5 +65,4 @@ export async function createNewTrip() {
     } catch (err) {
         console.error('Error in createNewTrip')
     }
-
 }
