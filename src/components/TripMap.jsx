@@ -1,6 +1,6 @@
 import "leaflet/dist/leaflet.css"
 import { useParams } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
@@ -10,12 +10,14 @@ import accommodationIconImage from "../assets/images/placeholder1.png"
 import foodIconImage from "../assets/images/placeholder2.png"
 import pointsOfInterestIconImage from "../assets/images/placeholder3.png"
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
-import "leaflet-geosearch/dist/geosearch.css"; 
+import "leaflet-geosearch/dist/geosearch.css";
 
 
 export default function TripMap() {
     //Pulling state from Context
     const { tripName, setTripName, accommodations, setAccommodations, foods, setFoods, pointsOfInterest, setPointsOfInterest } = useTrip()
+
+    const [searchResult, setSearchResult] = useState(null)
 
     const { tripId } = useParams()
 
@@ -25,10 +27,10 @@ export default function TripMap() {
     const [activeCategory, setActiveCategory] = useState("")
 
     // MAP DESIGN
-    // Category Dropdown - lets the user choose the category of the next marker to be added
-    function CategoryDropdown({activeCategory, setActiveCategory}) {
+    // Category Dropdown component - lets the user choose the category of the next marker to be added
+    function CategoryDropdown({ activeCategory, setActiveCategory }) {
         const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
-        
+
         useEffect(() => {
             const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for the dropdown
             const select = L.DomUtil.create("select", "", controlDiv) //creates a select element inside the controlDiv
@@ -38,34 +40,34 @@ export default function TripMap() {
                 <option value="food">Food</option>
                 <option value="pointOfInterest">Point of Interest</option>
             `
-            
+
             select.value = activeCategory //sets the selected option
-            
-            
+
+
             select.addEventListener("change", (e) => {
                 setActiveCategory(e.target.value)
             }) //updates state when a new category is selected
-            
+
             // Stop clicks from propagating to the map
             L.DomEvent.disableClickPropagation(controlDiv)
             L.DomEvent.disableScrollPropagation(controlDiv)
 
             const customControl = L.Control.extend({ //creates a custom control class
                 onAdd: () => controlDiv, //how it should be added to the map
-                onRemove: () => {} //no need for removal
+                onRemove: () => { } //no need for removal
             })
 
-            const instance = new customControl({position: "topright"}) //creates an instance of the control
+            const instance = new customControl({ position: "topright" }) //creates an instance of the control
             map.addControl(instance) //adds it to the map
 
             return () => map.removeControl(instance) //cleanup function when useEffect re-runs or component unmounts
 
         }, [map, activeCategory, setActiveCategory]) //dependencies
-        
+
         return null
     }
 
-    //Search Control - lets the user search for places, like in Google Maps
+    //Search Control component - lets the user search for places, like in Google Maps
     function SearchControl() {
         const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
 
@@ -75,14 +77,19 @@ export default function TripMap() {
             const searchControl = new GeoSearchControl({ //create the search bar
                 provider,
                 style: "bar",
-                showMarker: true,
+                showMarker: false, // don't show the marker so this can be handled in the SearchResultHandler component
                 showPopup: true,
                 marker: {
                     icon: new L.Icon.Default(),
                     draggable: false
                 }
             })
+
             map.addControl(searchControl) //add the search bar to the map
+
+            map.on('geosearch/showlocation', (e) => { //add an event listener to the search bar
+                setSearchResult((e.location ? { location: e.location, label: e.location.label } : null))
+            })
             return () => map.removeControl(searchControl) //clean up after unmount or re-render
         }, [map])
 
@@ -91,7 +98,7 @@ export default function TripMap() {
 
 
     // MAP DATA
-    // GET DATA FROM BACKEND
+    // Get data from backend
     useEffect(() => {
         getTripById(tripId)
             .then(data => {
@@ -133,7 +140,7 @@ export default function TripMap() {
             })
     }, [tripId])
 
-    // CREATE THE MARKER ICONS
+    // Create new marker icons
     const accommodationIcon = new Icon({
         iconUrl: accommodationIconImage,
         iconSize: [38, 38]
@@ -149,7 +156,7 @@ export default function TripMap() {
         iconSize: [38, 38]
     })
 
-    // CREATE NEW MARKERS (with default info + specific to each category)
+    // Create a new marker with temporary info)
     function getNewMarker(category, latLong) {
         const basic = {
             id: `temp-${Date.now()}`, // Temporary id, just until the data is sent to the backend
@@ -158,17 +165,18 @@ export default function TripMap() {
             comments: ""
         }
         if (category === "accommodation") {
-            return { ...basic, type: "Hotel", status: "planned", price: "unknown" }
+            return { ...basic, type: "New accommodation item", status: "planned", price: "unknown" }
         }
         if (category === "food") {
-            return { ...basic, type: "Restaurant" }
+            return { ...basic, type: "New food item" }
         }
         if (category === "pointOfInterest") {
-            return { ...basic, name: "New POI", price: "Free" }
+            return { ...basic, name: "New POI", price: "unknown" }
         }
     }
 
-    // Add a new marker when there is a map click
+
+    // Add a new marker to state when there is a map click
     function handleMapClick(event) {
         const latLong = [event.latlng.lat, event.latlng.lng] // gets lat and long from the map and turns it into latLong
         const newMarker = getNewMarker(activeCategory, latLong)
@@ -194,8 +202,8 @@ export default function TripMap() {
                     direction: "top",
                     className: "bg-red-200 text-red-800 p-1 rounded shadow"
                 })
-                .setLatLng(e.latlng)
-                .setContent("Please select a category first")
+                    .setLatLng(e.latlng)
+                    .setContent("Please select a category first")
 
                 tempTooltip.addTo(map)
                 setTimeout(() => map.removeLayer(tempTooltip), 2000) //remove tooltip after 2 seconds
@@ -244,6 +252,60 @@ export default function TripMap() {
             ))
         }
     }
+
+    // Component that turns a temporary marker resultant from a search to one of the trip's marker
+    function SearchResultHandler({ result }) {
+        const map = useMap() // get an instance of the map
+
+        useEffect(() => {
+            if (!result?.location) return; // make sure location exists
+
+            const lat = result.location.y ?? result.y;
+            const lng = result.location.x ?? result.x;
+
+            const tempMarker = L.marker([lat, lng]).addTo(map);
+
+            tempMarker
+                .bindTooltip(result.label || "Search result", { permanent: false, direction: "top" })
+                .openTooltip()
+
+            
+            // Upon click
+            const onClick = () => { 
+                // if there is no category selected, open tooltip
+                if (!activeCategory) { 
+                    const tempTooltip = L.tooltip({
+                        permanent: false,
+                        direction: "top",
+                        className: "bg-red-200 text-red-800 p-1 rounded shadow"
+                    })
+                        .setLatLng([lat, lng])
+                        .setContent("To add this place to your markers, please choose a category first")
+                        .addTo(map) // add tooltip to map
+
+                    setTimeout(() => map.removeLayer(tempTooltip), 2000) // remove it after 2 seconds
+                    return
+                }
+                // if there is a category selected, remove the default temp marker from the search, and add permanent marker
+                if (map.hasLayer(tempMarker)) { // remove temporary marker
+                    map.removeLayer(tempMarker)
+                }
+                handleMapClick({ latlng: { lat, lng } }) // reuse this function to add permanent marker
+                setSearchResult(null) // clear results to unmount this component
+            }
+
+            tempMarker.on("click", onClick) // when the temp marker is clicked, run the onClick function
+
+            return () => {
+                tempMarker.off("click", onClick) // turn off click function (remove event listener)
+                if (map.hasLayer(tempMarker)) {
+                    map.removeLayer(tempMarker) //make sure there is no temp marker left on the map (clean up if unmounts or new result arrives)
+                }
+            }
+        }, [result, map])
+        return null
+    }
+
 
     const saveChanges = () => {
         // Match the names to the backend to send data
@@ -394,11 +456,12 @@ export default function TripMap() {
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <SearchControl /> {/* Search bar */}
-                <AddMarkerOnClick 
+                {searchResult && <SearchResultHandler result={searchResult} />} {/* Add marker from search upon click */}
+                <AddMarkerOnClick
                     activeCategory={activeCategory}
                     onClick={handleMapClick} />
                 {/* Control - Dropdown to pick category of next marker to be added*/}
-                <CategoryDropdown 
+                <CategoryDropdown
                     activeCategory={activeCategory}
                     setActiveCategory={setActiveCategory}
                 />
@@ -480,7 +543,8 @@ export default function TripMap() {
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleDeleteMarker("accommodation", marker.id)}}
+                                            handleDeleteMarker("accommodation", marker.id)
+                                        }}
                                     >
                                         Delete
                                     </button>
@@ -548,7 +612,8 @@ export default function TripMap() {
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleDeleteMarker("food", marker.id)}}
+                                            handleDeleteMarker("food", marker.id)
+                                        }}
                                     >
                                         Delete
                                     </button>
@@ -575,8 +640,8 @@ export default function TripMap() {
                                 })
                             }}>
                             <Popup>
-                            <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name: 
+                                <div className="space-x-2">
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             type="text"
@@ -585,7 +650,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("pointOfInterest", marker.id, "name", event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Price: 
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Price:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             type="text"
@@ -594,7 +659,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("pointOfInterest", marker.id, "price", event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address: 
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             type="text"
@@ -603,7 +668,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("pointOfInterest", marker.id, "address", event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL: 
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             type="text"
@@ -612,7 +677,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("pointOfInterest", marker.id, "url", event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments: 
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             type="text"
@@ -625,7 +690,8 @@ export default function TripMap() {
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleDeleteMarker("pointOfInterest", marker.id)}}
+                                            handleDeleteMarker("pointOfInterest", marker.id)
+                                        }}
                                     >
                                         Delete
                                     </button>
@@ -635,6 +701,8 @@ export default function TripMap() {
                     ))}
 
             </MapContainer>
+
+
             <button
                 onClick={saveChanges}
                 className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
