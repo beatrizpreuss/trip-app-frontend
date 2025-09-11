@@ -1,6 +1,7 @@
 import "leaflet/dist/leaflet.css"
+import "leaflet-geosearch/dist/geosearch.css"
 import { useParams } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
@@ -10,7 +11,6 @@ import accommodationIconImage from "../assets/images/placeholder1.png"
 import foodIconImage from "../assets/images/placeholder2.png"
 import pointsOfInterestIconImage from "../assets/images/placeholder3.png"
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
-import "leaflet-geosearch/dist/geosearch.css";
 
 
 export default function TripMap() {
@@ -19,6 +19,9 @@ export default function TripMap() {
 
     // State for the search bar result
     const [searchResult, setSearchResult] = useState(null)
+
+    // Was the FitBounds (allMarkers) already defined? Then set this to true (I need this to only render the map zoomed in on my markers once)
+    const [hasFitBounds, setHasFitBounds] = useState(false)
 
     // Extract dinamic URL parameter
     const { tripId } = useParams()
@@ -79,14 +82,15 @@ export default function TripMap() {
                 style: "bar",
                 showMarker: false, // don't show the marker so this can be handled in the SearchResultHandler component
                 showPopup: true,
+                zoomToResult: true,
                 marker: {
                     icon: new L.Icon.Default(),
                     draggable: false
                 }
             })
-
+            
             map.addControl(searchControl) //add the search bar to the map
-
+            
             map.on('geosearch/showlocation', (e) => { //add an event listener to the search bar
                 setSearchResult((e.location ? { location: e.location, label: e.location.label } : null))
             })
@@ -157,7 +161,11 @@ export default function TripMap() {
     })
 
     // Create and add a new marker to state when there is a map click
-    function addMarker(event) {
+    // DEBUG ************** (double markers) Because the TripMap component (parent component) re-renders every time there is a change in any state, 
+    // React was also creating a new function object for addMarker, which made AddMarkerOnClick see it as a new function and run again.
+    // With useCallback, when the componentre-renders, this function is being kept as the same object in memory, NOT triggering AddMarkerOnClick
+    const addMarkerCallback = useCallback((event) => {
+        console.log("addMarkerCallback called") // REMOVE THIS LATER
         const latLong = [event.latlng.lat, event.latlng.lng] // gets lat and long from the map and turns it into latLong
         let newMarker = {
             id: `temp-${Date.now()}`, // Temporary id, just until the data is sent to the backend
@@ -176,7 +184,7 @@ export default function TripMap() {
             newMarker = { ...newMarker, name: "New POI", price: "unknown" }
             setPointsOfInterest([...pointsOfInterest, newMarker])
         }
-    }
+    }, [activeCategory, accommodations, foods, pointsOfInterest])
 
     // Component that helps the click event happen (wrapper for addMarker that listens to click events)
     function AddMarkerOnClick({ activeCategory, onClick }) { //onClick = addMarker
@@ -277,7 +285,7 @@ export default function TripMap() {
                 if (map.hasLayer(tempMarker)) { // remove temporary marker
                     map.removeLayer(tempMarker)
                 }
-                addMarker({ latlng: { lat, lng } }) // reuse this function to add permanent marker
+                addMarkerCallback({ latlng: { lat, lng } }) // reuse this function to add permanent marker
                 setSearchResult(null) // clear results to unmount this component
             }
 
@@ -328,7 +336,6 @@ export default function TripMap() {
             comment: poi.comments,
             deleted: poi.deleted || false
         }))
-
         updateTripById(tripId, tripName, mappedFoods, mappedPointsOfInterest, mappedAccommodations)
             .then(data => {
                 console.log("Saved", data)
@@ -420,14 +427,19 @@ export default function TripMap() {
         ...pointOfInterestMarkers
     ]
 
-    // Make the map automatically open on my markers, not on a fixed location
+    // Make the map automatically open on my markers, not on a fixed location (and update the hasFitBounds state so this function will only run the first time the map opens, when hasFitBounds is still false)
+    // !! hasFitBound state has also resolved the problem of the zoom not working with addresses !! ******************** DEBUGGED
     function FitBounds({ allMarkers }) {
         const map = useMap()
 
-        if (allMarkers.length > 0) {
-            const bounds = allMarkers.map(marker => marker.position)
-            map.fitBounds(bounds, { padding: [50, 50] })
-        }
+        useEffect(() => {
+            if (allMarkers.length > 0 && !hasFitBounds) {
+                const bounds = allMarkers.map(marker => marker.position)
+                map.fitBounds(bounds, { padding: [50, 50] })
+                setHasFitBounds(true)
+            }
+        }, [allMarkers, hasFitBounds, map])
+
         return null
     }
 
@@ -446,7 +458,7 @@ export default function TripMap() {
                 {searchResult && <SearchResultHandler result={searchResult} />} {/* Add marker from search upon click */}
                 <AddMarkerOnClick
                     activeCategory={activeCategory}
-                    onClick={addMarker} />
+                    onClick={addMarkerCallback} />
                 {/* Control - Dropdown to pick category of next marker to be added*/}
                 <CategoryDropdown
                     activeCategory={activeCategory}
@@ -475,55 +487,61 @@ export default function TripMap() {
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Type:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="type"
                                             type="text"
                                             value={marker.type || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, "type", event.target.value)
+                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Status:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="status"
                                             type="text"
                                             value={marker.status || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, "status", event.target.value)
+                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Price:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="price"
                                             type="text"
                                             value={marker.price || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, "price", event.target.value)
+                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="address"
                                             type="text"
                                             value={marker.address || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, "address", event.target.value)
+                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="url"
                                             type="text"
                                             value={marker.url || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, "url", event.target.value)
+                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="comments"
                                             type="text"
                                             value={marker.comments || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, "comments", event.target.value)
+                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
@@ -562,37 +580,41 @@ export default function TripMap() {
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Type:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="type"
                                             type="text"
                                             value={marker.type || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("food", marker.id, "type", event.target.value)
+                                                handleMarkerFieldChange("food", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="address"
                                             type="text"
                                             value={marker.address || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("food", marker.id, "address", event.target.value)
+                                                handleMarkerFieldChange("food", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="url"
                                             type="text"
                                             value={marker.url || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("food", marker.id, "url", event.target.value)
+                                                handleMarkerFieldChange("food", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="comments"
                                             type="text"
                                             value={marker.comments || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("food", marker.id, "comments", event.target.value)
+                                                handleMarkerFieldChange("food", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
@@ -631,46 +653,51 @@ export default function TripMap() {
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="name"
                                             type="text"
                                             value={marker.name || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, "name", event.target.value)
+                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Price:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="price"
                                             type="text"
                                             value={marker.price || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, "price", event.target.value)
+                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="address"
                                             type="text"
                                             value={marker.address || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, "address", event.target.value)
+                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="url"
                                             type="text"
                                             value={marker.url || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, "url", event.target.value)
+                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
+                                            name="comments"
                                             type="text"
                                             value={marker.comments || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, "comments", event.target.value)
+                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
