@@ -1,7 +1,7 @@
 import "leaflet/dist/leaflet.css"
 import "leaflet-geosearch/dist/geosearch.css"
 import { useParams } from "react-router-dom"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
@@ -161,12 +161,20 @@ export default function TripMap() {
     })
 
     // Create and add a new marker to state when there is a map click
-    // DEBUG ************** (double markers) Because the TripMap component (parent component) re-renders every time there is a change in any state, 
-    // React was also creating a new function object for addMarker, which made AddMarkerOnClick see it as a new function and run again.
-    // With useCallback, when the componentre-renders, this function is being kept as the same object in memory, NOT triggering AddMarkerOnClick
+    // DEBUG ************** (double markers) 
+    // const exists - checks if there's already a marker with the same coordinates.
+    // Callback (wasn't the issue, but added it for safety) - Because the TripMap component (parent component) re-renders every time there is a change in any state, 
+    // React could create a new function object for addMarker, which makes AddMarkerOnClick see it as a new function and run again.
+    // With useCallback, when the component re-renders, this function is being kept as the same object in memory, not triggering AddMarkerOnClick
     const addMarkerCallback = useCallback((event) => {
-        console.log("addMarkerCallback called") // REMOVE THIS LATER
-        const latLong = [event.latlng.lat, event.latlng.lng] // gets lat and long from the map and turns it into latLong
+        const lat = event.latlng.lat
+        const lng = event.latlng.lng // gets lat and long from the map and turns it into latLong
+
+        const exists = [...accommodations, ...foods, ...pointsOfInterest].some(
+            marker => marker.latLong[0] === lat && marker.latLong[1] === lng)
+        if (exists) return
+
+        const latLong = [lat, lng]
         let newMarker = {
             id: `temp-${Date.now()}`, // Temporary id, just until the data is sent to the backend
             latLong,
@@ -175,13 +183,22 @@ export default function TripMap() {
         }
         //add the new marker to the state
         if (activeCategory === "accommodation") {
-            newMarker = {...newMarker, type: "New accommodation item", status: "planned", price: "unknown"}
+            newMarker = {
+                ...newMarker, 
+                type: event.label || "New accommodation item", 
+                status: "planned", 
+                price: "unknown"}
             setAccommodations([...accommodations, newMarker])
         } else if (activeCategory === "food") {
-            newMarker = {...newMarker, type: "New food item" }
+            newMarker = {
+                ...newMarker, 
+                type: event.label || "New food item" }
             setFoods([...foods, newMarker])
         } else {
-            newMarker = { ...newMarker, name: "New POI", price: "unknown" }
+            newMarker = { 
+                ...newMarker, 
+                name: event.label || "New POI", 
+                price: "unknown" }
             setPointsOfInterest([...pointsOfInterest, newMarker])
         }
     }, [activeCategory, accommodations, foods, pointsOfInterest])
@@ -285,7 +302,7 @@ export default function TripMap() {
                 if (map.hasLayer(tempMarker)) { // remove temporary marker
                     map.removeLayer(tempMarker)
                 }
-                addMarkerCallback({ latlng: { lat, lng } }) // reuse this function to add permanent marker
+                addMarkerCallback({ latlng: { lat, lng }, label: result.label }) // reuse this function to add permanent marker
                 setSearchResult(null) // clear results to unmount this component
             }
 
@@ -297,7 +314,7 @@ export default function TripMap() {
                     map.removeLayer(tempMarker) //make sure there is no temp marker left on the map (clean up if unmounts or new result arrives)
                 }
             }
-        }, [result, map])
+        }, [result, map, activeCategory, addMarkerCallback, setSearchResult])
         return null
     }
 
