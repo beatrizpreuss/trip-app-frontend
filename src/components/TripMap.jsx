@@ -465,7 +465,7 @@ export default function TripMap() {
             <div className="flex flex-col justify-center items-center dark:text-zinc-100">
                 <h1 className="mb-15 text-4xl font-bold">{tripName}</h1>
             </div>
-            <MapContainer className="h-[500px] w-full" zoom={5}>
+            <MapContainer className="h-[500px] w-full" center={[51.5, 10.5]} zoom={5}>
                 <FitBounds allMarkers={allMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
