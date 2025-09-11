@@ -1,6 +1,6 @@
 import "leaflet/dist/leaflet.css"
 import "leaflet-geosearch/dist/geosearch.css"
-import { useParams } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
@@ -461,9 +461,9 @@ export default function TripMap() {
     }
 
     return (
-        <div className="m-25 mx-15">
+        <div className="m-25 mt-15 mx-15">
             <div className="flex flex-col justify-center items-center dark:text-zinc-100">
-                <h1 className="mb-25 text-4xl font-bold">{tripName}</h1>
+                <h1 className="mb-15 text-4xl font-bold">{tripName}</h1>
             </div>
             <MapContainer className="h-[500px] w-full" zoom={5}>
                 <FitBounds allMarkers={allMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
@@ -733,7 +733,14 @@ export default function TripMap() {
 
             </MapContainer>
 
-
+            <Link to="..">
+                <button
+                    className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                        focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                        dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                    Back
+                </button>
+            </Link>
             <button
                 onClick={saveChanges}
                 className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
