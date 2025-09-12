@@ -30,11 +30,11 @@ export async function updateTripById(tripId, tripName, mappedEatDrink, mappedExp
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 name: tripName,
-                eatDrink: mappedEatDrink,
+                eat_drink: mappedEatDrink,
                 explore: mappedExplore,
                 stays: mappedStays,
                 essentials: mappedEssentials,
-                gettingAround: mappedGettingAround
+                getting_around: mappedGettingAround
             })
         })
         return await res.json()

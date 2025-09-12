@@ -34,7 +34,7 @@ export default function TripDetails() {
                     data.stays.map(stay => ({
                         ...stay,
                         latLong: stay.coordinates, // Match the names with backend to get data
-                        url: acc.external_url
+                        url: stay.external_url
                     }))
                 )
                 setEatDrink(

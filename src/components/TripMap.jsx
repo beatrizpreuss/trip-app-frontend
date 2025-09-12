@@ -7,9 +7,11 @@ import { getTripById } from "../util/apiCalls"
 import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
 import { useTrip } from "./TripContext" //Context that is passed through TripLayout (all the trip states)
 import { updateTripById } from "../util/apiCalls"
-import accommodationIconImage from "../assets/images/placeholder1.png"
-import foodIconImage from "../assets/images/placeholder2.png"
-import pointsOfInterestIconImage from "../assets/images/placeholder3.png"
+import staysIconImage from "../assets/images/house.png"
+import eatDrinkIconImage from "../assets/images/drinks.png"
+import exploreIconImage from "../assets/images/camera.png"
+import essentialsIconImage from "../assets/images/plus.png"
+import gettingAroundIconImage from "../assets/images/train.png"
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
 
 
@@ -144,7 +146,7 @@ export default function TripMap() {
                         ...essential,
                         latLong:
                             essential.coordinates
-                                ? expl.coordinates.split(",").map(Number)
+                                ? essential.coordinates.split(",").map(Number)
                                 : null,
                         url: essential.external_url,
                     }))
@@ -164,19 +166,29 @@ export default function TripMap() {
     }, [tripId])
 
     // Create new marker icons ************ THIS NEEDS TO BE UPDATED *****************
-    const accommodationIcon = new Icon({
-        iconUrl: accommodationIconImage,
-        iconSize: [38, 38]
+    const staysIcon = new Icon({
+        iconUrl: staysIconImage,
+        iconSize: [65, 65]
     })
 
-    const foodIcon = new Icon({
-        iconUrl: foodIconImage,
-        iconSize: [38, 38]
+    const eatDrinkIcon = new Icon({
+        iconUrl: eatDrinkIconImage,
+        iconSize: [65, 65]
     })
 
-    const pointOfInterestIcon = new Icon({
-        iconUrl: pointsOfInterestIconImage,
-        iconSize: [38, 38]
+    const exploreIcon = new Icon({
+        iconUrl: exploreIconImage,
+        iconSize: [65, 65]
+    })
+
+    const essentialsIcon = new Icon({
+        iconUrl: essentialsIconImage,
+        iconSize: [65, 65]
+    })
+
+    const gettingAroundIcon = new Icon({
+        iconUrl: gettingAroundIconImage,
+        iconSize: [65, 65]
     })
 
     // Create and add a new marker to state when there is a map click
@@ -437,9 +449,9 @@ export default function TripMap() {
                     )
                 }
 
-                if (data.eatDrink) {
+                if (data.eat_drink) {
                     setEatDrink(
-                        data.eatDrink.map(eat => ({
+                        data.eat_drink.map(eat => ({
                             ...eat,
                             latLong: eat.coordinates ? eat.coordinates.split(",").map(Number) : null,
                             url: eat.external_url,
@@ -467,9 +479,9 @@ export default function TripMap() {
                     )
                 }
 
-                if (data.gettingAround) {
+                if (data.getting_around) {
                     setGettingAround(
-                        data.gettingAround.map(around => ({
+                        data.getting_around.map(around => ({
                             ...around,
                             latLong: around.coordinates ? around.coordinates.split(",").map(Number) : null,
                             url: around.external_url,
@@ -597,7 +609,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.position}
-                            icon={accommodationIcon}
+                            icon={staysIcon}
                             draggable={true} //Make it possible to drag marker to change the location
                             eventHandlers={{
                                 dragend: (event) => {
@@ -690,7 +702,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.position}
-                            icon={foodIcon}
+                            icon={eatDrinkIcon}
                             draggable={true}
                             eventHandlers={{
                                 dragend: (event) => {
@@ -763,7 +775,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.position}
-                            icon={pointOfInterestIcon}
+                            icon={exploreIcon}
                             draggable={true}
                             eventHandlers={{
                                 dragend: (event => {
@@ -846,7 +858,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.position}
-                            icon={foodIcon}
+                            icon={essentialsIcon}
                             draggable={true}
                             eventHandlers={{
                                 dragend: (event) => {
@@ -919,7 +931,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.position}
-                            icon={foodIcon}
+                            icon={gettingAroundIcon}
                             draggable={true}
                             eventHandlers={{
                                 dragend: (event) => {
