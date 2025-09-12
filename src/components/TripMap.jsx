@@ -15,7 +15,7 @@ import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
 
 export default function TripMap() {
     //Pulling state from Context
-    const { tripName, setTripName, accommodations, setAccommodations, foods, setFoods, pointsOfInterest, setPointsOfInterest } = useTrip()
+    const { tripName, setTripName, stays, setStays, eatDrink, setEatDrink, explore, setExplore, essentials, setEssentials, gettingAround, setGettingAround } = useTrip()
 
     // State for the search bar result
     const [searchResult, setSearchResult] = useState(null)
@@ -41,9 +41,11 @@ export default function TripMap() {
             const select = L.DomUtil.create("select", "", controlDiv) //creates a select element inside the controlDiv
             select.innerHTML = `
                 <option value="" disabled selected>Add Marker</option> <!-- placeholder -->
-                <option value="accommodation">Accommodation</option>
-                <option value="food">Food</option>
-                <option value="pointOfInterest">Point of Interest</option>
+                <option value="stay">Stays</option>
+                <option value="eatDrink">Eat & Drink</option>
+                <option value="explore">Explore</option>
+                <option value="essentials">Essentials</option>
+                <option value="gettingAround">Getting Around</option>
             `
             select.value = activeCategory //sets the selected option
 
@@ -88,9 +90,9 @@ export default function TripMap() {
                     draggable: false
                 }
             })
-            
+
             map.addControl(searchControl) //add the search bar to the map
-            
+
             map.on('geosearch/showlocation', (e) => { //add an event listener to the search bar
                 setSearchResult((e.location ? { location: e.location, label: e.location.label } : null))
             })
@@ -101,50 +103,67 @@ export default function TripMap() {
     }
 
 
-    // MAP DATA
+    // MAP DATA 
     // Get data from backend
     useEffect(() => {
         getTripById(tripId)
             .then(data => {
                 setTripName(data.trip.name)
-                setAccommodations(
-                    data.accommodations.map(acc => ({ // Match the names with backend to get data and turn latlong into an array
-                        ...acc,
+                setStays(
+                    data.stays.map(stay => ({ // Match the names with backend to get data and turn latlong into an array
+                        ...stay,
                         latLong:
-                            acc.lat_long
-                                ? acc.lat_long.split(",").map(Number)
+                            stay.coordinates
+                                ? stay.coordinates.split(",").map(Number)
                                 : null,
-                        url: acc.external_url,
-                        comments: acc.comment
+                        url: stay.external_url,
                     }))
                 )
-                setFoods(
-                    data.foods.map(food => ({
-                        ...food,
+                setEatDrink(
+                    data.eat_drink.map(eat => ({
+                        ...eat,
                         latLong:
-                            food.lat_long
-                                ? food.lat_long.split(",").map(Number)
+                            eat.coordinates
+                                ? eat.coordinates.split(",").map(Number)
                                 : null,
-                        url: food.external_url,
-                        comments: food.comment
+                        url: eat.external_url,
                     }))
                 )
-                setPointsOfInterest(
-                    data.points_of_interest.map(poi => ({
-                        ...poi,
+                setExplore(
+                    data.explore.map(expl => ({
+                        ...expl,
                         latLong:
-                            poi.lat_long
-                                ? poi.lat_long.split(",").map(Number)
+                            expl.coordinates
+                                ? expl.coordinates.split(",").map(Number)
                                 : null,
-                        url: poi.external_url,
-                        comments: poi.comment
+                        url: expl.external_url,
+                    }))
+                )
+                setEssentials(
+                    data.essentials.map(essential => ({
+                        ...essential,
+                        latLong:
+                            essential.coordinates
+                                ? expl.coordinates.split(",").map(Number)
+                                : null,
+                        url: essential.external_url,
+                    }))
+                )
+                setGettingAround(
+                    data.getting_around.map(around => ({
+                        ...around,
+                        latLong:
+                            around.coordinates
+                                ? around.coordinates.split(",").map(Number)
+                                : null,
+                        url: around.external_url,
                     }))
                 )
                 setLoading(false)
             })
     }, [tripId])
 
-    // Create new marker icons
+    // Create new marker icons ************ THIS NEEDS TO BE UPDATED *****************
     const accommodationIcon = new Icon({
         iconUrl: accommodationIconImage,
         iconSize: [38, 38]
@@ -170,7 +189,7 @@ export default function TripMap() {
         const lat = event.latlng.lat
         const lng = event.latlng.lng // gets lat and long from the map and turns it into latLong
 
-        const exists = [...accommodations, ...foods, ...pointsOfInterest].some(
+        const exists = [...stays, ...eatDrink, ...explore, ...essentials, ...gettingAround].some(
             marker => marker.latLong[0] === lat && marker.latLong[1] === lng)
         if (exists) return
 
@@ -182,26 +201,40 @@ export default function TripMap() {
             comments: ""
         }
         //add the new marker to the state
-        if (activeCategory === "accommodation") {
+        if (activeCategory === "stay") {
             newMarker = {
-                ...newMarker, 
-                type: event.label || "New accommodation item", 
-                status: "planned", 
-                price: "unknown"}
-            setAccommodations([...accommodations, newMarker])
-        } else if (activeCategory === "food") {
+                ...newMarker,
+                name: event.label || "New stay item",
+                status: "planned",
+                price: "unknown"
+            }
+            setStays([...stays, newMarker])
+        } else if (activeCategory === "eatDrink") {
             newMarker = {
-                ...newMarker, 
-                type: event.label || "New food item" }
-            setFoods([...foods, newMarker])
+                ...newMarker,
+                name: event.label || "New eat & drink item"
+            }
+            setEatDrink([...eatDrink, newMarker])
+        } else if (activeCategory === "explore") {
+            newMarker = {
+                ...newMarker,
+                name: event.label || "New explore item"
+            }
+            setExplore([...explore, newMarker])
+        } else if (activeCategory === "essentials") {
+            newMarker = {
+                ...newMarker,
+                name: event.label || "New essentials item"
+            }
+            setEssentials([...essentials, newMarker])
         } else {
-            newMarker = { 
-                ...newMarker, 
-                name: event.label || "New POI", 
-                price: "unknown" }
-            setPointsOfInterest([...pointsOfInterest, newMarker])
+            newMarker = {
+                ...newMarker,
+                name: event.label || "New getting around item"
+            }
+            setGettingAround([...gettingAround, newMarker])
         }
-    }, [activeCategory, accommodations, foods, pointsOfInterest])
+    }, [activeCategory, stays, eatDrink, explore, essentials, gettingAround])
 
     // Component that helps the click event happen (wrapper for addMarker that listens to click events)
     function AddMarkerOnClick({ activeCategory, onClick }) { //onClick = addMarker
@@ -228,17 +261,25 @@ export default function TripMap() {
 
     // Update info inside the popups
     function handleMarkerFieldChange(category, id, field, value) {
-        if (category === "accommodation") {
-            setAccommodations(accommodations.map(acc =>
-                acc.id === id ? { ...acc, [field]: value } : acc
+        if (category === "stay") {
+            setStays(stays.map(stay =>
+                stay.id === id ? { ...stay, [field]: value } : stay
             ))
-        } else if (category === "food") {
-            setFoods(foods.map(food =>
-                food.id === id ? { ...food, [field]: value } : food
+        } else if (category === "eatDrink") {
+            setEatDrink(eatDrink.map(eat =>
+                eat.id === id ? { ...eat, [field]: value } : eat
+            ))
+        } else if (category === "explore") {
+            setExplore(explore.map(expl =>
+                expl.id === id ? { ...expl, [field]: value } : expl
+            ))
+        } else if (category === "essentials") {
+            setEssentials(essentials.map(essential =>
+                essential.id === id ? { ...essential, [field]: value } : essential
             ))
         } else {
-            setPointsOfInterest(pointsOfInterest.map(poi =>
-                poi.id === id ? { ...poi, [field]: value } : poi
+            setGettingAround(gettingAround.map(around =>
+                around.id === id ? { ...around, [field]: value } : around
             ))
         }
     }
@@ -250,16 +291,24 @@ export default function TripMap() {
 
     // Delete a marker
     function handleDeleteMarker(category, id) {
-        if (category === "accommodation") {
-            setAccommodations(accommodations.map(marker =>
+        if (category === "stay") {
+            setStays(stays.map(marker =>
                 marker.id === id ? { ...marker, deleted: true } : marker
             ))
-        } else if (category === "food") {
-            setFoods(foods.map(marker =>
+        } else if (category === "eatDrink") {
+            setEatDrink(eatDrink.map(marker =>
+                marker.id === id ? { ...marker, deleted: true } : marker
+            ))
+        } else if (category === "explore") {
+            setExplore(explore.map(marker =>
+                marker.id === id ? { ...marker, deleted: true } : marker
+            ))
+        } else if (category === "essentials") {
+            setEssentials(essentials.map(marker =>
                 marker.id === id ? { ...marker, deleted: true } : marker
             ))
         } else {
-            setPointsOfInterest(pointsOfInterest.map(marker =>
+            setGettingAround(gettingAround.map(marker =>
                 marker.id === id ? { ...marker, deleted: true } : marker
             ))
         }
@@ -281,11 +330,11 @@ export default function TripMap() {
                 .bindTooltip(result.label || "Search result", { permanent: false, direction: "top" })
                 .openTooltip()
 
-            
+
             // Upon click
-            const onClick = () => { 
+            const onClick = () => {
                 // if there is no category selected, open tooltip
-                if (!activeCategory) { 
+                if (!activeCategory) {
                     const tempTooltip = L.tooltip({
                         permanent: false,
                         direction: "top",
@@ -321,72 +370,109 @@ export default function TripMap() {
 
     const saveChanges = () => {
         // Match the names to the backend to send data
-        const mappedAccommodations = accommodations.map(acc => ({
-            id: acc.id && acc.id.toString().startsWith("temp-") ? null : acc.id, // reads the temporary id (which starts with "temp") then turns it to null so the backend can add a real id later
-            type: acc.type,
-            status: acc.status,
-            price: acc.price,
-            address: acc.address,
-            lat_long: acc.latLong ? acc.latLong.join(",") : null,
-            external_url: acc.url,
-            comment: acc.comments,
-            deleted: acc.deleted || false
+        const mappedStays = stays.map(stay => ({
+            id: stay.id && stay.id.toString().startsWith("temp-") ? null : stay.id, // reads the temporary id (which starts with "temp") then turns it to null so the backend can add a real id later
+            name: stay.name,
+            status: stay.status,
+            price: stay.price,
+            address: stay.address,
+            coordinates: stay.latLong ? stay.latLong.join(",") : null,
+            external_url: stay.url,
+            comments: stay.comments,
+            deleted: stay.deleted || false
         }))
 
-        const mappedFoods = foods.map(food => ({
-            id: food.id && food.id.toString().startsWith("temp-") ? null : food.id,
-            type: food.type,
-            address: food.address,
-            lat_long: food.latLong ? food.latLong.join(",") : null,
-            external_url: food.url,
-            comment: food.comments,
-            deleted: food.deleted || false
+        const mappedEatDrink = eatDrink.map(eat => ({
+            id: eat.id && eat.id.toString().startsWith("temp-") ? null : eat.id,
+            name: eat.name,
+            address: eat.address,
+            coordinates: eat.latLong ? eat.latLong.join(",") : null,
+            external_url: eat.url,
+            comments: eat.comments,
+            deleted: eat.deleted || false
         }))
 
-        const mappedPointsOfInterest = pointsOfInterest.map(poi => ({
-            id: poi.id && poi.id.toString().startsWith("temp-") ? null : poi.id,
-            name: poi.name,
-            price: poi.price,
-            address: poi.address,
-            lat_long: poi.latLong ? poi.latLong.join(",") : null,
-            external_url: poi.url,
-            comment: poi.comments,
-            deleted: poi.deleted || false
+        const mappedExplore = explore.map(expl => ({
+            id: expl.id && expl.id.toString().startsWith("temp-") ? null : expl.id,
+            name: expl.name,
+            price: expl.price,
+            address: expl.address,
+            coordinates: expl.latLong ? expl.latLong.join(",") : null,
+            external_url: expl.url,
+            comments: expl.comments,
+            deleted: expl.deleted || false
         }))
-        updateTripById(tripId, tripName, mappedFoods, mappedPointsOfInterest, mappedAccommodations)
+
+        const mappedEssentials = essentials.map(essential => ({
+            id: essential.id && essential.id.toString().startsWith("temp-") ? null : essential.id,
+            name: essential.name,
+            address: essential.address,
+            coordinates: essential.latLong ? essential.latLong.join(",") : null,
+            external_url: essential.url,
+            comments: essential.comments,
+            deleted: essential.deleted || false
+        }))
+
+        const mappedGettingAround = gettingAround.map(around => ({
+            id: around.id && around.id.toString().startsWith("temp-") ? null : around.id,
+            name: around.name,
+            address: around.address,
+            coordinates: around.latLong ? around.latLong.join(",") : null,
+            external_url: around.url,
+            comments: around.comments,
+            deleted: around.deleted || false
+        }))
+        updateTripById(tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
             .then(data => {
                 console.log("Saved", data)
 
                 //Replace frontend state with backend response
-                if (data.accommodations) {
-                    setAccommodations(
-                        data.accommodations.map(acc => ({
-                            ...acc,
-                            latLong: acc.lat_long ? acc.lat_long.split(",").map(Number) : null,
-                            url: acc.external_url,
-                            comments: acc.comment
+                if (data.stays) {
+                    setStays(
+                        data.stays.map(stay => ({
+                            ...stay,
+                            latLong: stay.coordinates ? stay.coordinates.split(",").map(Number) : null,
+                            url: stay.external_url,
                         }))
                     )
                 }
 
-                if (data.foods) {
-                    setFoods(
-                        data.foods.map(food => ({
-                            ...food,
-                            latLong: food.lat_long ? food.lat_long.split(",").map(Number) : null,
-                            url: food.external_url,
-                            comments: food.comment
+                if (data.eatDrink) {
+                    setEatDrink(
+                        data.eatDrink.map(eat => ({
+                            ...eat,
+                            latLong: eat.coordinates ? eat.coordinates.split(",").map(Number) : null,
+                            url: eat.external_url,
                         }))
                     )
                 }
 
-                if (data.points_of_interest) {
-                    setPointsOfInterest(
-                        data.points_of_interest.map(poi => ({
-                            ...poi,
-                            latLong: poi.lat_long ? poi.lat_long.split(",").map(Number) : null,
-                            url: poi.external_url,
-                            comments: poi.comment
+                if (data.explore) {
+                    setExplore(
+                        data.explore.map(expl => ({
+                            ...expl,
+                            latLong: expl.coordinates ? expl.coordinates.split(",").map(Number) : null,
+                            url: expl.external_url,
+                        }))
+                    )
+                }
+
+                if (data.essentials) {
+                    setEssentials(
+                        data.essentials.map(essential => ({
+                            ...essential,
+                            latLong: essential.coordinates ? essential.coordinates.split(",").map(Number) : null,
+                            url: essential.external_url,
+                        }))
+                    )
+                }
+
+                if (data.gettingAround) {
+                    setGettingAround(
+                        data.gettingAround.map(around => ({
+                            ...around,
+                            latLong: around.coordinates ? around.coordinates.split(",").map(Number) : null,
+                            url: around.external_url,
                         }))
                     )
                 }
@@ -400,12 +486,12 @@ export default function TripMap() {
     // Everything below the if needs the data to be loaded to run
 
     // Only get details after data is loaded
-    const accommodationMarkers = accommodations
+    const staysMarkers = stays
         .filter(item => !item.deleted) // hide marker immediately if it has been deleted from map
         .map(item => ({
             id: item.id,
             position: item.latLong,
-            type: item.type,
+            name: item.name,
             status: item.status,
             price: item.price,
             address: item.address,
@@ -413,19 +499,18 @@ export default function TripMap() {
             comments: item.comments
         }))
 
-    const foodMarkers = foods
+    const eatDrinkMarkers = eatDrink
         .filter(item => !item.deleted)
         .map(item => ({
             id: item.id,
             position: item.latLong,
-            type: item.type,
+            name: item.name,
             address: item.address,
             url: item.url,
             comments: item.comments
         }))
 
-
-    const pointOfInterestMarkers = pointsOfInterest
+    const exploreMarkers = explore
         .filter(item => !item.deleted)
         .map(item => ({
             id: item.id,
@@ -437,11 +522,35 @@ export default function TripMap() {
             comments: item.comments
         }))
 
+    const essentialsMarkers = essentials
+        .filter(item => !item.deleted)
+        .map(item => ({
+            id: item.id,
+            position: item.latLong,
+            name: item.name,
+            address: item.address,
+            url: item.url,
+            comments: item.comments
+        }))
+
+    const gettingAroundMarkers = gettingAround
+        .filter(item => !item.deleted)
+        .map(item => ({
+            id: item.id,
+            position: item.latLong,
+            name: item.name,
+            address: item.address,
+            url: item.url,
+            comments: item.comments
+        }))
+
     // Collect all the markers into 1 array (needed for FitBounds function)
     const allMarkers = [
-        ...accommodationMarkers,
-        ...foodMarkers,
-        ...pointOfInterestMarkers
+        ...staysMarkers,
+        ...eatDrinkMarkers,
+        ...exploreMarkers,
+        ...essentialsMarkers,
+        ...gettingAroundMarkers
     ]
 
     // Make the map automatically open on my markers, not on a fixed location (and update the hasFitBounds state so this function will only run the first time the map opens, when hasFitBounds is still false)
@@ -482,7 +591,7 @@ export default function TripMap() {
                     setActiveCategory={setActiveCategory}
                 />
 
-                {accommodationMarkers
+                {staysMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (
                         <Marker
@@ -496,19 +605,19 @@ export default function TripMap() {
                                         event.target.getLatLng().lat,
                                         event.target.getLatLng().lng
                                     ]
-                                    handleMarkerDragEnd("accommodation", marker.id, newLatLong)
+                                    handleMarkerDragEnd("stay", marker.id, newLatLong)
                                 }
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Type:
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
-                                            name="type"
+                                            name="name"
                                             type="text"
-                                            value={marker.type || ""}
+                                            value={marker.name || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Status:
@@ -518,7 +627,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.status || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Price:
@@ -528,7 +637,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.price || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
@@ -538,7 +647,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.address || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
@@ -548,7 +657,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.url || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
@@ -558,14 +667,14 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.comments || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("accommodation", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleDeleteMarker("accommodation", marker.id)
+                                            handleDeleteMarker("stay", marker.id)
                                         }}
                                     >
                                         Delete
@@ -575,7 +684,7 @@ export default function TripMap() {
                         </Marker>
                     ))}
 
-                {foodMarkers
+                {eatDrinkMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (
                         <Marker
@@ -589,19 +698,19 @@ export default function TripMap() {
                                         event.target.getLatLng().lat,
                                         event.target.getLatLng().lng
                                     ]
-                                    handleMarkerDragEnd("food", marker.id, newLatLong)
+                                    handleMarkerDragEnd("eatDrink", marker.id, newLatLong)
                                 }
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Type:
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
-                                            name="type"
+                                            name="name"
                                             type="text"
-                                            value={marker.type || ""}
+                                            value={marker.name || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("food", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
@@ -611,7 +720,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.address || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("food", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
@@ -621,7 +730,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.url || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("food", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
@@ -631,14 +740,14 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.comments || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("food", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleDeleteMarker("food", marker.id)
+                                            handleDeleteMarker("eatDrink", marker.id)
                                         }}
                                     >
                                         Delete
@@ -648,7 +757,7 @@ export default function TripMap() {
                         </Marker>
                     ))}
 
-                {pointOfInterestMarkers
+                {exploreMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (
                         <Marker
@@ -662,7 +771,7 @@ export default function TripMap() {
                                         event.target.getLatLng().lat,
                                         event.target.getLatLng().lng
                                     ]
-                                    handleMarkerDragEnd("pointsOfInterest", marker.id, newLatLong)
+                                    handleMarkerDragEnd("explore", marker.id, newLatLong)
                                 })
                             }}>
                             <Popup>
@@ -674,7 +783,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.name || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Price:
@@ -684,7 +793,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.price || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
@@ -694,7 +803,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.address || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
@@ -704,7 +813,7 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.url || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
@@ -714,14 +823,160 @@ export default function TripMap() {
                                             type="text"
                                             value={marker.comments || ""}
                                             onChange={(event) =>
-                                                handleMarkerFieldChange("pointOfInterest", marker.id, event.target.name, event.target.value)
+                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
                                         className="block text-xs text-red-600 dark:text-gray-300 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handleDeleteMarker("pointOfInterest", marker.id)
+                                            handleDeleteMarker("explore", marker.id)
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    ))}
+
+                {essentialsMarkers
+                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
+                    .map((marker, index) => (
+                        <Marker
+                            key={index}
+                            position={marker.position}
+                            icon={foodIcon}
+                            draggable={true}
+                            eventHandlers={{
+                                dragend: (event) => {
+                                    const newLatLong = [
+                                        event.target.getLatLng().lat,
+                                        event.target.getLatLng().lng
+                                    ]
+                                    handleMarkerDragEnd("essentials", marker.id, newLatLong)
+                                }
+                            }}>
+                            <Popup>
+                                <div className="space-x-2">
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="name"
+                                            type="text"
+                                            value={marker.name || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="address"
+                                            type="text"
+                                            value={marker.address || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="url"
+                                            type="text"
+                                            value={marker.url || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="comments"
+                                            type="text"
+                                            value={marker.comments || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <button
+                                        className="block text-xs text-red-600 dark:text-gray-300 my-1"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteMarker("essentials", marker.id)
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    ))}
+                
+                {gettingAroundMarkers
+                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
+                    .map((marker, index) => (
+                        <Marker
+                            key={index}
+                            position={marker.position}
+                            icon={foodIcon}
+                            draggable={true}
+                            eventHandlers={{
+                                dragend: (event) => {
+                                    const newLatLong = [
+                                        event.target.getLatLng().lat,
+                                        event.target.getLatLng().lng
+                                    ]
+                                    handleMarkerDragEnd("gettingAround", marker.id, newLatLong)
+                                }
+                            }}>
+                            <Popup>
+                                <div className="space-x-2">
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="name"
+                                            type="text"
+                                            value={marker.name || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="address"
+                                            type="text"
+                                            value={marker.address || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="url"
+                                            type="text"
+                                            value={marker.url || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="comments"
+                                            type="text"
+                                            value={marker.comments || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <button
+                                        className="block text-xs text-red-600 dark:text-gray-300 my-1"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteMarker("gettingAround", marker.id)
                                         }}
                                     >
                                         Delete

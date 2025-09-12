@@ -6,16 +6,20 @@ export default function TripLayout() {
     
     // Passing state to the children using Context
     const [tripName, setTripName] = useState("")
-    const [accommodations, setAccommodations] = useState([])
-    const [foods, setFoods] = useState([])
-    const [pointsOfInterest, setPointsOfInterest] = useState([])
+    const [stays, setStays] = useState([])
+    const [eatDrink, setEatDrink] = useState([])
+    const [explore, setExplore] = useState([])
+    const [essentials, setEssentials] = useState([])
+    const [gettingAround, setGettingAround] = useState([])
 
     return (
         <TripContext.Provider value={{
             tripName, setTripName,
-            accommodations, setAccommodations,
-            foods, setFoods,
-            pointsOfInterest, setPointsOfInterest
+            stays, setStays,
+            eatDrink, setEatDrink,
+            explore, setExplore,
+            essentials, setEssentials,
+            gettingAround, setGettingAround
         }}>
             <Outlet />
         </TripContext.Provider>

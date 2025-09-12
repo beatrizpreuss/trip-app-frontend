@@ -23,16 +23,18 @@ export async function getTripById(tripId) {
 }
 
 // Update a trip by its ID
-export async function updateTripById(tripId, tripName, mappedFoods, mappedPointsOfInterest, mappedAccommodations) {
+export async function updateTripById(tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround) {
     try {
         const res = await fetch(`${BASE_URL}/trips/${tripId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 name: tripName,
-                foods: mappedFoods,
-                points_of_interest: mappedPointsOfInterest,
-                accommodations: mappedAccommodations
+                eatDrink: mappedEatDrink,
+                explore: mappedExplore,
+                stays: mappedStays,
+                essentials: mappedEssentials,
+                gettingAround: mappedGettingAround
             })
         })
         return await res.json()
