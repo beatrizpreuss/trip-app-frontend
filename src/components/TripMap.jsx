@@ -573,8 +573,15 @@ export default function TripMap() {
 
         useEffect(() => {
             if (allMarkers.length > 0 && !hasFitBounds) {
-                const bounds = allMarkers.map(marker => marker.position)
-                map.fitBounds(bounds, { padding: [50, 50] })
+                const validBounds = allMarkers // filter only markers with valid latLong
+                    .map(marker => marker.position)
+                    .filter(position => Array.isArray(position) && position.length === 2)
+
+                if (validBounds.length > 0) {
+                    map.fitBounds(bounds, { padding: [50, 50] })
+                } else { // if there are no valid coordinates
+                    map.setView([51.5, 10.5], 5)
+                }
                 setHasFitBounds(true)
             }
         }, [allMarkers, hasFitBounds, map])
