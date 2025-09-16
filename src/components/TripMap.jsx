@@ -165,7 +165,7 @@ export default function TripMap() {
             })
     }, [tripId])
 
-    // Create new marker icons ************ THIS NEEDS TO BE UPDATED *****************
+    // Create new marker icons
     const staysIcon = new Icon({
         iconUrl: staysIconImage,
         iconSize: [65, 65]
@@ -192,15 +192,15 @@ export default function TripMap() {
     })
 
     // Create and add a new marker to state when there is a map click
-    // DEBUG ************** (double markers) 
-    // const exists - checks if there's already a marker with the same coordinates.
-    // Callback (wasn't the issue, but added it for safety) - Because the TripMap component (parent component) re-renders every time there is a change in any state, 
+   
+    // Callback: Because the TripMap component (parent component) re-renders every time there is a change in any state, 
     // React could create a new function object for addMarker, which makes AddMarkerOnClick see it as a new function and run again.
     // With useCallback, when the component re-renders, this function is being kept as the same object in memory, not triggering AddMarkerOnClick
     const addMarkerCallback = useCallback((event) => {
         const lat = event.latlng.lat
         const lng = event.latlng.lng // gets lat and long from the map and turns it into latLong
 
+        // checks if there's already a marker with the same coordinates.
         const exists = [...stays, ...eatDrink, ...explore, ...essentials, ...gettingAround].some(
             marker => marker.latLong[0] === lat && marker.latLong[1] === lng)
         if (exists) return
@@ -210,7 +210,8 @@ export default function TripMap() {
             id: `temp-${Date.now()}`, // Temporary id, just until the data is sent to the backend
             latLong,
             address: "",
-            comments: ""
+            comments: "",
+            deleted: false
         }
         //add the new marker to the state
         if (activeCategory === "stay") {
@@ -306,7 +307,7 @@ export default function TripMap() {
         if (category === "stay") {
             setStays(stays.map(marker =>
                 marker.id === id ? { ...marker, deleted: true } : marker
-            ))
+            ))  
         } else if (category === "eatDrink") {
             setEatDrink(eatDrink.map(marker =>
                 marker.id === id ? { ...marker, deleted: true } : marker
@@ -393,7 +394,7 @@ export default function TripMap() {
             comments: stay.comments,
             deleted: stay.deleted || false
         }))
-
+        
         const mappedEatDrink = eatDrink.map(eat => ({
             id: eat.id && eat.id.toString().startsWith("temp-") ? null : eat.id,
             name: eat.name,
@@ -924,7 +925,7 @@ export default function TripMap() {
                             </Popup>
                         </Marker>
                     ))}
-                
+
                 {gettingAroundMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (

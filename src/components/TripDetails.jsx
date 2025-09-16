@@ -11,7 +11,7 @@ import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 export default function TripDetails() {
     //Pulling state from Context
     const { tripName, setTripName, stays, setStays, eatDrink, setEatDrink, explore, setExplore, essentials, setEssentials, gettingAround, setGettingAround } = useTrip()
-        
+
     const { tripId } = useParams()
     const navigate = useNavigate()
 
@@ -224,7 +224,7 @@ export default function TripDetails() {
     const saveChanges = () => {
         // Match the names to the backend to send data
         const mappedStays = stays.map(stay => ({
-            id: stay.id,
+            id: stay.id && stay.id.toString().startsWith("temp-") ? null : stay.id,
             name: stay.name,
             status: stay.status,
             price: stay.price,
@@ -236,7 +236,7 @@ export default function TripDetails() {
         }))
 
         const mappedEatDrink = eatDrink.map(eat => ({
-            id: eat.id,
+            id: eat.id && eat.id.toString().startsWith("temp-") ? null : eat.id,
             name: eat.name,
             address: eat.address,
             coordinates: eat.latLong,
@@ -246,7 +246,7 @@ export default function TripDetails() {
         }))
 
         const mappedExplore = explore.map(expl => ({
-            id: expl.id,
+            id: expl.id && expl.id.toString().startsWith("temp-") ? null : expl.id,
             name: expl.name,
             price: expl.price,
             address: expl.address,
@@ -257,7 +257,7 @@ export default function TripDetails() {
         }))
 
         const mappedEssentials = essentials.map(essential => ({
-            id: essential.id,
+            id: essential.id && essential.id.toString().startsWith("temp-") ? null : essential.id,
             name: essential.name,
             address: essential.address,
             coordinates: essential.latLong,
@@ -267,7 +267,7 @@ export default function TripDetails() {
         }))
 
         const mappedGettingAround = gettingAround.map(around => ({
-            id: around.id,
+            id: around.id && around.id.toString().startsWith("temp-") ? null : around.id,
             name: around.name,
             address: around.address,
             coordinates: around.latLong,
@@ -279,6 +279,57 @@ export default function TripDetails() {
         updateTripById(tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
             .then(data => {
                 console.log("Saved", data)
+                
+                //Replace frontend state with backend response
+                if (data.stays) {
+                    setStays(
+                        data.stays.map(stay => ({
+                            ...stay,
+                            latLong: stay.coordinates ? stay.coordinates.split(",").map(Number) : null,
+                            url: stay.external_url,
+                        }))
+                    )
+                }
+
+                if (data.eat_drink) {
+                    setEatDrink(
+                        data.eat_drink.map(eat => ({
+                            ...eat,
+                            latLong: eat.coordinates ? eat.coordinates.split(",").map(Number) : null,
+                            url: eat.external_url,
+                        }))
+                    )
+                }
+
+                if (data.explore) {
+                    setExplore(
+                        data.explore.map(expl => ({
+                            ...expl,
+                            latLong: expl.coordinates ? expl.coordinates.split(",").map(Number) : null,
+                            url: expl.external_url,
+                        }))
+                    )
+                }
+
+                if (data.essentials) {
+                    setEssentials(
+                        data.essentials.map(essential => ({
+                            ...essential,
+                            latLong: essential.coordinates ? essential.coordinates.split(",").map(Number) : null,
+                            url: essential.external_url,
+                        }))
+                    )
+                }
+
+                if (data.getting_around) {
+                    setGettingAround(
+                        data.getting_around.map(around => ({
+                            ...around,
+                            latLong: around.coordinates ? around.coordinates.split(",").map(Number) : null,
+                            url: around.external_url,
+                        }))
+                    )
+                }
             })
             .catch(err => console.error("Error saving data", err))
     }
@@ -751,7 +802,7 @@ export default function TripDetails() {
                     ➕ Add Essentials
                 </button>
             </div>
-            
+
 
             {/* Getting Around table */}
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
