@@ -32,11 +32,11 @@ export default function Trips() {
             <button
                 onClick={handleNewTrip}
                 className="aspect-square flex flex-col items-center justify-center border-2 
-                        border-dashed rounded-lg cursor-pointer transition group dark:border-zinc-500"
+                        border-dashed rounded-lg cursor-pointer transition group dark:border-[#a9a9a9]"
             >
                 <div className="flex flex-col items-center transform transition group-hover:scale-110">
-                    <span className="text-7xl font-bold text-gray-400">+</span>
-                    <span className="font-medium text-zinc-900 dark:text-zinc-100">New Trip</span>
+                    <span className="text-7xl font-bold text-[#dddddd]">+</span>
+                    <span className="font-medium text-zinc-900 dark:text-[#dddddd]">New Trip</span>
                 </div>
             </button>
         )
@@ -45,7 +45,7 @@ export default function Trips() {
     
     return (
         <div className="m-25 mx-15">
-            <div className="flex flex-col justify-center items-center dark:text-zinc-100">
+            <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
                 <h1 className="text-4xl font-bold">Plan your trips</h1>
                 <h3 className="mt-4 mb-20">Edit an existing trip or create a new one</h3>
             </div>
@@ -59,7 +59,7 @@ export default function Trips() {
                     <Link
                         key={trip.id}
                         to={`/trips/${trip.id}`}
-                        className="aspect-square relative rounded-lg shadow dark:shadow-zinc-500 overflow-hidden group"
+                        className="aspect-square relative rounded-lg shadow dark:shadow-[#a9a9a9] overflow-hidden group"
                     >
                         {/* Background image if available */}
                         {trip.image ? (
@@ -69,12 +69,12 @@ export default function Trips() {
                                 className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 transition"
                             />
                         ) : (
-                            <div className="absolute inset-0 bg-gray-100 dark:bg-zinc-900" />
+                            <div className="absolute inset-0 bg-gray-100 dark:bg-[#222222]" />
                         )}
 
                         {/* Trip name overlay */}
                         <div className="relative flex items-center justify-center h-full">
-                            <span className="font-medium text-center text-zinc-900 group-hover:scale-110 transition dark:text-zinc-100">
+                            <span className="font-medium text-center text-zinc-900 group-hover:scale-110 transition dark:text-[#dddddd]">
                                 {trip.name}
                             </span>
                         </div>

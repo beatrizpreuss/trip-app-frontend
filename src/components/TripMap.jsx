@@ -594,9 +594,19 @@ export default function TripMap() {
 
     return (
         <div className="m-25 mt-15 mx-15">
-            <div className="flex flex-col justify-center items-center dark:text-zinc-100">
-                <h1 className="mb-15 text-4xl font-bold">{tripName}</h1>
+            <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
+
+                <input
+                    type="text"
+                    value={tripName}
+                    onChange={(e) => setTripName(e.target.value)}
+                    className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
+                />
+                <h3 className="mt-4 mb-25">Edit your trip details directly on the map</h3>
             </div>
+            {/* <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
+                <h1 className="mb-15 text-4xl font-bold">{tripName}</h1>
+            </div> */}
             <MapContainer className="h-[500px] w-full">
                 <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
                 <TileLayer
@@ -643,7 +653,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Status:
+                                    <label className="block text-xs text-gray-700 dark:text-[gray-300]"> Status:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="status"
@@ -1015,7 +1025,7 @@ export default function TripMap() {
                 <button
                     className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                         focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                        dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                        dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-[#222222]">
                     Back
                 </button>
             </Link>
@@ -1023,7 +1033,7 @@ export default function TripMap() {
                 onClick={saveChanges}
                 className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                    dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-[#222222]">
                 Save Changes
             </button>
         </div>

@@ -12,7 +12,7 @@ export async function getAllTrips() {
 }
 
 
-// Get a trip by its ID
+// Get a trip by its ID (in the backend: open_trip function)
 export async function getTripById(tripId) {
   try {
     const res = await fetch(`${BASE_URL}/trips/${tripId}`)

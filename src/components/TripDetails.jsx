@@ -279,7 +279,7 @@ export default function TripDetails() {
         updateTripById(tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
             .then(data => {
                 console.log("Saved", data)
-                
+
                 //Replace frontend state with backend response
                 if (data.stays) {
                     setStays(
@@ -357,42 +357,50 @@ export default function TripDetails() {
     return (
 
         <div className="m-25 mx-15">
-            <div className="flex flex-col justify-center items-center dark:text-zinc-100">
+            <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
 
                 <input
                     type="text"
                     value={tripName}
                     onChange={(e) => setTripName(e.target.value)}
-                    className="text-4xl font-bold bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500 text-center"
+                    className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                 />
-                <h3 className="mt-4 mb-20">Edit all the details of your trip</h3>
+                <h3 className="mt-4">Manage all your trip details in the tables, or open the map to make changes</h3>
+                <Link to="map">
+                    <button
+                        className="w-50 my-5 mb-20 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                            focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                            dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                        Open Map
+                    </button>
+                </Link>
             </div>
 
             {/* Stays Table */}
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+            <div className="relative overflow-x-auto shadow-md rounded-lg">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowStays(prev => !prev)}>
                                     {showStays ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Stays</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
                             >Make a list with all the hotels, camping sites or any other accommodation places
                                 <br /> relevant to your trip. Include all details and stay organized.</p>
                         </div>
                     </caption>
 
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Status</th>
@@ -411,8 +419,8 @@ export default function TripDetails() {
                             {stays
                                 .filter(stay => !stay.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -420,7 +428,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="status"
                                                 type="text"
@@ -428,7 +436,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="price"
                                                 type="text"
@@ -436,7 +444,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -444,7 +452,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -452,7 +460,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -460,7 +468,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -471,7 +479,7 @@ export default function TripDetails() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => deleteStay(item.id)}
-                                                className="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -484,34 +492,34 @@ export default function TripDetails() {
                     onClick={() => addStay()}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
+                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     ➕ Add Stay
                 </button>
             </div>
 
             {/* Eat & Drink Table */}
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+            <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowEatDrink(prev => !prev)}>
                                     {showEatDrink ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Eat & Drink</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
                             >Make a list of the restaurants you would like to try, and of possible</p>
                         </div>
                     </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
@@ -528,8 +536,8 @@ export default function TripDetails() {
                             {eatDrink
                                 .filter(eat => !eat.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -537,7 +545,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -545,7 +553,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -553,7 +561,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -561,7 +569,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -572,7 +580,7 @@ export default function TripDetails() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => deleteEatDrink(item.id)}
-                                                className="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -585,35 +593,35 @@ export default function TripDetails() {
                     onClick={() => addEatDrink()}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
+                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     ➕ Add Eat & Drink
                 </button>
             </div>
 
             {/* Explore table */}
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+            <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowExplore(prev => !prev)}>
                                     {showExplore ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Places to Explore</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
                             >List all the places you would like to see, like museums, monuments,
                                 <br /> parks, nature attractions, hiking trails, etc. </p>
                         </div>
                     </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Price</th>
@@ -631,8 +639,8 @@ export default function TripDetails() {
                             {explore
                                 .filter(expl => !expl.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -640,7 +648,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="price"
                                                 type="text"
@@ -648,7 +656,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -656,7 +664,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -664,7 +672,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -672,7 +680,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -683,7 +691,7 @@ export default function TripDetails() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => deleteExplore(item.id)}
-                                                className="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -696,35 +704,35 @@ export default function TripDetails() {
                     onClick={() => addExplore()}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
+                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     ➕ Add Place to Explore
                 </button>
             </div>
 
             {/* Essentials table */}
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+            <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowEssentials(prev => !prev)}>
                                     {showEssentials ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Essentials</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
                             >List places that could be helpful to keep your trip up and running,
                                 <br /> like supermarkets, pharmacies, banks, etc. </p>
                         </div>
                     </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
@@ -741,8 +749,8 @@ export default function TripDetails() {
                             {essentials
                                 .filter(essential => !essential.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -750,7 +758,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -758,7 +766,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -766,7 +774,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -774,7 +782,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -785,7 +793,7 @@ export default function TripDetails() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => deleteEssentials(item.id)}
-                                                className="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -798,35 +806,35 @@ export default function TripDetails() {
                     onClick={() => addEssentials()}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
+                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     ➕ Add Essentials
                 </button>
             </div>
 
 
             {/* Getting Around table */}
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+            <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowGettingAround(prev => !prev)}>
                                     {showGettingAround ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Getting Around</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
                             >Airports, train statios, bus stops and such.</p>
                         </div>
                     </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
@@ -843,8 +851,8 @@ export default function TripDetails() {
                             {gettingAround
                                 .filter(around => !around.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -852,7 +860,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -860,7 +868,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -868,7 +876,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -876,7 +884,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -887,7 +895,7 @@ export default function TripDetails() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => deleteGettingAround(item.id)}
-                                                className="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -900,7 +908,7 @@ export default function TripDetails() {
                     onClick={() => addGettingAround()}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
+                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     ➕ Add Getting Around Item
                 </button>
             </div>
@@ -912,14 +920,14 @@ export default function TripDetails() {
                         onClick={saveChanges}
                         className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                    dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
                         Save Changes
                     </button>
                     <Link to="map">
                         <button
                             className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                         focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                        dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                        dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
                             Open Map
                         </button>
                     </Link>
@@ -928,7 +936,7 @@ export default function TripDetails() {
                     onClick={deleteTrip}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-100">
+                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     Delete entire trip
                 </button>
             </div>
