@@ -22,11 +22,11 @@ export default function TripMap() {
     // State for the search bar result
     const [searchResult, setSearchResult] = useState(null)
 
-    // Was the FitBounds (allMarkers) already defined? Then set this to true (I need this to only render the map zoomed in on my markers once)
-    const [hasFitBounds, setHasFitBounds] = useState(false)
-
     // Extract dinamic URL parameter
     const { tripId } = useParams()
+
+    // Was the FitBounds (allMarkers) already defined? Then set this to true (I need this to only render the map zoomed in on my markers once)
+    const [hasFitBounds, setHasFitBounds] = useState(false)
 
     const [loading, setLoading] = useState(true)
 
@@ -192,7 +192,7 @@ export default function TripMap() {
     })
 
     // Create and add a new marker to state when there is a map click
-   
+
     // Callback: Because the TripMap component (parent component) re-renders every time there is a change in any state, 
     // React could create a new function object for addMarker, which makes AddMarkerOnClick see it as a new function and run again.
     // With useCallback, when the component re-renders, this function is being kept as the same object in memory, not triggering AddMarkerOnClick
@@ -307,7 +307,7 @@ export default function TripMap() {
         if (category === "stay") {
             setStays(stays.map(marker =>
                 marker.id === id ? { ...marker, deleted: true } : marker
-            ))  
+            ))
         } else if (category === "eatDrink") {
             setEatDrink(eatDrink.map(marker =>
                 marker.id === id ? { ...marker, deleted: true } : marker
@@ -343,6 +343,7 @@ export default function TripMap() {
                 .bindTooltip(result.label || "Search result", { permanent: false, direction: "top" })
                 .openTooltip()
 
+            map.setView([lat, lng], 15); // zoom to the search result
 
             // Upon click
             const onClick = () => {
@@ -394,7 +395,7 @@ export default function TripMap() {
             comments: stay.comments,
             deleted: stay.deleted || false
         }))
-        
+
         const mappedEatDrink = eatDrink.map(eat => ({
             id: eat.id && eat.id.toString().startsWith("temp-") ? null : eat.id,
             name: eat.name,
@@ -557,34 +558,36 @@ export default function TripMap() {
             comments: item.comments
         }))
 
-    // Collect all the markers into 1 array (needed for FitBounds function)
-    const allMarkers = [
-        ...staysMarkers,
-        ...eatDrinkMarkers,
-        ...exploreMarkers,
-        ...essentialsMarkers,
-        ...gettingAroundMarkers
+
+    // Only markers loaded from backend at the start
+    const initialMarkers = [
+        ...staysMarkers.filter(m => !m.id.toString().startsWith("temp-")),
+        ...eatDrinkMarkers.filter(m => !m.id.toString().startsWith("temp-")),
+        ...exploreMarkers.filter(m => !m.id.toString().startsWith("temp-")),
+        ...essentialsMarkers.filter(m => !m.id.toString().startsWith("temp-")),
+        ...gettingAroundMarkers.filter(m => !m.id.toString().startsWith("temp-"))
     ]
+
 
     // Make the map automatically open on my markers, not on a fixed location (and update the hasFitBounds state so this function will only run the first time the map opens, when hasFitBounds is still false)
     // !! hasFitBound state has also resolved the problem of the zoom not working with addresses !! ******************** DEBUGGED
-    function FitBounds({ allMarkers }) {
+    function FitBounds({ markers }) {
         const map = useMap()
 
         useEffect(() => {
-            if (allMarkers.length > 0 && !hasFitBounds) {
-                const validBounds = allMarkers // filter only markers with valid latLong
-                    .map(marker => marker.position)
-                    .filter(position => Array.isArray(position) && position.length === 2)
+            if (hasFitBounds) return
+            const validBounds = markers // filter only markers with valid latLong
+                .map(marker => marker.position)
+                .filter(position => Array.isArray(position) && position.length === 2)
 
-                if (validBounds.length > 0) {
-                    map.fitBounds(bounds, { padding: [50, 50] })
-                } else { // if there are no valid coordinates
-                    map.setView([51.5, 10.5], 5)
-                }
-                setHasFitBounds(true)
+            if (validBounds.length > 0) {
+                const bounds = L.latLngBounds(validBounds)
+                map.fitBounds(bounds, { padding: [30, 30] })
+            } else { // if there are no valid coordinates
+                map.setView([0, 0], 2)
             }
-        }, [allMarkers, hasFitBounds, map])
+            setHasFitBounds(true)
+        }, [])
 
         return null
     }
@@ -594,8 +597,8 @@ export default function TripMap() {
             <div className="flex flex-col justify-center items-center dark:text-zinc-100">
                 <h1 className="mb-15 text-4xl font-bold">{tripName}</h1>
             </div>
-            <MapContainer className="h-[500px] w-full" center={[51.5, 10.5]} zoom={5}>
-                <FitBounds allMarkers={allMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
+            <MapContainer className="h-[500px] w-full">
+                <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
