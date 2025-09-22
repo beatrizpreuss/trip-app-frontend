@@ -24,6 +24,9 @@ export default function TripDetails() {
     const [showEssentials, setShowEssentials] = useState(true)
     const [showGettingAround, setShowGettingAround] = useState(true)
 
+    // used to track unsaved changes to make the Save Changes button another color
+    const [hasChanges, setHasChanges] = useState(false)
+
     // GET DATA FROM BACKEND
 
     useEffect(() => {
@@ -76,30 +79,35 @@ export default function TripDetails() {
         const updated = [...stays]
         updated[index][field] = value
         setStays(updated)
+        setHasChanges(true)
     }
 
     const handleEatDrinkChange = (index, field, value) => {
         const updated = [...eatDrink]
         updated[index][field] = value
         setEatDrink(updated)
+        setHasChanges(true)
     }
 
     const handleExploreChange = (index, field, value) => {
         const updated = [...explore]
         updated[index][field] = value
         setExplore(updated)
+        setHasChanges(true)
     }
 
     const handleEssentialsChange = (index, field, value) => {
         const updated = [...essentials]
         updated[index][field] = value
         setEssentials(updated)
+        setHasChanges(true)
     }
 
     const handleGettingAroundChange = (index, field, value) => {
         const updated = [...gettingAround]
         updated[index][field] = value
         setGettingAround(updated)
+        setHasChanges(true)
     }
 
     // ADD A ROW TO THE TABLE
@@ -118,6 +126,7 @@ export default function TripDetails() {
                 comments: ""
             }
         ])
+        setHasChanges(true)
     }
 
     const addEatDrink = () => {
@@ -132,6 +141,7 @@ export default function TripDetails() {
                 comments: ""
             }
         ])
+        setHasChanges(true)
     }
 
     const addExplore = () => {
@@ -147,6 +157,7 @@ export default function TripDetails() {
                 comments: ""
             }
         ])
+        setHasChanges(true)
     }
 
     const addEssentials = () => {
@@ -161,6 +172,7 @@ export default function TripDetails() {
                 comments: ""
             }
         ])
+        setHasChanges(true)
     }
 
     const addGettingAround = () => {
@@ -185,6 +197,7 @@ export default function TripDetails() {
                 stay.id === stayId ? { ...stay, deleted: true } : stay
             )
         )
+        setHasChanges(true)
     }
 
     const deleteEatDrink = (eatDrinkId) => {
@@ -193,6 +206,7 @@ export default function TripDetails() {
                 eatDrink.id === eatDrinkId ? { ...eatDrink, deleted: true } : eatDrink
             )
         )
+        setHasChanges(true)
     }
 
     const deleteExplore = (exploreId) => {
@@ -201,6 +215,7 @@ export default function TripDetails() {
                 explore.id === exploreId ? { ...explore, deleted: true } : explore
             )
         )
+        setHasChanges(true)
     }
 
     const deleteEssentials = (essentialsId) => {
@@ -209,6 +224,7 @@ export default function TripDetails() {
                 essentials.id === essentialsId ? { ...essentials, deleted: true } : essentials
             )
         )
+        setHasChanges(true)
     }
 
     const deleteGettingAround = (gettingAroundId) => {
@@ -217,6 +233,7 @@ export default function TripDetails() {
                 gettingAround.id === gettingAroundId ? { ...gettingAround, deleted: true } : gettingAround
             )
         )
+        setHasChanges(true)
     }
 
     // SAVE ALL TABLES AT ONCE (saves all changes to the backend - update)
@@ -329,7 +346,8 @@ export default function TripDetails() {
                             url: around.external_url,
                         }))
                     )
-                }
+                } 
+                setHasChanges(false)
             })
             .catch(err => console.error("Error saving data", err))
     }
@@ -918,9 +936,9 @@ export default function TripDetails() {
                 <div className="flex flex-row">
                     <button
                         onClick={saveChanges}
-                        className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                        className={`${hasChanges ? "bg-red-400" : "bg-zinc-900"} w-50 my-5 mr-5 text-zinc-100 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                    dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
                         Save Changes
                     </button>
                     <Link to="map">

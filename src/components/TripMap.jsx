@@ -28,6 +28,9 @@ export default function TripMap() {
     // Was the FitBounds (allMarkers) already defined? Then set this to true (I need this to only render the map zoomed in on my markers once)
     const [hasFitBounds, setHasFitBounds] = useState(false)
 
+    // used to track unsaved changes to make the Save Changes button another color
+    const [hasChanges, setHasChanges] = useState(false)
+
     const [loading, setLoading] = useState(true)
 
     // State for the dropdown inside the map (lets the user choose the category of the next marker to be added)
@@ -268,6 +271,7 @@ export default function TripMap() {
                 return
             }
             onClick(e)
+            setHasChanges(true)
         })
         return null
     }
@@ -295,11 +299,13 @@ export default function TripMap() {
                 around.id === id ? { ...around, [field]: value } : around
             ))
         }
+        setHasChanges(true)
     }
 
     // Change marker's location by dragging it (and reusing handleMarkerFieldChange)
     function handleMarkerDragEnd(category, id, newLatLong) {
         handleMarkerFieldChange(category, id, "latLong", newLatLong)
+        setHasChanges(true)
     }
 
     // Delete a marker
@@ -325,6 +331,7 @@ export default function TripMap() {
                 marker.id === id ? { ...marker, deleted: true } : marker
             ))
         }
+        setHasChanges(true)
     }
 
     // Component that turns a temporary marker resultant from a search to one of the trip's marker
@@ -490,6 +497,7 @@ export default function TripMap() {
                         }))
                     )
                 }
+                setHasChanges(false)
             })
             .catch(err => console.error("Error saving data", err))
     }
@@ -1031,9 +1039,7 @@ export default function TripMap() {
             </Link>
             <button
                 onClick={saveChanges}
-                className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-[#222222]">
+                className={`${hasChanges ? "bg-red-400" : "bg-zinc-900"} w-50 my-5 mr-5 text-zinc-100  hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-[#222222]`}>
                 Save Changes
             </button>
         </div>
