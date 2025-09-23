@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import { useParams } from "react-router-dom"
 import { useTrip } from "./TripContext"
 import { useNavigate } from "react-router-dom"
-import { FaTrash } from "react-icons/fa"
+import { FaTrash, FaPlus } from "react-icons/fa"
 import { Link } from "react-router-dom"
 import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 
@@ -511,7 +511,10 @@ export default function TripDetails() {
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
-                    ➕ Add Stay
+                    <div className="flex flex-row items-center">
+                        < FaPlus /> 
+                        <span> Add Stay</span>
+                    </div>
                 </button>
             </div>
 
@@ -612,7 +615,10 @@ export default function TripDetails() {
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
-                    ➕ Add Eat & Drink
+                    <div className="flex flex-row items-center">
+                        < FaPlus /> 
+                        <span> Add Eat & Drink</span>
+                    </div>
                 </button>
             </div>
 
@@ -723,7 +729,10 @@ export default function TripDetails() {
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
-                    ➕ Add Place to Explore
+                    <div className="flex flex-row items-center">
+                        < FaPlus /> 
+                        <span> Add Place to Explore</span>
+                    </div>
                 </button>
             </div>
 
@@ -825,7 +834,10 @@ export default function TripDetails() {
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
-                    ➕ Add Essentials
+                    <div className="flex flex-row items-center">
+                        < FaPlus /> 
+                        <span> Add Essentials</span>
+                    </div>
                 </button>
             </div>
 
@@ -927,7 +939,10 @@ export default function TripDetails() {
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
-                    ➕ Add Getting Around Item
+                    <div className="flex flex-row items-center">
+                        < FaPlus /> 
+                        <span> Add Getting Around Item</span>
+                    </div>
                 </button>
             </div>
 
@@ -936,9 +951,9 @@ export default function TripDetails() {
                 <div className="flex flex-row">
                     <button
                         onClick={saveChanges}
-                        className={`${hasChanges ? "bg-red-400" : "bg-zinc-900"} w-50 my-5 mr-5 text-zinc-100 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                        className={`${hasChanges ? "bg-red-400" : "bg-zinc-900 dark:bg-[#dddddd]"} w-50 my-5 mr-5 text-zinc-100 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
+                     dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
                         Save Changes
                     </button>
                     <Link to="map">

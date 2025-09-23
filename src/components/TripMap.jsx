@@ -651,7 +651,7 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
+                                    <label className="block text-xs text-gray-700"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="name"
@@ -661,7 +661,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-[gray-300]"> Status:
+                                    <label className="block text-xs text-gray-700"> Status:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="status"
@@ -671,7 +671,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Price:
+                                    <label className="block text-xs text-gray-700"> Price:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="price"
@@ -681,7 +681,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
+                                    <label className="block text-xs text-gray-700"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="address"
@@ -691,7 +691,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
+                                    <label className="block text-xs text-gray-700"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="url"
@@ -701,7 +701,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
+                                    <label className="block text-xs text-gray-700"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="comments"
@@ -712,7 +712,7 @@ export default function TripMap() {
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 dark:text-gray-300 my-1"
+                                        className="block text-xs text-red-600 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("stay", marker.id)
@@ -744,7 +744,7 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
+                                    <label className="block text-xs text-gray-700"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="name"
@@ -754,7 +754,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
+                                    <label className="block text-xs text-gray-700"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="address"
@@ -764,7 +764,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
+                                    <label className="block text-xs text-gray-700"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="url"
@@ -774,7 +774,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
+                                    <label className="block text-xs text-gray-700"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="comments"
@@ -785,7 +785,7 @@ export default function TripMap() {
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 dark:text-gray-300 my-1"
+                                        className="block text-xs text-red-600 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("eatDrink", marker.id)
@@ -817,7 +817,7 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
+                                    <label className="block text-xs text-gray-700"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="name"
@@ -827,7 +827,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Price:
+                                    <label className="block text-xs text-gray-700"> Price:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="price"
@@ -837,7 +837,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
+                                    <label className="block text-xs text-gray-700"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="address"
@@ -847,7 +847,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
+                                    <label className="block text-xs text-gray-700"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="url"
@@ -857,7 +857,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
+                                    <label className="block text-xs text-gray-700"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="comments"
@@ -868,7 +868,7 @@ export default function TripMap() {
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 dark:text-gray-300 my-1"
+                                        className="block text-xs text-red-600 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("explore", marker.id)
@@ -900,7 +900,7 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
+                                    <label className="block text-xs text-gray-700"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="name"
@@ -910,7 +910,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
+                                    <label className="block text-xs text-gray-700"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="address"
@@ -920,7 +920,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
+                                    <label className="block text-xs text-gray-700"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="url"
@@ -930,7 +930,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
+                                    <label className="block text-xs text-gray-700"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="comments"
@@ -941,7 +941,7 @@ export default function TripMap() {
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 dark:text-gray-300 my-1"
+                                        className="block text-xs text-red-600 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("essentials", marker.id)
@@ -973,7 +973,7 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Name:
+                                    <label className="block text-xs text-gray-700"> Name:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="name"
@@ -983,7 +983,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Address:
+                                    <label className="block text-xs text-gray-700"> Address:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="address"
@@ -993,7 +993,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> URL:
+                                    <label className="block text-xs text-gray-700"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="url"
@@ -1003,7 +1003,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700 dark:text-gray-300"> Comments:
+                                    <label className="block text-xs text-gray-700"> Comments:
                                         <input
                                             className="px-1 py-0.2 text-sm"
                                             name="comments"
@@ -1014,7 +1014,7 @@ export default function TripMap() {
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 dark:text-gray-300 my-1"
+                                        className="block text-xs text-red-600 my-1"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("gettingAround", marker.id)
@@ -1039,7 +1039,7 @@ export default function TripMap() {
             </Link>
             <button
                 onClick={saveChanges}
-                className={`${hasChanges ? "bg-red-400" : "bg-zinc-900"} w-50 my-5 mr-5 text-zinc-100  hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-[#222222]`}>
+                className={`${hasChanges ? "bg-red-400" : "bg-zinc-900 dark:bg-[#dddddd]"} w-50 my-5 mr-5 text-zinc-100  hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-[#222222]`}>
                 Save Changes
             </button>
         </div>
