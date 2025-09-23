@@ -2,7 +2,7 @@ import "leaflet/dist/leaflet.css"
 import "leaflet-geosearch/dist/geosearch.css"
 import { useParams, Link } from "react-router-dom"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent, LayersControl, FeatureGroup, ZoomControl } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
 import { useTrip } from "./TripContext" //Context that is passed through TripLayout (all the trip states)
@@ -33,8 +33,16 @@ export default function TripMap() {
 
     const [loading, setLoading] = useState(true)
 
+    // States used to show markers in the LayerFilter component
+    const [showStays, setShowStays] = useState(true)
+    const [showEatDrink, setShowEatDrink] = useState(true)
+    const [showExplore, setShowExplore] = useState(true)
+    const [showEssentials, setShowEssentials] = useState(true)
+    const [showGettingAround, setShowGettingAround] = useState(true)
+
     // State for the dropdown inside the map (lets the user choose the category of the next marker to be added)
     const [activeCategory, setActiveCategory] = useState("")
+
 
     // MAP DESIGN
     // Category Dropdown component - lets the user choose the category of the next marker to be added
@@ -77,7 +85,57 @@ export default function TripMap() {
         return null
     }
 
-    //Search Control component - lets the user search for places, like in Google Maps
+
+    // Layer Filter component - lets the user filter the map to see different categories
+    function LayerFilter({ showStays, showEatDrink, showExplore, showEssentials, showGettingAround,
+        setShowStays, setShowEatDrink, setShowExplore, setShowEssentials, setShowGettingAround }) {
+        const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
+
+        useEffect(() => {
+            const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for the dropdown
+
+            const categories = [
+                { value: "stay", label: " Stays", show: showStays, setShow: setShowStays },
+                { value: "eatDrink", label: " Eat & Drink", show: showEatDrink, setShow: setShowEatDrink },
+                { value: "explore", label: " Explore", show: showExplore, setShow: setShowExplore },
+                { value: "essentials", label: " Essentials", show: showEssentials, setShow: setShowEssentials },
+                { value: "gettingAround", label: " Getting Around", show: showGettingAround, setShow: setShowGettingAround },
+            ]
+
+            categories.forEach(category => {
+                const label = L.DomUtil.create("label", "block mb-1", controlDiv)
+                const checkbox = L.DomUtil.create("input", "", label)
+                checkbox.type = "checkbox"
+                checkbox.checked = category.show
+
+                const textNode = document.createTextNode(`${category.label}`)
+                label.appendChild(textNode)
+                checkbox.addEventListener("change", (e) => {
+                    category.setShow(e.target.checked)
+                })
+            })
+
+            // Stop clicks from propagating to the map
+            L.DomEvent.disableClickPropagation(controlDiv)
+            L.DomEvent.disableScrollPropagation(controlDiv)
+
+            const filterControl = L.Control.extend({ //creates a custom control class
+                onAdd: () => controlDiv, //how it should be added to the map
+                onRemove: () => { } //no need for removal
+            })
+
+            const instance = new filterControl({ position: "topleft" }) //creates an instance of the control
+            map.addControl(instance) //adds it to the map
+
+            return () => map.removeControl(instance) //cleanup function when useEffect re-runs or component unmounts
+
+        }, [map, showStays, showEatDrink, showExplore, showEssentials, showGettingAround,
+            setShowStays, setShowEatDrink, setShowExplore, setShowEssentials, setShowGettingAround]) //dependencies
+
+        return null
+    }
+
+    // Search Control component - lets the user search for places, like in Google Maps
     function SearchControl() {
         const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
 
@@ -615,7 +673,8 @@ export default function TripMap() {
             {/* <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
                 <h1 className="mb-15 text-4xl font-bold">{tripName}</h1>
             </div> */}
-            <MapContainer className="h-[500px] w-full">
+            <MapContainer zoomControl={false} className="h-[500px] w-full">
+                <ZoomControl position="bottomright"/>
                 <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -631,8 +690,15 @@ export default function TripMap() {
                     activeCategory={activeCategory}
                     setActiveCategory={setActiveCategory}
                 />
+                <LayerFilter
+                    showStays={showStays} setShowStays={setShowStays}
+                    showEatDrink={showEatDrink} setShowEatDrink={setShowEatDrink}
+                    showExplore={showExplore} setShowExplore={setShowExplore}
+                    showEssentials={showEssentials} setShowEssentials={setShowEssentials}
+                    showGettingAround={showGettingAround} setShowGettingAround={setShowGettingAround}
+                />
 
-                {staysMarkers
+                {showStays && staysMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (
                         <Marker
@@ -725,7 +791,7 @@ export default function TripMap() {
                         </Marker>
                     ))}
 
-                {eatDrinkMarkers
+                {showEatDrink && eatDrinkMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (
                         <Marker
@@ -798,7 +864,7 @@ export default function TripMap() {
                         </Marker>
                     ))}
 
-                {exploreMarkers
+                {showExplore && exploreMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (
                         <Marker
@@ -881,7 +947,7 @@ export default function TripMap() {
                         </Marker>
                     ))}
 
-                {essentialsMarkers
+                {showEssentials && essentialsMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (
                         <Marker
@@ -954,7 +1020,7 @@ export default function TripMap() {
                         </Marker>
                     ))}
 
-                {gettingAroundMarkers
+                {showGettingAround && gettingAroundMarkers
                     .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
                     .map((marker, index) => (
                         <Marker
