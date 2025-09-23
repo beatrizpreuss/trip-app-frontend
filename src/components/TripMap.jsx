@@ -1,8 +1,8 @@
 import "leaflet/dist/leaflet.css"
 import "leaflet-geosearch/dist/geosearch.css"
 import { useParams, Link } from "react-router-dom"
-import { useCallback, useEffect, useRef, useState } from "react"
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent, LayersControl, FeatureGroup, ZoomControl } from "react-leaflet"
+import { useCallback, useEffect, useState } from "react"
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent, ZoomControl } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
 import { useTrip } from "./TripContext" //Context that is passed through TripLayout (all the trip states)
@@ -25,7 +25,7 @@ export default function TripMap() {
     // Extract dinamic URL parameter
     const { tripId } = useParams()
 
-    // Was the FitBounds (allMarkers) already defined? Then set this to true (I need this to only render the map zoomed in on my markers once)
+    // Was the FitBounds (initialMarkers) already defined? Then set this to true (I need this to only render the map zoomed in on my markers once)
     const [hasFitBounds, setHasFitBounds] = useState(false)
 
     // used to track unsaved changes to make the Save Changes button another color
@@ -42,6 +42,7 @@ export default function TripMap() {
 
     // State for the dropdown inside the map (lets the user choose the category of the next marker to be added)
     const [activeCategory, setActiveCategory] = useState("")
+
 
 
     // MAP DESIGN
@@ -86,13 +87,13 @@ export default function TripMap() {
     }
 
 
-    // Layer Filter component - lets the user filter the map to see different categories
-    function LayerFilter({ showStays, showEatDrink, showExplore, showEssentials, showGettingAround,
+    // Category Filter component - lets the user filter the map to see different categories
+    function CategoryFilter({ showStays, showEatDrink, showExplore, showEssentials, showGettingAround,
         setShowStays, setShowEatDrink, setShowExplore, setShowEssentials, setShowGettingAround }) {
         const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
 
         useEffect(() => {
-            const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for the dropdown
+            const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for the filter
 
             const categories = [
                 { value: "stay", label: " Stays", show: showStays, setShow: setShowStays },
@@ -108,12 +109,13 @@ export default function TripMap() {
                 checkbox.type = "checkbox"
                 checkbox.checked = category.show
 
-                const textNode = document.createTextNode(`${category.label}`)
+                const textNode = document.createTextNode(`${category.label}`) // add text to the lable
                 label.appendChild(textNode)
-                checkbox.addEventListener("change", (e) => {
+                checkbox.addEventListener("change", (e) => { // Connect checkbox to the state
                     category.setShow(e.target.checked)
                 })
             })
+
 
             // Stop clicks from propagating to the map
             L.DomEvent.disableClickPropagation(controlDiv)
@@ -131,6 +133,68 @@ export default function TripMap() {
 
         }, [map, showStays, showEatDrink, showExplore, showEssentials, showGettingAround,
             setShowStays, setShowEatDrink, setShowExplore, setShowEssentials, setShowGettingAround]) //dependencies
+
+        return null
+    }
+
+
+    // To be used in Day Filter
+    const [showDays, setShowDays] = useState({})
+    useEffect(() => {
+        const allMarkers = [...stays, ...eatDrink, ...explore, ...essentials, ...gettingAround]
+        const uniqueDays = Array.from(new Set(allMarkers.map(m => m.day)))
+        
+        setShowDays(prev => {
+            const updated = { ...prev }
+            uniqueDays.forEach(day => {
+                if (!(day in updated)) {
+                    updated[day] = true
+                }
+            })
+            return updated
+        })
+        
+    }, [stays, eatDrink, explore, essentials, gettingAround])
+
+
+
+    // Day Filter component - lets the user filter the map to see points of interest for different days of the trip
+    function DayFilter({ showDays, setShowDays }) {
+        const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
+
+        useEffect(() => {
+            const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for filter
+            const days = Object.keys(showDays).sort((a,b) => a - b);
+
+            days.forEach(day => {
+                const label = L.DomUtil.create("label", "block mb-1", controlDiv)
+                const checkbox = L.DomUtil.create("input", "", label)
+                checkbox.type = "checkbox"
+                checkbox.checked = showDays[day]
+
+                label.appendChild(document.createTextNode(` Day ${day}`));
+
+                checkbox.addEventListener("change", (e) => {
+                    setShowDays(prev => ({ ...prev, [day]: e.target.checked }));
+                });
+            });
+
+
+            // Stop clicks from propagating to the map
+            L.DomEvent.disableClickPropagation(controlDiv)
+            L.DomEvent.disableScrollPropagation(controlDiv)
+
+            const filterControl = L.Control.extend({ //creates a custom control class
+                onAdd: () => controlDiv, //how it should be added to the map
+                onRemove: () => { } //no need for removal
+            })
+
+            const instance = new filterControl({ position: "topleft" }) //creates an instance of the control
+            map.addControl(instance) //adds it to the map
+
+            return () => map.removeControl(instance) //cleanup function when useEffect re-runs or component unmounts
+
+        }, [map, showDays, setShowDays]) //dependencies
 
         return null
     }
@@ -271,6 +335,7 @@ export default function TripMap() {
             id: `temp-${Date.now()}`, // Temporary id, just until the data is sent to the backend
             latLong,
             address: "",
+            day: 1,
             comments: "",
             deleted: false
         }
@@ -455,6 +520,7 @@ export default function TripMap() {
             status: stay.status,
             price: stay.price,
             address: stay.address,
+            day: stay.day,
             coordinates: stay.latLong ? stay.latLong.join(",") : null,
             external_url: stay.url,
             comments: stay.comments,
@@ -465,6 +531,7 @@ export default function TripMap() {
             id: eat.id && eat.id.toString().startsWith("temp-") ? null : eat.id,
             name: eat.name,
             address: eat.address,
+            day: eat.day,
             coordinates: eat.latLong ? eat.latLong.join(",") : null,
             external_url: eat.url,
             comments: eat.comments,
@@ -476,6 +543,7 @@ export default function TripMap() {
             name: expl.name,
             price: expl.price,
             address: expl.address,
+            day: expl.day,
             coordinates: expl.latLong ? expl.latLong.join(",") : null,
             external_url: expl.url,
             comments: expl.comments,
@@ -486,6 +554,7 @@ export default function TripMap() {
             id: essential.id && essential.id.toString().startsWith("temp-") ? null : essential.id,
             name: essential.name,
             address: essential.address,
+            day: essential.day,
             coordinates: essential.latLong ? essential.latLong.join(",") : null,
             external_url: essential.url,
             comments: essential.comments,
@@ -496,6 +565,7 @@ export default function TripMap() {
             id: around.id && around.id.toString().startsWith("temp-") ? null : around.id,
             name: around.name,
             address: around.address,
+            day: around.day,
             coordinates: around.latLong ? around.latLong.join(",") : null,
             external_url: around.url,
             comments: around.comments,
@@ -575,6 +645,7 @@ export default function TripMap() {
             status: item.status,
             price: item.price,
             address: item.address,
+            day: item.day,
             url: item.url,
             comments: item.comments
         }))
@@ -586,6 +657,7 @@ export default function TripMap() {
             position: item.latLong,
             name: item.name,
             address: item.address,
+            day: item.day,
             url: item.url,
             comments: item.comments
         }))
@@ -598,6 +670,7 @@ export default function TripMap() {
             name: item.name,
             price: item.price,
             address: item.address,
+            day: item.day,
             url: item.url,
             comments: item.comments
         }))
@@ -609,6 +682,7 @@ export default function TripMap() {
             position: item.latLong,
             name: item.name,
             address: item.address,
+            day: item.day,
             url: item.url,
             comments: item.comments
         }))
@@ -620,6 +694,7 @@ export default function TripMap() {
             position: item.latLong,
             name: item.name,
             address: item.address,
+            day: item.day,
             url: item.url,
             comments: item.comments
         }))
@@ -633,7 +708,6 @@ export default function TripMap() {
         ...essentialsMarkers.filter(m => !m.id.toString().startsWith("temp-")),
         ...gettingAroundMarkers.filter(m => !m.id.toString().startsWith("temp-"))
     ]
-
 
     // Make the map automatically open on my markers, not on a fixed location (and update the hasFitBounds state so this function will only run the first time the map opens, when hasFitBounds is still false)
     // !! hasFitBound state has also resolved the problem of the zoom not working with addresses !! ******************** DEBUGGED
@@ -674,7 +748,7 @@ export default function TripMap() {
                 <h1 className="mb-15 text-4xl font-bold">{tripName}</h1>
             </div> */}
             <MapContainer zoomControl={false} className="h-[500px] w-full">
-                <ZoomControl position="bottomright"/>
+                <ZoomControl position="bottomright" />
                 <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -690,16 +764,17 @@ export default function TripMap() {
                     activeCategory={activeCategory}
                     setActiveCategory={setActiveCategory}
                 />
-                <LayerFilter
+                <CategoryFilter
                     showStays={showStays} setShowStays={setShowStays}
                     showEatDrink={showEatDrink} setShowEatDrink={setShowEatDrink}
                     showExplore={showExplore} setShowExplore={setShowExplore}
                     showEssentials={showEssentials} setShowEssentials={setShowEssentials}
                     showGettingAround={showGettingAround} setShowGettingAround={setShowGettingAround}
                 />
+                <DayFilter showDays={showDays} setShowDays={setShowDays} />
 
                 {showStays && staysMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
+                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -757,6 +832,16 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
+                                    <label className="block text-xs text-gray-700"> Day:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="day"
+                                            type="number"
+                                            value={marker.day || 1}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
                                     <label className="block text-xs text-gray-700"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
@@ -792,7 +877,7 @@ export default function TripMap() {
                     ))}
 
                 {showEatDrink && eatDrinkMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
+                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -826,6 +911,16 @@ export default function TripMap() {
                                             name="address"
                                             type="text"
                                             value={marker.address || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700"> Day:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="day"
+                                            type="number"
+                                            value={marker.day || 1}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
@@ -865,7 +960,7 @@ export default function TripMap() {
                     ))}
 
                 {showExplore && exploreMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
+                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -913,6 +1008,16 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
+                                    <label className="block text-xs text-gray-700"> Day:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="day"
+                                            type="number"
+                                            value={marker.day || 1}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
                                     <label className="block text-xs text-gray-700"> URL:
                                         <input
                                             className="px-1 py-0.2 text-sm"
@@ -948,7 +1053,7 @@ export default function TripMap() {
                     ))}
 
                 {showEssentials && essentialsMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
+                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && showDays[marker.day])
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -982,6 +1087,16 @@ export default function TripMap() {
                                             name="address"
                                             type="text"
                                             value={marker.address || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700"> Day:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="day"
+                                            type="number"
+                                            value={marker.day || 1}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1021,7 +1136,7 @@ export default function TripMap() {
                     ))}
 
                 {showGettingAround && gettingAroundMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2)
+                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -1055,6 +1170,16 @@ export default function TripMap() {
                                             name="address"
                                             type="text"
                                             value={marker.address || ""}
+                                            onChange={(event) =>
+                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                            } />
+                                    </label>
+                                    <label className="block text-xs text-gray-700"> Day:
+                                        <input
+                                            className="px-1 py-0.2 text-sm"
+                                            name="day"
+                                            type="number"
+                                            value={marker.day || 1}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />

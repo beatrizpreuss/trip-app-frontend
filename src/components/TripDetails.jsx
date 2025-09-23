@@ -75,40 +75,25 @@ export default function TripDetails() {
 
     // CHANGE DATA IN THE TABLE
 
-    const handleStaysChange = (index, field, value) => {
-        const updated = [...stays]
-        updated[index][field] = value
-        setStays(updated)
+    const handleMarkerChange = (category, index, field, value, type) => {
+        const categoryMap = {
+            stays: [stays, setStays],
+            eatDrink: [eatDrink, setEatDrink],
+            explore: [explore, setExplore],
+            essentials: [essentials, setEssentials],
+            gettingAround: [gettingAround, setGettingAround]
+        }
+        const [array, setArray] = categoryMap[category]
+
+        const updated = [...array]
+        updated[index] = {
+            ...updated[index],
+            [field]: type === "number" ? Number(value) : value
+        }
+        setArray(updated)
         setHasChanges(true)
     }
 
-    const handleEatDrinkChange = (index, field, value) => {
-        const updated = [...eatDrink]
-        updated[index][field] = value
-        setEatDrink(updated)
-        setHasChanges(true)
-    }
-
-    const handleExploreChange = (index, field, value) => {
-        const updated = [...explore]
-        updated[index][field] = value
-        setExplore(updated)
-        setHasChanges(true)
-    }
-
-    const handleEssentialsChange = (index, field, value) => {
-        const updated = [...essentials]
-        updated[index][field] = value
-        setEssentials(updated)
-        setHasChanges(true)
-    }
-
-    const handleGettingAroundChange = (index, field, value) => {
-        const updated = [...gettingAround]
-        updated[index][field] = value
-        setGettingAround(updated)
-        setHasChanges(true)
-    }
 
     // ADD A ROW TO THE TABLE
 
@@ -121,6 +106,7 @@ export default function TripDetails() {
                 status: "",
                 price: "",
                 address: "",
+                day: 1,
                 coordinates: "",
                 external_url: "",
                 comments: ""
@@ -136,6 +122,7 @@ export default function TripDetails() {
                 id: null,
                 name: "",
                 address: "",
+                day: 1,
                 coordinates: "",
                 external_url: "",
                 comments: ""
@@ -152,6 +139,7 @@ export default function TripDetails() {
                 name: "",
                 price: "",
                 address: "",
+                day: 1,
                 coordinates: "",
                 external_url: "",
                 comments: ""
@@ -167,6 +155,7 @@ export default function TripDetails() {
                 id: null,
                 name: "",
                 address: "",
+                day: 1,
                 coordinates: "",
                 external_url: "",
                 comments: ""
@@ -182,6 +171,7 @@ export default function TripDetails() {
                 id: null,
                 name: "",
                 address: "",
+                day: 1,
                 coordinates: "",
                 external_url: "",
                 comments: ""
@@ -246,7 +236,8 @@ export default function TripDetails() {
             status: stay.status,
             price: stay.price,
             address: stay.address,
-            coordinates: stay.latLong,
+            day: stay.day,
+            coordinates: Array.isArray(stay.latLong) ? stay.latLong.join(",") : null,
             external_url: stay.url,
             comments: stay.comments,
             deleted: stay.deleted || false
@@ -256,7 +247,8 @@ export default function TripDetails() {
             id: eat.id && eat.id.toString().startsWith("temp-") ? null : eat.id,
             name: eat.name,
             address: eat.address,
-            coordinates: eat.latLong,
+            day: eat.day,
+            coordinates: Array.isArray(eat.latLong) ? eat.latLong.join(",") : null,
             external_url: eat.url,
             comments: eat.comments,
             deleted: eat.deleted || false
@@ -267,7 +259,8 @@ export default function TripDetails() {
             name: expl.name,
             price: expl.price,
             address: expl.address,
-            coordinates: expl.latLong,
+            day: expl.day,
+            coordinates: Array.isArray(expl.latLong) ? expl.latLong.join(",") : null,
             external_url: expl.url,
             comment: expl.comments,
             deleted: expl.deleted || false
@@ -277,7 +270,8 @@ export default function TripDetails() {
             id: essential.id && essential.id.toString().startsWith("temp-") ? null : essential.id,
             name: essential.name,
             address: essential.address,
-            coordinates: essential.latLong,
+            day: essential.day,
+            coordinates: Array.isArray(essential.latLong) ?  essential.latLong.join(",") : null,
             external_url: essential.url,
             comments: essential.comments,
             deleted: essential.deleted || false
@@ -287,7 +281,8 @@ export default function TripDetails() {
             id: around.id && around.id.toString().startsWith("temp-") ? null : around.id,
             name: around.name,
             address: around.address,
-            coordinates: around.latLong,
+            day: around.day,
+            coordinates: Array.isArray(around.latLong) ? around.latLong.join(",") : null,
             external_url: around.url,
             comments: around.comments,
             deleted: around.deleted || false
@@ -346,7 +341,7 @@ export default function TripDetails() {
                             url: around.external_url,
                         }))
                     )
-                } 
+                }
                 setHasChanges(false)
             })
             .catch(err => console.error("Error saving data", err))
@@ -424,6 +419,7 @@ export default function TripDetails() {
                             <th className="px-6 py-3">Status</th>
                             <th className="px-6 py-3">Price</th>
                             <th className="px-6 py-3">Address</th>
+                            <th className="px-6 py-3">Day</th>
                             <th className="px-6 py-3">Coordinates</th>
                             <th className="px-6 py-3">External URL</th>
                             <th className="px-6 py-3">Comments</th>
@@ -443,7 +439,7 @@ export default function TripDetails() {
                                                 name="name"
                                                 type="text"
                                                 value={item.name || ""}
-                                                onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -451,7 +447,7 @@ export default function TripDetails() {
                                                 name="status"
                                                 type="text"
                                                 value={item.status || ""}
-                                                onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -459,7 +455,7 @@ export default function TripDetails() {
                                                 name="price"
                                                 type="text"
                                                 value={item.price || ""}
-                                                onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -467,7 +463,15 @@ export default function TripDetails() {
                                                 name="address"
                                                 type="text"
                                                 value={item.address || ""}
-                                                onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                            <input
+                                                name="day"
+                                                type="number"
+                                                value={item.day}
+                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -475,7 +479,7 @@ export default function TripDetails() {
                                                 name="latLong"
                                                 type="text"
                                                 value={item.latLong || ""}
-                                                onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -483,7 +487,7 @@ export default function TripDetails() {
                                                 name="url"
                                                 type="text"
                                                 value={item.url || ""}
-                                                onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -491,7 +495,7 @@ export default function TripDetails() {
                                                 name="comments"
                                                 type="text"
                                                 value={item.comments || ""}
-                                                onChange={(event) => handleStaysChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -512,7 +516,7 @@ export default function TripDetails() {
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     <div className="flex flex-row items-center">
-                        < FaPlus /> 
+                        < FaPlus />
                         <span> Add Stay</span>
                     </div>
                 </button>
@@ -544,6 +548,7 @@ export default function TripDetails() {
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
+                            <th className="px-6 py-3">Day</th>
                             <th className="px-6 py-3">Coordinates</th>
                             <th className="px-6 py-3">External URL</th>
                             <th className="px-6 py-3">Comments</th>
@@ -563,7 +568,7 @@ export default function TripDetails() {
                                                 name="name"
                                                 type="text"
                                                 value={item.name || ""}
-                                                onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -571,7 +576,15 @@ export default function TripDetails() {
                                                 name="address"
                                                 type="text"
                                                 value={item.address || ""}
-                                                onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                            <input
+                                                name="day"
+                                                type="number"
+                                                value={item.day}
+                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -579,7 +592,7 @@ export default function TripDetails() {
                                                 name="latLong"
                                                 type="text"
                                                 value={item.latLong || ""}
-                                                onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -587,7 +600,7 @@ export default function TripDetails() {
                                                 name="url"
                                                 type="text"
                                                 value={item.url || ""}
-                                                onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -595,7 +608,7 @@ export default function TripDetails() {
                                                 name="comments"
                                                 type="text"
                                                 value={item.comments || ""}
-                                                onChange={(event) => handleEatDrinkChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -616,7 +629,7 @@ export default function TripDetails() {
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     <div className="flex flex-row items-center">
-                        < FaPlus /> 
+                        < FaPlus />
                         <span> Add Eat & Drink</span>
                     </div>
                 </button>
@@ -650,6 +663,7 @@ export default function TripDetails() {
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Price</th>
                             <th className="px-6 py-3">Address</th>
+                            <th className="px-6 py-3">Day</th>
                             <th className="px-6 py-3">Coordinates</th>
                             <th className="px-6 py-3">External URL</th>
                             <th className="px-6 py-3">Comments</th>
@@ -669,7 +683,7 @@ export default function TripDetails() {
                                                 name="name"
                                                 type="text"
                                                 value={item.name || ""}
-                                                onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -677,7 +691,7 @@ export default function TripDetails() {
                                                 name="price"
                                                 type="text"
                                                 value={item.price || ""}
-                                                onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -685,7 +699,15 @@ export default function TripDetails() {
                                                 name="address"
                                                 type="text"
                                                 value={item.address || ""}
-                                                onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                            <input
+                                                name="day"
+                                                type="number"
+                                                value={item.day}
+                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -693,7 +715,7 @@ export default function TripDetails() {
                                                 name="latLong"
                                                 type="text"
                                                 value={item.latLong || ""}
-                                                onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -701,7 +723,7 @@ export default function TripDetails() {
                                                 name="url"
                                                 type="text"
                                                 value={item.url || ""}
-                                                onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -709,7 +731,7 @@ export default function TripDetails() {
                                                 name="comments"
                                                 type="text"
                                                 value={item.comments || ""}
-                                                onChange={(event) => handleExploreChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -730,7 +752,7 @@ export default function TripDetails() {
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     <div className="flex flex-row items-center">
-                        < FaPlus /> 
+                        < FaPlus />
                         <span> Add Place to Explore</span>
                     </div>
                 </button>
@@ -763,6 +785,7 @@ export default function TripDetails() {
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
+                            <th className="px-6 py-3">Day</th>
                             <th className="px-6 py-3">Coordinates</th>
                             <th className="px-6 py-3">External URL</th>
                             <th className="px-6 py-3">Comments</th>
@@ -782,7 +805,7 @@ export default function TripDetails() {
                                                 name="name"
                                                 type="text"
                                                 value={item.name || ""}
-                                                onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -790,7 +813,15 @@ export default function TripDetails() {
                                                 name="address"
                                                 type="text"
                                                 value={item.address || ""}
-                                                onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                            <input
+                                                name="day"
+                                                type="number"
+                                                value={item.day}
+                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -798,7 +829,7 @@ export default function TripDetails() {
                                                 name="latLong"
                                                 type="text"
                                                 value={item.latLong || ""}
-                                                onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -806,7 +837,7 @@ export default function TripDetails() {
                                                 name="url"
                                                 type="text"
                                                 value={item.url || ""}
-                                                onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -814,7 +845,7 @@ export default function TripDetails() {
                                                 name="comments"
                                                 type="text"
                                                 value={item.comments || ""}
-                                                onChange={(event) => handleEssentialsChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -835,7 +866,7 @@ export default function TripDetails() {
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     <div className="flex flex-row items-center">
-                        < FaPlus /> 
+                        < FaPlus />
                         <span> Add Essentials</span>
                     </div>
                 </button>
@@ -868,6 +899,7 @@ export default function TripDetails() {
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
+                            <th className="px-6 py-3">Day</th>
                             <th className="px-6 py-3">Coordinates</th>
                             <th className="px-6 py-3">External URL</th>
                             <th className="px-6 py-3">Comments</th>
@@ -887,7 +919,7 @@ export default function TripDetails() {
                                                 name="name"
                                                 type="text"
                                                 value={item.name || ""}
-                                                onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -895,7 +927,15 @@ export default function TripDetails() {
                                                 name="address"
                                                 type="text"
                                                 value={item.address || ""}
-                                                onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                            <input
+                                                name="day"
+                                                type="number"
+                                                value={item.day}
+                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -903,7 +943,7 @@ export default function TripDetails() {
                                                 name="latLong"
                                                 type="text"
                                                 value={item.latLong || ""}
-                                                onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -911,7 +951,7 @@ export default function TripDetails() {
                                                 name="url"
                                                 type="text"
                                                 value={item.url || ""}
-                                                onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
@@ -919,7 +959,7 @@ export default function TripDetails() {
                                                 name="comments"
                                                 type="text"
                                                 value={item.comments || ""}
-                                                onChange={(event) => handleGettingAroundChange(index, event.target.name, event.target.value)}
+                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -940,7 +980,7 @@ export default function TripDetails() {
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
                     <div className="flex flex-row items-center">
-                        < FaPlus /> 
+                        < FaPlus />
                         <span> Add Getting Around Item</span>
                     </div>
                 </button>
