@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 import { FaTrash, FaPlus } from "react-icons/fa"
 import { Link } from "react-router-dom"
 import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
+import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
 
 
 export default function TripDetails() {
@@ -30,47 +31,20 @@ export default function TripDetails() {
     // GET DATA FROM BACKEND
 
     useEffect(() => {
-        getTripById(tripId)
-            .then(data => {
-                setTripName(data.trip.name)
-                setStays(
-                    data.stays.map(stay => ({
-                        ...stay,
-                        latLong: stay.coordinates, // Match the names with backend to get data
-                        url: stay.external_url
-                    }))
-                )
-                setEatDrink(
-                    data.eat_drink.map(eat => ({
-                        ...eat,
-                        latLong: eat.coordinates,
-                        url: eat.external_url
-                    }))
-                )
-                setExplore(
-                    data.explore.map(expl => ({
-                        ...expl,
-                        latLong: expl.coordinates,
-                        url: expl.external_url
-                    }))
-                )
-                setEssentials(
-                    data.essentials.map(essential => ({
-                        ...essential,
-                        latLong: essential.coordinates,
-                        url: essential.external_url
-                    }))
-                )
-                setGettingAround(
-                    data.getting_around.map(around => ({
-                        ...around,
-                        latLong: around.coordinates,
-                        url: around.external_url
-                    }))
-                )
+        getTripById(tripId).then(data => {
+            const {
+                tripName, stays, eatDrink, explore, essentials, gettingAround
+            } = formatTripData(data)
 
-                setLoading(false)
-            })
+            setTripName(tripName)
+            setStays(stays)
+            setEatDrink(eatDrink)
+            setExplore(explore)
+            setEssentials(essentials)
+            setGettingAround(gettingAround)
+
+            setLoading(false)
+        })
     }, [])
 
     // CHANGE TRIP NAME
@@ -238,118 +212,23 @@ export default function TripDetails() {
 
     const saveChanges = () => {
         // Match the names to the backend to send data
-        const mappedStays = stays.map(stay => ({
-            id: stay.id && stay.id.toString().startsWith("temp-") ? null : stay.id,
-            name: stay.name,
-            status: stay.status,
-            price: stay.price,
-            address: stay.address,
-            day: stay.day,
-            coordinates: Array.isArray(stay.latLong) ? stay.latLong.join(",") : null,
-            external_url: stay.url,
-            comments: stay.comments,
-            deleted: stay.deleted || false
-        }))
-
-        const mappedEatDrink = eatDrink.map(eat => ({
-            id: eat.id && eat.id.toString().startsWith("temp-") ? null : eat.id,
-            name: eat.name,
-            address: eat.address,
-            day: eat.day,
-            coordinates: Array.isArray(eat.latLong) ? eat.latLong.join(",") : null,
-            external_url: eat.url,
-            comments: eat.comments,
-            deleted: eat.deleted || false
-        }))
-
-        const mappedExplore = explore.map(expl => ({
-            id: expl.id && expl.id.toString().startsWith("temp-") ? null : expl.id,
-            name: expl.name,
-            price: expl.price,
-            address: expl.address,
-            day: expl.day,
-            coordinates: Array.isArray(expl.latLong) ? expl.latLong.join(",") : null,
-            external_url: expl.url,
-            comment: expl.comments,
-            deleted: expl.deleted || false
-        }))
-
-        const mappedEssentials = essentials.map(essential => ({
-            id: essential.id && essential.id.toString().startsWith("temp-") ? null : essential.id,
-            name: essential.name,
-            address: essential.address,
-            day: essential.day,
-            coordinates: Array.isArray(essential.latLong) ? essential.latLong.join(",") : null,
-            external_url: essential.url,
-            comments: essential.comments,
-            deleted: essential.deleted || false
-        }))
-
-        const mappedGettingAround = gettingAround.map(around => ({
-            id: around.id && around.id.toString().startsWith("temp-") ? null : around.id,
-            name: around.name,
-            address: around.address,
-            day: around.day,
-            coordinates: Array.isArray(around.latLong) ? around.latLong.join(",") : null,
-            external_url: around.url,
-            comments: around.comments,
-            deleted: around.deleted || false
-        }))
+        const mappedStays = stays.map(mapItemForBackend)
+        const mappedEatDrink = eatDrink.map(mapItemForBackend)
+        const mappedExplore = explore.map(mapItemForBackend)
+        const mappedEssentials = essentials.map(mapItemForBackend)
+        const mappedGettingAround = gettingAround.map(mapItemForBackend)
 
         updateTripById(tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
             .then(data => {
                 console.log("Saved", data)
 
                 //Replace frontend state with backend response
-                if (data.stays) {
-                    setStays(
-                        data.stays.map(stay => ({
-                            ...stay,
-                            latLong: stay.coordinates ? stay.coordinates.split(",").map(Number) : null,
-                            url: stay.external_url,
-                        }))
-                    )
-                }
+                if (data.stays) setStays(mapCategoryForFrontend(data.stays))
+                if (data.eat_drink) setEatDrink(mapCategoryForFrontend(data.eat_drink))
+                if (data.explore) setExplore(mapCategoryForFrontend(data.explore))
+                if (data.essentials) setEssentials(mapCategoryForFrontend(data.essentials))
+                if (data.getting_around) setGettingAround(mapCategoryForFrontend(data.getting_around))
 
-                if (data.eat_drink) {
-                    setEatDrink(
-                        data.eat_drink.map(eat => ({
-                            ...eat,
-                            latLong: eat.coordinates ? eat.coordinates.split(",").map(Number) : null,
-                            url: eat.external_url,
-                        }))
-                    )
-                }
-
-                if (data.explore) {
-                    setExplore(
-                        data.explore.map(expl => ({
-                            ...expl,
-                            latLong: expl.coordinates ? expl.coordinates.split(",").map(Number) : null,
-                            url: expl.external_url,
-                        }))
-                    )
-                }
-
-                if (data.essentials) {
-                    setEssentials(
-                        data.essentials.map(essential => ({
-                            ...essential,
-                            latLong: essential.coordinates ? essential.coordinates.split(",").map(Number) : null,
-                            url: essential.external_url,
-                        }))
-                    )
-                }
-
-                if (data.getting_around) {
-                    setGettingAround(
-                        data.getting_around.map(around => ({
-                            ...around,
-                            latLong: around.coordinates ? around.coordinates.split(",").map(Number) : null,
-                            url: around.external_url,
-                        }))
-                    )
-                }
                 setHasChanges(false)
             })
             .catch(err => console.error("Error saving data", err))
