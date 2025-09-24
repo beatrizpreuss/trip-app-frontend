@@ -73,6 +73,13 @@ export default function TripDetails() {
             })
     }, [])
 
+    // CHANGE TRIP NAME
+
+    const handleTripNameChange = (newName) => {
+        setTripName(newName)
+        setHasChanges(true)
+    }
+
     // CHANGE DATA IN THE TABLE
 
     const handleMarkerChange = (category, index, field, value, type) => {
@@ -177,6 +184,7 @@ export default function TripDetails() {
                 comments: ""
             }
         ])
+        setHasChanges(true)
     }
 
     // DELETE A ROW FROM THE TABLE
@@ -271,7 +279,7 @@ export default function TripDetails() {
             name: essential.name,
             address: essential.address,
             day: essential.day,
-            coordinates: Array.isArray(essential.latLong) ?  essential.latLong.join(",") : null,
+            coordinates: Array.isArray(essential.latLong) ? essential.latLong.join(",") : null,
             external_url: essential.url,
             comments: essential.comments,
             deleted: essential.deleted || false
@@ -375,18 +383,27 @@ export default function TripDetails() {
                 <input
                     type="text"
                     value={tripName}
-                    onChange={(e) => setTripName(e.target.value)}
+                    onChange={(e) => handleTripNameChange(e.target.value)}
                     className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                 />
                 <h3 className="mt-4">Manage all your trip details in the tables, or open the map to make changes</h3>
-                <Link to="map">
+                <div className="flex flex-row items-center gap-5 mb-20">
                     <button
-                        className="w-50 my-5 mb-20 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                            focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                            dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
-                        Open Map
+                        onClick={saveChanges}
+                        className={`${hasChanges ? "bg-red-400 hover:bg-red-500" : "bg-zinc-900 hover:bg-zinc-800 dark:bg-[#dddddd]"} w-50 my-5 mr-5 text-zinc-100 hover:font-bold focus:ring-4 
+                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                     dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
+                        Save Changes
                     </button>
-                </Link>
+                    <Link to="map">
+                        <button
+                            className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                            focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                            dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                            Open Map
+                        </button>
+                    </Link>
+                </div>
             </div>
 
             {/* Stays Table */}
@@ -991,7 +1008,7 @@ export default function TripDetails() {
                 <div className="flex flex-row">
                     <button
                         onClick={saveChanges}
-                        className={`${hasChanges ? "bg-red-400" : "bg-zinc-900 dark:bg-[#dddddd]"} w-50 my-5 mr-5 text-zinc-100 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                        className={`${hasChanges ? "bg-red-400 hover:bg-red-500" : "bg-zinc-900 hover:bg-zinc-800 dark:bg-[#dddddd]"} w-50 my-5 mr-5 text-zinc-100 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                      dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
                         Save Changes

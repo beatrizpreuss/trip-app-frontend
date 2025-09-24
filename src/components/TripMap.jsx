@@ -399,6 +399,12 @@ export default function TripMap() {
         return null
     }
 
+    // Update Trip Name Change
+    const handleTripNameChange = (newName) => {
+        setTripName(newName)
+        setHasChanges(true)
+    }
+
     // Update info inside the popups
     function handleMarkerFieldChange(category, id, field, value) {
         if (category === "stay") {
@@ -739,14 +745,28 @@ export default function TripMap() {
                 <input
                     type="text"
                     value={tripName}
-                    onChange={(e) => setTripName(e.target.value)}
+                    onChange={(e) => handleTripNameChange(e.target.value)}
                     className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                 />
-                <h3 className="mt-4 mb-25">Edit your trip details directly on the map</h3>
+                <h3 className="mt-4">Edit your trip details directly on the map</h3>
             </div>
-            {/* <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
-                <h1 className="mb-15 text-4xl font-bold">{tripName}</h1>
-            </div> */}
+            <div className="flex flex-row items-center justify-center gap-5 mb-20">
+            <Link to="..">
+                <button
+                    className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                        focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                        dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-[#222222]">
+                    Back
+                </button>
+            </Link>
+            <button
+                onClick={saveChanges}
+                className={`${hasChanges ? "bg-red-400 hover:bg-red-500" : "bg-zinc-900 hover:bg-zinc-800 dark:bg-[#dddddd]"} w-50 my-5 mr-5 
+                    text-zinc-100 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 
+                    text-center dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
+                Save Changes
+            </button>
+            </div>
             <MapContainer zoomControl={false} className="h-[500px] w-full">
                 <ZoomControl position="bottomright" />
                 <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
@@ -1220,19 +1240,6 @@ export default function TripMap() {
 
             </MapContainer>
 
-            <Link to="..">
-                <button
-                    className="w-50 my-5 mr-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                        focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                        dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-[#222222]">
-                    Back
-                </button>
-            </Link>
-            <button
-                onClick={saveChanges}
-                className={`${hasChanges ? "bg-red-400" : "bg-zinc-900 dark:bg-[#dddddd]"} w-50 my-5 mr-5 text-zinc-100  hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-[#222222]`}>
-                Save Changes
-            </button>
         </div>
     )
 }
