@@ -327,7 +327,7 @@ export default function TripMap() {
 
         // checks if there's already a marker with the same coordinates.
         const exists = [...stays, ...eatDrink, ...explore, ...essentials, ...gettingAround].some(
-            marker => marker.latLong[0] === lat && marker.latLong[1] === lng)
+            marker => marker.latLong && marker.latLong.length === 2 && marker.latLong[0] === lat && marker.latLong[1] === lng)
         if (exists) return
 
         const latLong = [lat, lng]
