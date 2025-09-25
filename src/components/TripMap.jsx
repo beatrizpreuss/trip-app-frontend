@@ -67,14 +67,6 @@ export default function TripMap() {
             select.addEventListener("change", (e) => { 
                 const value = e.target.value
                 setActiveCategory(e.target.value) //updates state when a new category is selected
-                switch (value) { // make sure category is visible when marker is added (update show state)
-                    case "stay": setShowStays(true); break
-                    case "eatDrink": setShowEatDrink(true); break
-                    case "explore": setShowExplore(true); break
-                    case "essentials": setShowEssentials(true); break
-                    case "gettingAround": setShowGettingAround(true); break
-                    default: break
-                }
             }) 
             
 
@@ -310,38 +302,34 @@ export default function TripMap() {
             deleted: false
         }
         //add the new marker to the state
-        if (activeCategory === "stay") {
-            newMarker = {
-                ...newMarker,
-                name: event.label || "New stay item",
-                status: "planned",
-                price: "unknown"
-            }
-            setStays([...stays, newMarker])
-        } else if (activeCategory === "eatDrink") {
-            newMarker = {
-                ...newMarker,
-                name: event.label || "New eat & drink item"
-            }
-            setEatDrink([...eatDrink, newMarker])
-        } else if (activeCategory === "explore") {
-            newMarker = {
-                ...newMarker,
-                name: event.label || "New explore item"
-            }
-            setExplore([...explore, newMarker])
-        } else if (activeCategory === "essentials") {
-            newMarker = {
-                ...newMarker,
-                name: event.label || "New essentials item"
-            }
-            setEssentials([...essentials, newMarker])
-        } else {
-            newMarker = {
-                ...newMarker,
-                name: event.label || "New getting around item"
-            }
-            setGettingAround([...gettingAround, newMarker])
+        switch (activeCategory) {
+            case "stay":
+                setShowStays(true)
+                newMarker = {...newMarker, name: event.label || "New stay item", status: "planned", price: "unknown"}
+                setStays([...stays, newMarker])
+                break
+            case "eatDrink":
+                setShowEatDrink(true)
+                newMarker = {...newMarker, name: event.label || "New eat & drink item"}
+                setEatDrink([...eatDrink, newMarker])
+                break
+            case "explore":
+                setShowExplore(true)
+                newMarker = {...newMarker, name: event.label || "New explore item"}
+                setExplore([...explore, newMarker])
+                break
+            case "essentials":
+                setShowEssentials(true)
+                newMarker = {...newMarker, name: event.label || "New essentials item"}
+                setEssentials([...essentials, newMarker])
+                break
+            case "gettingAround":
+                setGettingAround(true)
+                newMarker = {...newMarker, name: event.label || "New getting around item"}
+                setGettingAround([...gettingAround, newMarker])
+                break
+            default:
+                break
         }
     }, [activeCategory, stays, eatDrink, explore, essentials, gettingAround])
 
