@@ -64,11 +64,10 @@ export default function TripMap() {
             `
             select.value = activeCategory //sets the selected option
 
-            select.addEventListener("change", (e) => { 
+            select.addEventListener("change", (e) => {
                 const value = e.target.value
                 setActiveCategory(e.target.value) //updates state when a new category is selected
-            }) 
-            
+            })
 
             // Stop clicks from propagating to the map
             L.DomEvent.disableClickPropagation(controlDiv)
@@ -252,31 +251,16 @@ export default function TripMap() {
         })
     }, [tripId])
 
+
     // Create new marker icons
-    const staysIcon = new Icon({
-        iconUrl: staysIconImage,
-        iconSize: [65, 65]
-    })
+    const createIcon = (iconUrl) => new Icon({ iconUrl, iconSize: [65, 65] })
 
-    const eatDrinkIcon = new Icon({
-        iconUrl: eatDrinkIconImage,
-        iconSize: [65, 65]
-    })
+    const staysIcon = createIcon(staysIconImage)
+    const eatDrinkIcon = createIcon(eatDrinkIconImage)
+    const exploreIcon = createIcon(exploreIconImage)
+    const essentialsIcon = createIcon(essentialsIconImage)
+    const gettingAroundIcon = createIcon(gettingAroundIconImage)
 
-    const exploreIcon = new Icon({
-        iconUrl: exploreIconImage,
-        iconSize: [65, 65]
-    })
-
-    const essentialsIcon = new Icon({
-        iconUrl: essentialsIconImage,
-        iconSize: [65, 65]
-    })
-
-    const gettingAroundIcon = new Icon({
-        iconUrl: gettingAroundIconImage,
-        iconSize: [65, 65]
-    })
 
     // Create and add a new marker to state when there is a map click
 
@@ -305,27 +289,27 @@ export default function TripMap() {
         switch (activeCategory) {
             case "stay":
                 setShowStays(true)
-                newMarker = {...newMarker, name: event.label || "New stay item", status: "planned", price: "unknown"}
+                newMarker = { ...newMarker, name: event.label || "New stay item", status: "planned", price: "unknown" }
                 setStays([...stays, newMarker])
                 break
             case "eatDrink":
                 setShowEatDrink(true)
-                newMarker = {...newMarker, name: event.label || "New eat & drink item"}
+                newMarker = { ...newMarker, name: event.label || "New eat & drink item" }
                 setEatDrink([...eatDrink, newMarker])
                 break
             case "explore":
                 setShowExplore(true)
-                newMarker = {...newMarker, name: event.label || "New explore item"}
+                newMarker = { ...newMarker, name: event.label || "New explore item" }
                 setExplore([...explore, newMarker])
                 break
             case "essentials":
                 setShowEssentials(true)
-                newMarker = {...newMarker, name: event.label || "New essentials item"}
+                newMarker = { ...newMarker, name: event.label || "New essentials item" }
                 setEssentials([...essentials, newMarker])
                 break
             case "gettingAround":
                 setGettingAround(true)
-                newMarker = {...newMarker, name: event.label || "New getting around item"}
+                newMarker = { ...newMarker, name: event.label || "New getting around item" }
                 setGettingAround([...gettingAround, newMarker])
                 break
             default:
@@ -365,27 +349,20 @@ export default function TripMap() {
 
     // Update info inside the popups
     function handleMarkerFieldChange(category, id, field, value) {
-        if (category === "stay") {
-            setStays(stays.map(stay =>
-                stay.id === id ? { ...stay, [field]: value } : stay
-            ))
-        } else if (category === "eatDrink") {
-            setEatDrink(eatDrink.map(eat =>
-                eat.id === id ? { ...eat, [field]: value } : eat
-            ))
-        } else if (category === "explore") {
-            setExplore(explore.map(expl =>
-                expl.id === id ? { ...expl, [field]: value } : expl
-            ))
-        } else if (category === "essentials") {
-            setEssentials(essentials.map(essential =>
-                essential.id === id ? { ...essential, [field]: value } : essential
-            ))
-        } else {
-            setGettingAround(gettingAround.map(around =>
-                around.id === id ? { ...around, [field]: value } : around
-            ))
+        const categoryMap = {
+            stay: [stays, setStays],
+            eatDrink: [eatDrink, setEatDrink],
+            explore: [explore, setExplore],
+            essentials: [essentials, setEssentials],
+            gettingAround: [gettingAround, setGettingAround]
         }
+        const [markers, setMarkers] = categoryMap[category] || []
+
+        if (!markers || !setMarkers) return
+
+        setMarkers(markers.map(marker =>
+            marker.id === id ? { ...marker, [field]: value } : marker
+        ))
         setHasChanges(true)
     }
 
@@ -503,69 +480,32 @@ export default function TripMap() {
 
     // Everything below the if needs the data to be loaded to run
 
-    // Only get details after data is loaded
-    const staysMarkers = stays
-        .filter(item => !item.deleted) // hide marker immediately if it has been deleted from map
-        .map(item => ({
-            id: item.id,
-            position: item.latLong,
-            name: item.name,
-            status: item.status,
-            price: item.price,
-            address: item.address,
-            day: item.day,
-            url: item.url,
-            comments: item.comments
-        }))
-
-    const eatDrinkMarkers = eatDrink
-        .filter(item => !item.deleted)
-        .map(item => ({
-            id: item.id,
-            position: item.latLong,
-            name: item.name,
-            address: item.address,
-            day: item.day,
-            url: item.url,
-            comments: item.comments
-        }))
-
-    const exploreMarkers = explore
-        .filter(item => !item.deleted)
-        .map(item => ({
-            id: item.id,
-            position: item.latLong,
-            name: item.name,
-            price: item.price,
-            address: item.address,
-            day: item.day,
-            url: item.url,
-            comments: item.comments
-        }))
-
-    const essentialsMarkers = essentials
-        .filter(item => !item.deleted)
-        .map(item => ({
-            id: item.id,
-            position: item.latLong,
-            name: item.name,
-            address: item.address,
-            day: item.day,
-            url: item.url,
-            comments: item.comments
-        }))
-
-    const gettingAroundMarkers = gettingAround
-        .filter(item => !item.deleted)
-        .map(item => ({
-            id: item.id,
-            position: item.latLong,
-            name: item.name,
-            address: item.address,
-            day: item.day,
-            url: item.url,
-            comments: item.comments
-        }))
+    // Get markers (Only get details after data is loaded)
+    function prepareMarkers(items, extraFields = []) {
+        return items
+            .filter(item => !item.deleted)
+            .map(item => {
+                const marker = {
+                    id: item.id,
+                    position: item.latLong,
+                    name: item.name,
+                    address: item.address,
+                    day: item.day,
+                    url: item.url,
+                    comments: item.comments
+                }
+                extraFields.forEach(field => {
+                    if (item[field] !== undefined) marker[field] = item[field]
+                })
+                return marker
+            })
+    }
+    // Then call it per category
+    const staysMarkers = prepareMarkers(stays, ["status", "price"])
+    const eatDrinkMarkers = prepareMarkers(eatDrink)
+    const exploreMarkers = prepareMarkers(explore, ["price"])
+    const essentialsMarkers = prepareMarkers(essentials)
+    const gettingAroundMarkers = prepareMarkers(gettingAround)
 
 
     // Only markers loaded from backend at the start
