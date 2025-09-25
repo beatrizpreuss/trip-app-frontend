@@ -7,6 +7,7 @@ import { FaTrash, FaPlus } from "react-icons/fa"
 import { Link } from "react-router-dom"
 import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
+import SaveButton from "./SaveButton"
 
 
 export default function TripDetails() {
@@ -209,9 +210,8 @@ export default function TripDetails() {
     }
 
     // SAVE ALL TABLES AT ONCE (saves all changes to the backend - update)
-
+    // mapItemForBackend and and mapCategoryForFrontend come fron util/tripMappers.js, updateTripById comes from util/apiCalls.js
     const saveChanges = () => {
-        // Match the names to the backend to send data
         const mappedStays = stays.map(mapItemForBackend)
         const mappedEatDrink = eatDrink.map(mapItemForBackend)
         const mappedExplore = explore.map(mapItemForBackend)
@@ -222,7 +222,6 @@ export default function TripDetails() {
             .then(data => {
                 console.log("Saved", data)
 
-                //Replace frontend state with backend response
                 if (data.stays) setStays(mapCategoryForFrontend(data.stays))
                 if (data.eat_drink) setEatDrink(mapCategoryForFrontend(data.eat_drink))
                 if (data.explore) setExplore(mapCategoryForFrontend(data.explore))
@@ -267,13 +266,7 @@ export default function TripDetails() {
                 />
                 <h3 className="mt-4">Manage all your trip details in the tables, or open the map to make changes</h3>
                 <div className="flex flex-row items-center gap-5 mb-20">
-                    <button
-                        onClick={saveChanges}
-                        className={`${hasChanges ? "bg-red-400 hover:bg-red-500" : "bg-zinc-900 hover:bg-zinc-800 dark:bg-[#dddddd]"} w-50 my-5 mr-5 text-zinc-100 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                     dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
-                        Save Changes
-                    </button>
+                    <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
                     <Link to="map">
                         <button
                             className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
@@ -885,13 +878,7 @@ export default function TripDetails() {
 
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row">
-                    <button
-                        onClick={saveChanges}
-                        className={`${hasChanges ? "bg-red-400 hover:bg-red-500" : "bg-zinc-900 hover:bg-zinc-800 dark:bg-[#dddddd]"} w-50 my-5 mr-5 text-zinc-100 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                     dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
-                        Save Changes
-                    </button>
+                    <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
                     <Link to="map">
                         <button
                             className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 

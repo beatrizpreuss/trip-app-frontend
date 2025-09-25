@@ -14,6 +14,7 @@ import exploreIconImage from "../assets/images/camera.png"
 import essentialsIconImage from "../assets/images/plus.png"
 import gettingAroundIconImage from "../assets/images/train.png"
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
+import SaveButton from "./SaveButton"
 
 
 export default function TripMap() {
@@ -561,13 +562,7 @@ export default function TripMap() {
                         Back
                     </button>
                 </Link>
-                <button
-                    onClick={saveChanges}
-                    className={`${hasChanges ? "bg-red-400 hover:bg-red-500" : "bg-zinc-900 hover:bg-zinc-800 dark:bg-[#dddddd]"} w-50 my-5 mr-5 
-                    text-zinc-100 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 
-                    text-center dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800`}>
-                    Save Changes
-                </button>
+                <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
             </div>
             <MapContainer zoomControl={false} className="h-[500px] w-full">
                 <ZoomControl position="bottomright" />
