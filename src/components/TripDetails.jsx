@@ -79,135 +79,36 @@ export default function TripDetails() {
 
     // ADD A ROW TO THE TABLE
 
-    const addStay = () => {
-        setStays([
-            ...stays,
-            {
-                id: null,
-                name: "",
-                status: "",
-                price: "",
-                address: "",
-                day: 1,
-                coordinates: "",
-                external_url: "",
-                comments: ""
-            }
-        ])
+    function addRow(category, setCategory, extraFields = []) {
+        const baseRow = {
+            id: null,
+            name: "",
+            address: "",
+            day: 1,
+            coordinates: "",
+            external_url: "",
+            comments: ""
+        }
+        // Add extra fields if needed
+        extraFields.forEach(field => {
+            baseRow[field] = ""
+        })
+        setCategory(prev => [...prev, baseRow])
         setHasChanges(true)
     }
 
-    const addEatDrink = () => {
-        setEatDrink([
-            ...eatDrink,
-            {
-                id: null,
-                name: "",
-                address: "",
-                day: 1,
-                coordinates: "",
-                external_url: "",
-                comments: ""
-            }
-        ])
-        setHasChanges(true)
-    }
-
-    const addExplore = () => {
-        setExplore([
-            ...explore,
-            {
-                id: null,
-                name: "",
-                price: "",
-                address: "",
-                day: 1,
-                coordinates: "",
-                external_url: "",
-                comments: ""
-            }
-        ])
-        setHasChanges(true)
-    }
-
-    const addEssentials = () => {
-        setEssentials([
-            ...essentials,
-            {
-                id: null,
-                name: "",
-                address: "",
-                day: 1,
-                coordinates: "",
-                external_url: "",
-                comments: ""
-            }
-        ])
-        setHasChanges(true)
-    }
-
-    const addGettingAround = () => {
-        setGettingAround([
-            ...gettingAround,
-            {
-                id: null,
-                name: "",
-                address: "",
-                day: 1,
-                coordinates: "",
-                external_url: "",
-                comments: ""
-            }
-        ])
-        setHasChanges(true)
-    }
-
+    
     // DELETE A ROW FROM THE TABLE
 
-    const deleteStay = (stayId) => {
-        setStays(prev =>
-            prev.map(stay =>
-                stay.id === stayId ? { ...stay, deleted: true } : stay
+    function deleteRow(id, setCategory) {
+        setCategory(prev =>
+            prev.map(item =>
+                item.id === id ? {...item, deleted: true} : item
             )
         )
         setHasChanges(true)
     }
 
-    const deleteEatDrink = (eatDrinkId) => {
-        setEatDrink(prev =>
-            prev.map(eatDrink =>
-                eatDrink.id === eatDrinkId ? { ...eatDrink, deleted: true } : eatDrink
-            )
-        )
-        setHasChanges(true)
-    }
-
-    const deleteExplore = (exploreId) => {
-        setExplore(prev =>
-            prev.map(explore =>
-                explore.id === exploreId ? { ...explore, deleted: true } : explore
-            )
-        )
-        setHasChanges(true)
-    }
-
-    const deleteEssentials = (essentialsId) => {
-        setEssentials(prev =>
-            prev.map(essentials =>
-                essentials.id === essentialsId ? { ...essentials, deleted: true } : essentials
-            )
-        )
-        setHasChanges(true)
-    }
-
-    const deleteGettingAround = (gettingAroundId) => {
-        setGettingAround(prev =>
-            prev.map(gettingAround =>
-                gettingAround.id === gettingAroundId ? { ...gettingAround, deleted: true } : gettingAround
-            )
-        )
-        setHasChanges(true)
-    }
 
     // SAVE ALL TABLES AT ONCE (saves all changes to the backend - update)
     // mapItemForBackend and and mapCategoryForFrontend come fron util/tripMappers.js, updateTripById comes from util/apiCalls.js
@@ -389,7 +290,7 @@ export default function TripDetails() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button
-                                                onClick={() => deleteStay(item.id)}
+                                                onClick={() => deleteRow(item.id, setStays)}
                                                 className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
@@ -400,7 +301,7 @@ export default function TripDetails() {
                     )}
                 </table>
                 <button
-                    onClick={() => addStay()}
+                    onClick={() => addRow("stay", setStays, ["status", "price"])}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
@@ -502,7 +403,7 @@ export default function TripDetails() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button
-                                                onClick={() => deleteEatDrink(item.id)}
+                                                onClick={() => deleteRow(item.id, setEatDrink)}
                                                 className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
@@ -513,7 +414,7 @@ export default function TripDetails() {
                     )}
                 </table>
                 <button
-                    onClick={() => addEatDrink()}
+                    onClick={() => addRow("eatDrink", setEatDrink)}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
@@ -625,7 +526,7 @@ export default function TripDetails() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button
-                                                onClick={() => deleteExplore(item.id)}
+                                                onClick={() => deleteRow(item.id, setExplore)}
                                                 className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
@@ -636,7 +537,7 @@ export default function TripDetails() {
                     )}
                 </table>
                 <button
-                    onClick={() => addExplore()}
+                    onClick={() => addRow("explore", setExplore, ["price"])}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
@@ -739,7 +640,7 @@ export default function TripDetails() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button
-                                                onClick={() => deleteEssentials(item.id)}
+                                                onClick={() => deleteRow(item.id, setEssentials)}
                                                 className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
@@ -750,7 +651,7 @@ export default function TripDetails() {
                     )}
                 </table>
                 <button
-                    onClick={() => addEssentials()}
+                    onClick={() => addRow("essentials", setEssentials)}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
@@ -853,7 +754,7 @@ export default function TripDetails() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button
-                                                onClick={() => deleteGettingAround(item.id)}
+                                                onClick={() => deleteRow(item.id, setGettingAround)}
                                                 className="font-medium text-red-600 dark:text-red-400 hover:underline">
                                                 <FaTrash />
                                             </button>
@@ -864,7 +765,7 @@ export default function TripDetails() {
                     )}
                 </table>
                 <button
-                    onClick={() => addGettingAround()}
+                    onClick={() => addRow("gettingAround", setGettingAround)}
                     className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
                     focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                     dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
