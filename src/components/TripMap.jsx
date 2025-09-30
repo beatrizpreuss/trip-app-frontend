@@ -15,6 +15,7 @@ import essentialsIconImage from "../assets/images/plus.png"
 import gettingAroundIconImage from "../assets/images/train.png"
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
 import SaveButton from "./SaveButton"
+import MapAISuggestions from "./MapAISuggestions"
 
 
 export default function TripMap() {
@@ -553,7 +554,7 @@ export default function TripMap() {
                 />
                 <h3 className="mt-4">Edit your trip details directly on the map</h3>
             </div>
-            <div className="flex flex-row items-center justify-center gap-5 mb-20">
+            <div className="flex flex-row items-center justify-center gap-5">
                 <Link to="..">
                     <button
                         className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
@@ -1041,6 +1042,26 @@ export default function TripMap() {
                     ))}
 
             </MapContainer>
+
+
+            <MapAISuggestions
+                markers={[
+                    ...stays,
+                    ...eatDrink,
+                    ...explore,
+                    ...essentials,
+                    ...gettingAround
+                ]}
+                onAddMarker={(category, newMarker) => {
+                    // Decide which category array to update
+                    if (category === "stays") setStays([...staysMarkers, newMarker]);
+                    if (category === "eatDrink") setEatDrink([...eatDrinkMarkers, newMarker]);
+                    if (category === "explore") setExplore([...exploreMarkers, newMarker]);
+                    if (category === "essentials") setEssentials([...essentialsMarkers, newMarker]);
+                    if (category === "gettingAround") setGettingAround([...gettingAroundMarkers, newMarker]);
+                }}
+            />
+
 
         </div>
     )
