@@ -1045,6 +1045,7 @@ export default function TripMap() {
 
 
             <MapAISuggestions
+                tripId={tripId}
                 markers={[
                     ...stays,
                     ...eatDrink,
@@ -1054,11 +1055,11 @@ export default function TripMap() {
                 ]}
                 onAddMarker={(category, newMarker) => {
                     // Decide which category array to update
-                    if (category === "stays") setStays([...staysMarkers, newMarker]);
-                    if (category === "eatDrink") setEatDrink([...eatDrinkMarkers, newMarker]);
-                    if (category === "explore") setExplore([...exploreMarkers, newMarker]);
-                    if (category === "essentials") setEssentials([...essentialsMarkers, newMarker]);
-                    if (category === "gettingAround") setGettingAround([...gettingAroundMarkers, newMarker]);
+                    if (category === "stays") setStays([...staysMarkers, newMarker])
+                    if (category === "eatDrink") setEatDrink([...eatDrinkMarkers, newMarker])
+                    if (category === "explore") setExplore([...exploreMarkers, newMarker])
+                    if (category === "essentials") setEssentials([...essentialsMarkers, newMarker])
+                    if (category === "gettingAround") setGettingAround([...gettingAroundMarkers, newMarker])
                 }}
             />
 

@@ -68,3 +68,20 @@ export async function createNewTrip() {
         console.error('Error in createNewTrip')
     }
 }
+
+
+// Send pop-up questionnaire answers to the backend
+export async function popupToBackend(tripId, finalAnswers) {
+    try {
+        const res = await fetch (`${BASE_URL}/trips/${tripId}/suggestions`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(finalAnswers)
+        })
+        const data = await res.json()
+        console.log("Backend response in apiCalls:", data)
+        return data
+    } catch (err) {
+        console.error("Error in popupToBackend", err)
+    }
+}

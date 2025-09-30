@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
+import { popupToBackend } from "../util/apiCalls";
 
-export default function MapAISuggestions({ markers, onAddMarker }) {
+export default function MapAISuggestions({ tripId, markers, onAddMarker }) {
     // Popup + flow states
     const [isOpen, setIsOpen] = useState(false);
     const [currentNode, setCurrentNode] = useState("start") // start or category
@@ -9,6 +10,8 @@ export default function MapAISuggestions({ markers, onAddMarker }) {
     const [selectedOptions, setSelectedOptions] = useState([])
     const [textInput, setTextInput] = useState("")
     const [suggestions, setSuggestions] = useState([])
+
+    const [loading, setLoading] = useState(false)
 
     // Question structure (linear per category)
     const questionTree = {
@@ -162,26 +165,22 @@ export default function MapAISuggestions({ markers, onAddMarker }) {
         // Move to next question or fetch suggestions
         if (branchStep + 1 < questionTree[currentNode].length) { //if there are still questions (branchStep + 1 exists inside the category list), move to next question
             setBranchStep(branchStep + 1)
-        } else {
-            fetchSuggestions(newAnswers) //if there are no more questions, fetch suggestions
+        } else { //if there are no more questions, fetch suggestions
+            setLoading(true)
+            fetchSuggestions(newAnswers).finally(() => {
+                setLoading(false)
+            })
         }
     }
 
 
-
-    // STARTING HERE, I NEED TO LINK TO THE BACKEND
-
-    // Fake backend call (replace with Python API later)
+    // Backend call (popupToBackend comes from apiCalls.js and it sends the info from the popups to the backend)
     const fetchSuggestions = async (finalAnswers) => {
-        console.log("Collected answers:", finalAnswers, "Markers:", markers)
+        const info = await popupToBackend(tripId, finalAnswers)
+        console.log("Backend response in MapAISuggestions:", info)
+        setSuggestions(info)
+    }
 
-        // While I don't have real results, use fake ones
-        const fakeResults = [
-            { name: "Café Example", address: "123 Main St", lat: 40.71, lng: -74.00 },
-            { name: "Museum Example", address: "456 Broadway", lat: 40.72, lng: -74.01 }
-        ];
-        setSuggestions(fakeResults);
-    };
 
     // User picks one suggestion → add marker
     const handleSelectSuggestion = (suggestion) => {
@@ -209,92 +208,74 @@ export default function MapAISuggestions({ markers, onAddMarker }) {
                 <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-[1000] dark:bg-[#222222]/80">
                     <div className="bg-white rounded-xl shadow-lg p-6 w-96 z-[1001] dark:text-[#dddddd] dark:bg-[#222222]">
                         {/* If no results yet, show questions */}
-                        {suggestions.length === 0 ? (
-                            <div>
-                                <p className="mb-4 font-semibold">{currentQuestion.text}</p>
-
-                                {/* Questions with options */}
-                                {currentQuestion.options ? (
-                                    <div className="flex flex-col gap-2">
-                                        {currentQuestion.options.map((opt) => (
-                                            <button
-                                                key={opt}
-                                                onClick={() => handleOptionClick(opt, currentQuestion.type)}
-                                                className={`px-4 py-2 rounded shadow mb-2 ${selectedOptions.includes(opt) ? "bg-[#a9a9a9] text-white" : "bg-[#dddddd] dark:bg-[#8d8d8d] dark:text-[#dddddd]"}`}
-                                            >
-                                                {optionLabels[opt] || opt}
-                                            </button>
-                                        ))}
-                                        <button 
-                                            onClick={() => {
-                                                if (selectedOptions.length > 0) {
-                                                    submitAnswer(selectedOptions)
-                                                } 
-                                            }}
-                                            className="my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
-                                            font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                        >
-                                            Next
-                                        </button>
-                                    </div>
-                                ) : (
-                                    /* Questions with text input */
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Type your answer"
-                                            className="border rounded px-2 py-1 flex-grow"
-                                            value={textInput}
-                                            onChange={(e) => setTextInput(e.target.value)}
-                                        />
-                                        <button
-                                            onClick={() => submitAnswer([textInput.trim()])}
-                                            disabled={textInput.trim() === ""}
-                                            className="text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm 
-                                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                        >
-                                            OK
-                                        </button>
-                                    </div>
-                                )}
-
-                                {/* Cancel Button */}
-                                <button
-                                    onClick={resetPopup}
-                                    className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
-                                    px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
+                        {loading ? (
+                            <div>Fetching suggestions...</div>
                         ) : (
-                            // Show AI suggestions
-                            <div>
-                                <h3 className="text-lg font-bold mb-4">Suggestions</h3>
-                                <ul>
-                                    {suggestions.map((s, i) => (
-                                        <li
-                                            key={i}
-                                            className="mb-2 p-2 border rounded cursor-pointer hover:bg-gray-100"
-                                            onClick={() => handleSelectSuggestion(s)}
-                                        >
-                                            <p className="font-semibold">{s.name}</p>
-                                            <p className="text-sm text-gray-600">{s.address}</p>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button
-                                    onClick={resetPopup}
-                                    className="my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium
-                                    rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                >
-                                    Close
-                                </button>
-                            </div>
+                            suggestions.length === 0 ? (
+                                <div>
+                                    <p className="mb-4 font-semibold">{currentQuestion.text}</p>
+
+                                    {/* Questions with options */}
+                                    {currentQuestion.options ? (
+                                        <div className="flex flex-col gap-2">
+                                            {currentQuestion.options.map((opt) => (
+                                                <button
+                                                    key={opt}
+                                                    onClick={() => handleOptionClick(opt, currentQuestion.type)}
+                                                    className={`px-4 py-2 rounded shadow mb-2 ${selectedOptions.includes(opt) ? "bg-[#a9a9a9] text-white" : "bg-[#dddddd] dark:bg-[#8d8d8d] dark:text-[#dddddd]"}`}
+                                                >
+                                                    {optionLabels[opt] || opt}
+                                                </button>
+                                            ))}
+                                            <button
+                                                onClick={() => {
+                                                    if (selectedOptions.length > 0) {
+                                                        submitAnswer(selectedOptions)
+                                                    }
+                                                }}
+                                                className="my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
+                                            font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                            >
+                                                Next
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        /* Questions with text input */
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Type your answer"
+                                                className="border rounded px-2 py-1 flex-grow"
+                                                value={textInput}
+                                                onChange={(e) => setTextInput(e.target.value)}
+                                            />
+                                            <button
+                                                onClick={() => submitAnswer([textInput.trim()])}
+                                                disabled={textInput.trim() === ""}
+                                                className="text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm 
+                                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                            >
+                                                OK
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <span>Suggestions will show here later</span>
+                            )
                         )}
+                        {/* Cancel Button */}
+                        <button
+                            onClick={resetPopup}
+                            className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
+                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                        >
+                            Cancel
+                        </button>
+
                     </div>
                 </div>
             )}
         </div>
-    );
+    )
 }
