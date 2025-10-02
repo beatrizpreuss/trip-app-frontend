@@ -34,7 +34,8 @@ export const mapItemForBackend = (item) => ({
     price: item.price,
     address: item.address,
     day: item.day,
-    coordinates: Array.isArray(item.latLong) ? item.latLong.join(",") : null,
+    // coordinates: Array.isArray(item.latLong) ? item.latLong.join(",") : null,
+    coordinates: Array.isArray(item.latLong) ? item.latLong.join(",") : (item.latLong || null),
     external_url: item.url,
     comments: item.comments,
     deleted: item.deleted || false
