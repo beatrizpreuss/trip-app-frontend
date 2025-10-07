@@ -1,7 +1,7 @@
 import "leaflet/dist/leaflet.css"
 import "leaflet-geosearch/dist/geosearch.css"
 import { useParams, Link } from "react-router-dom"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useMemo } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent, ZoomControl } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
@@ -15,7 +15,8 @@ import essentialsIconImage from "../assets/images/plus.png"
 import gettingAroundIconImage from "../assets/images/train.png"
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
 import SaveButton from "./SaveButton"
-import MapAISuggestions from "./MapAISuggestions"
+import MapSuggestions from "./MapSuggestions"
+import { combineMarkers, getCenterOfMarkers, getRadiusFromMarkers } from "../util/geo.js"
 
 
 export default function TripMap() {
@@ -383,21 +384,21 @@ export default function TripMap() {
                 ? markers.filter(marker => marker.id !== id)  // remove temp marker
                 : markers.map(marker =>
                     marker.id === id ? { ...marker, deleted: true } : marker
-                ); // mark non-temp as deleted
+                ) // mark non-temp as deleted
 
         if (category === "stay") {
-            setStays(updateMarkers(stays));
+            setStays(updateMarkers(stays))
         } else if (category === "eatDrink") {
-            setEatDrink(updateMarkers(eatDrink));
+            setEatDrink(updateMarkers(eatDrink))
         } else if (category === "explore") {
-            setExplore(updateMarkers(explore));
+            setExplore(updateMarkers(explore))
         } else if (category === "essentials") {
-            setEssentials(updateMarkers(essentials));
+            setEssentials(updateMarkers(essentials))
         } else {
-            setGettingAround(updateMarkers(gettingAround));
+            setGettingAround(updateMarkers(gettingAround))
         }
 
-        setHasChanges(true);
+        setHasChanges(true)
 
     }
     // Component that turns a temporary marker resultant from a search to one of the trip's marker
@@ -437,6 +438,7 @@ export default function TripMap() {
                 // if there is a category selected, remove the default temp marker from the search, and add permanent marker
                 if (map.hasLayer(tempMarker)) { // remove temporary marker
                     map.removeLayer(tempMarker)
+                    setHasChanges(true)
                 }
                 addMarkerCallback({ latlng: { lat, lng }, label: result.label }) // reuse this function to add permanent marker
                 setSearchResult(null) // clear results to unmount this component
@@ -478,592 +480,633 @@ export default function TripMap() {
     }
 
 
-    if (loading) return <h2>Loading map...</h2>
+    // Combine all markers into one 
+    const allMarkersData = useMemo(() => {
+        if (loading) return { allMarkers: [], initialMarkers: [] }
 
-    // Everything below the if needs the data to be loaded to run
-
-    // Get markers (Only get details after data is loaded)
-    function prepareMarkers(items, extraFields = []) {
-        return items
-            .filter(item => !item.deleted)
-            .map(item => {
-                const marker = {
-                    id: item.id,
-                    position: item.latLong,
-                    name: item.name,
-                    address: item.address,
-                    day: item.day,
-                    url: item.url,
-                    comments: item.comments
-                }
-                extraFields.forEach(field => {
-                    if (item[field] !== undefined) marker[field] = item[field]
+        // Get markers
+        const prepareMarkers = (items, extraFields = []) =>
+            items
+                .filter(item => !item.deleted)
+                .map(item => {
+                    const marker = {
+                        id: item.id,
+                        position: item.latLong,
+                        name: item.name,
+                        address: item.address,
+                        day: item.day,
+                        url: item.url,
+                        comments: item.comments
+                    }
+                    extraFields.forEach(field => {
+                        if (item[field] !== undefined) marker[field] = item[field]
+                    })
+                    return marker
                 })
-                return marker
+        
+        // then call prepareMarker to get markers per category
+        const staysMarkers = prepareMarkers(stays, ["status", "price"])
+        const eatDrinkMarkers = prepareMarkers(eatDrink)
+        const exploreMarkers = prepareMarkers(explore, ["price"])
+        const essentialsMarkers = prepareMarkers(essentials)
+        const gettingAroundMarkers = prepareMarkers(gettingAround)
+
+        // combine all markers to be used in the calculation of the center point and radius for MapSuggestions
+        const allMarkers = combineMarkers([staysMarkers, exploreMarkers, eatDrinkMarkers, essentialsMarkers, gettingAroundMarkers])
+            .map(marker => {
+                const lat = marker.position?.[0] ?? null
+                const lon = marker.position?.[1] ?? null
+                return lat != null && lon != null ? { lat, lon } : null
             })
-    }
-    // Then call it per category
-    const staysMarkers = prepareMarkers(stays, ["status", "price"])
-    const eatDrinkMarkers = prepareMarkers(eatDrink)
-    const exploreMarkers = prepareMarkers(explore, ["price"])
-    const essentialsMarkers = prepareMarkers(essentials)
-    const gettingAroundMarkers = prepareMarkers(gettingAround)
+            .filter(Boolean)
+        
+        // Only markers loaded from backend at the start
+        const initialMarkers = [
+            ...staysMarkers.filter(m => !m.id.toString().startsWith("temp-")),
+            ...eatDrinkMarkers.filter(m => !m.id.toString().startsWith("temp-")),
+            ...exploreMarkers.filter(m => !m.id.toString().startsWith("temp-")),
+            ...essentialsMarkers.filter(m => !m.id.toString().startsWith("temp-")),
+            ...gettingAroundMarkers.filter(m => !m.id.toString().startsWith("temp-"))
+        ]
 
 
-    // Only markers loaded from backend at the start
-    const initialMarkers = [
-        ...staysMarkers.filter(m => !m.id.toString().startsWith("temp-")),
-        ...eatDrinkMarkers.filter(m => !m.id.toString().startsWith("temp-")),
-        ...exploreMarkers.filter(m => !m.id.toString().startsWith("temp-")),
-        ...essentialsMarkers.filter(m => !m.id.toString().startsWith("temp-")),
-        ...gettingAroundMarkers.filter(m => !m.id.toString().startsWith("temp-"))
-    ]
+        //return markers per category, combined markers, and initial markers
+        return {
+            staysMarkers,
+            eatDrinkMarkers,
+            exploreMarkers,
+            essentialsMarkers,
+            gettingAroundMarkers,
+            allMarkers,
+            initialMarkers
+          }
+            
+    }, [loading, stays, explore, eatDrink, essentials, gettingAround])
 
-    // Make the map automatically open on my markers, not on a fixed location (and update the hasFitBounds state so this function will only run the first time the map opens, when hasFitBounds is still false)
-    // !! hasFitBound state has also resolved the problem of the zoom not working with addresses !! ******************** DEBUGGED
-    function FitBounds({ markers }) {
-        const map = useMap()
+    const {
+        staysMarkers,
+        eatDrinkMarkers,
+        exploreMarkers,
+        essentialsMarkers,
+        gettingAroundMarkers,
+        allMarkers,
+        initialMarkers
+      } = allMarkersData
 
-        useEffect(() => {
-            if (hasFitBounds) return
-            const validBounds = markers // filter only markers with valid latLong
-                .map(marker => marker.position)
-                .filter(position => Array.isArray(position) && position.length === 2)
+// Calculate Center and Radius to be used for MapSuggestions
+//getCenterOfMarkers and getRadiusFromMarkers come from util/geo.js
+const suggestionsParams = useMemo(() => {
+    if (!allMarkers.length) return null
+    const center = getCenterOfMarkers(allMarkers)
+    const radius = getRadiusFromMarkers(allMarkers, center)
+    return { lat: center.lat, lon: center.lon, radius }
+}, [allMarkers])
 
-            if (validBounds.length > 0) {
-                const bounds = L.latLngBounds(validBounds)
-                map.fitBounds(bounds, { padding: [30, 30] })
-            } else { // if there are no valid coordinates
-                map.setView([0, 0], 2)
-            }
-            setHasFitBounds(true)
-        }, [])
 
-        return null
-    }
+if (loading) return <h2>Loading map...</h2>
 
-    return (
-        <div className="m-25 mt-15 mx-15">
-            <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
+// Everything below the if needs the data to be loaded to run
 
-                <input
-                    type="text"
-                    value={tripName}
-                    onChange={(e) => handleTripNameChange(e.target.value)}
-                    className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
-                />
-                <h3 className="mt-4">Edit your trip details directly on the map</h3>
-            </div>
-            <div className="flex flex-row items-center justify-center gap-5">
-                <Link to="..">
-                    <button
-                        className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+
+// Make the map automatically open on my markers, not on a fixed location (and update the hasFitBounds state so this function will only run the first time the map opens, when hasFitBounds is still false)
+// !! hasFitBound state has also resolved the problem of the zoom not working with addresses !! ******************** DEBUGGED
+function FitBounds({ markers }) {
+    const map = useMap()
+
+    useEffect(() => {
+        if (hasFitBounds) return
+        const validBounds = markers // filter only markers with valid latLong
+            .map(marker => marker.position)
+            .filter(position => Array.isArray(position) && position.length === 2)
+
+        if (validBounds.length > 0) {
+            const bounds = L.latLngBounds(validBounds)
+            map.fitBounds(bounds, { padding: [30, 30] })
+        } else { // if there are no valid coordinates
+            map.setView([0, 0], 2)
+        }
+        setHasFitBounds(true)
+    }, [])
+
+    return null
+}
+
+
+return (
+    <div className="m-25 mt-15 mx-15">
+        <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
+
+            <input
+                type="text"
+                value={tripName}
+                onChange={(e) => handleTripNameChange(e.target.value)}
+                className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
+            />
+            <h3 className="mt-4">Edit your trip details directly on the map</h3>
+        </div>
+        <div className="flex flex-row items-center justify-center gap-5">
+            <Link to="..">
+                <button
+                    className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                         focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
                         dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-[#222222]">
-                        Back
-                    </button>
-                </Link>
-                <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
-            </div>
-            <MapContainer zoomControl={false} className="h-[500px] w-full">
-                <ZoomControl position="bottomright" />
-                <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <SearchControl /> {/* Search bar */}
-                {searchResult && <SearchResultHandler result={searchResult} />} {/* Add marker from search upon click */}
-                <AddMarkerOnClick
-                    activeCategory={activeCategory}
-                    onClick={addMarkerCallback} />
-                {/* Control - Dropdown to pick category of next marker to be added*/}
-                <CategoryDropdown
-                    activeCategory={activeCategory}
-                    setActiveCategory={setActiveCategory}
-                    setShowStays={setShowStays}
-                    setShowEatDrink={setShowEatDrink}
-                    setShowExplore={setShowExplore}
-                    setShowEssentials={setShowEssentials}
-                    setShowGettingAround={setShowGettingAround}
-                />
-                <CategoryFilter
-                    showStays={showStays} setShowStays={setShowStays}
-                    showEatDrink={showEatDrink} setShowEatDrink={setShowEatDrink}
-                    showExplore={showExplore} setShowExplore={setShowExplore}
-                    showEssentials={showEssentials} setShowEssentials={setShowEssentials}
-                    showGettingAround={showGettingAround} setShowGettingAround={setShowGettingAround}
-                />
-                <DayFilter showDays={showDays} setShowDays={setShowDays} />
+                    Back
+                </button>
+            </Link>
+            <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
+        </div>
+        <MapContainer zoomControl={false} className="h-[500px] w-full">
+            <ZoomControl position="bottomright" />
+            <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <SearchControl /> {/* Search bar */}
+            {searchResult && <SearchResultHandler result={searchResult} />} {/* Add marker from search upon click */}
+            <AddMarkerOnClick
+                activeCategory={activeCategory}
+                onClick={addMarkerCallback} />
+            {/* Control - Dropdown to pick category of next marker to be added*/}
+            <CategoryDropdown
+                activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
+                setShowStays={setShowStays}
+                setShowEatDrink={setShowEatDrink}
+                setShowExplore={setShowExplore}
+                setShowEssentials={setShowEssentials}
+                setShowGettingAround={setShowGettingAround}
+            />
+            <CategoryFilter
+                showStays={showStays} setShowStays={setShowStays}
+                showEatDrink={showEatDrink} setShowEatDrink={setShowEatDrink}
+                showExplore={showExplore} setShowExplore={setShowExplore}
+                showEssentials={showEssentials} setShowEssentials={setShowEssentials}
+                showGettingAround={showGettingAround} setShowGettingAround={setShowGettingAround}
+            />
+            <DayFilter showDays={showDays} setShowDays={setShowDays} />
 
-                {showStays && staysMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.position}
-                            icon={staysIcon}
-                            draggable={true} //Make it possible to drag marker to change the location
-                            eventHandlers={{
-                                dragend: (event) => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("stay", marker.id, newLatLong)
-                                }
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Status:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="status"
-                                            type="text"
-                                            value={marker.status || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Price:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="price"
-                                            type="text"
-                                            value={marker.price || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Address:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Day:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="day"
-                                            type="number"
-                                            value={marker.day || 1}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> URL:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="comments"
-                                            type="text"
-                                            value={marker.comments || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="block text-xs text-red-600 my-1"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("stay", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
+            {showStays && staysMarkers
+                .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
+                .map((marker, index) => (
+                    <Marker
+                        key={index}
+                        position={marker.position}
+                        icon={staysIcon}
+                        draggable={true} //Make it possible to drag marker to change the location
+                        eventHandlers={{
+                            dragend: (event) => {
+                                const newLatLong = [
+                                    event.target.getLatLng().lat,
+                                    event.target.getLatLng().lng
+                                ]
+                                handleMarkerDragEnd("stay", marker.id, newLatLong)
+                            }
+                        }}>
+                        <Popup>
+                            <div className="space-x-2">
+                                <label className="block text-xs text-gray-700"> Name:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="name"
+                                        type="text"
+                                        value={marker.name || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Status:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="status"
+                                        type="text"
+                                        value={marker.status || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Price:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="price"
+                                        type="text"
+                                        value={marker.price || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Address:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="address"
+                                        type="text"
+                                        value={marker.address || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Day:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="day"
+                                        type="number"
+                                        value={marker.day || 1}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> URL:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="url"
+                                        type="text"
+                                        value={marker.url || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Comments:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="comments"
+                                        type="text"
+                                        value={marker.comments || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <button
+                                    className="block text-xs text-red-600 my-1"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleDeleteMarker("stay", marker.id)
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </Popup>
+                    </Marker>
+                ))}
 
-                {showEatDrink && eatDrinkMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.position}
-                            icon={eatDrinkIcon}
-                            draggable={true}
-                            eventHandlers={{
-                                dragend: (event) => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("eatDrink", marker.id, newLatLong)
-                                }
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Address:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Day:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="day"
-                                            type="number"
-                                            value={marker.day || 1}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> URL:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="comments"
-                                            type="text"
-                                            value={marker.comments || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="block text-xs text-red-600 my-1"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("eatDrink", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
+            {showEatDrink && eatDrinkMarkers
+                .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
+                .map((marker, index) => (
+                    <Marker
+                        key={index}
+                        position={marker.position}
+                        icon={eatDrinkIcon}
+                        draggable={true}
+                        eventHandlers={{
+                            dragend: (event) => {
+                                const newLatLong = [
+                                    event.target.getLatLng().lat,
+                                    event.target.getLatLng().lng
+                                ]
+                                handleMarkerDragEnd("eatDrink", marker.id, newLatLong)
+                            }
+                        }}>
+                        <Popup>
+                            <div className="space-x-2">
+                                <label className="block text-xs text-gray-700"> Name:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="name"
+                                        type="text"
+                                        value={marker.name || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Address:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="address"
+                                        type="text"
+                                        value={marker.address || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Day:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="day"
+                                        type="number"
+                                        value={marker.day || 1}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> URL:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="url"
+                                        type="text"
+                                        value={marker.url || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Comments:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="comments"
+                                        type="text"
+                                        value={marker.comments || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <button
+                                    className="block text-xs text-red-600 my-1"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleDeleteMarker("eatDrink", marker.id)
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </Popup>
+                    </Marker>
+                ))}
 
-                {showExplore && exploreMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.position}
-                            icon={exploreIcon}
-                            draggable={true}
-                            eventHandlers={{
-                                dragend: (event => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("explore", marker.id, newLatLong)
-                                })
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Price:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="price"
-                                            type="text"
-                                            value={marker.price || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Address:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Day:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="day"
-                                            type="number"
-                                            value={marker.day || 1}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> URL:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="comments"
-                                            type="text"
-                                            value={marker.comments || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="block text-xs text-red-600 my-1"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("explore", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
+            {showExplore && exploreMarkers
+                .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
+                .map((marker, index) => (
+                    <Marker
+                        key={index}
+                        position={marker.position}
+                        icon={exploreIcon}
+                        draggable={true}
+                        eventHandlers={{
+                            dragend: (event => {
+                                const newLatLong = [
+                                    event.target.getLatLng().lat,
+                                    event.target.getLatLng().lng
+                                ]
+                                handleMarkerDragEnd("explore", marker.id, newLatLong)
+                            })
+                        }}>
+                        <Popup>
+                            <div className="space-x-2">
+                                <label className="block text-xs text-gray-700"> Name:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="name"
+                                        type="text"
+                                        value={marker.name || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Price:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="price"
+                                        type="text"
+                                        value={marker.price || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Address:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="address"
+                                        type="text"
+                                        value={marker.address || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Day:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="day"
+                                        type="number"
+                                        value={marker.day || 1}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> URL:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="url"
+                                        type="text"
+                                        value={marker.url || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Comments:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="comments"
+                                        type="text"
+                                        value={marker.comments || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <button
+                                    className="block text-xs text-red-600 my-1"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleDeleteMarker("explore", marker.id)
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </Popup>
+                    </Marker>
+                ))}
 
-                {showEssentials && essentialsMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && showDays[marker.day])
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.position}
-                            icon={essentialsIcon}
-                            draggable={true}
-                            eventHandlers={{
-                                dragend: (event) => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("essentials", marker.id, newLatLong)
-                                }
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Address:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Day:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="day"
-                                            type="number"
-                                            value={marker.day || 1}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> URL:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="comments"
-                                            type="text"
-                                            value={marker.comments || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="block text-xs text-red-600 my-1"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("essentials", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
+            {showEssentials && essentialsMarkers
+                .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && showDays[marker.day])
+                .map((marker, index) => (
+                    <Marker
+                        key={index}
+                        position={marker.position}
+                        icon={essentialsIcon}
+                        draggable={true}
+                        eventHandlers={{
+                            dragend: (event) => {
+                                const newLatLong = [
+                                    event.target.getLatLng().lat,
+                                    event.target.getLatLng().lng
+                                ]
+                                handleMarkerDragEnd("essentials", marker.id, newLatLong)
+                            }
+                        }}>
+                        <Popup>
+                            <div className="space-x-2">
+                                <label className="block text-xs text-gray-700"> Name:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="name"
+                                        type="text"
+                                        value={marker.name || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Address:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="address"
+                                        type="text"
+                                        value={marker.address || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Day:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="day"
+                                        type="number"
+                                        value={marker.day || 1}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> URL:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="url"
+                                        type="text"
+                                        value={marker.url || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Comments:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="comments"
+                                        type="text"
+                                        value={marker.comments || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <button
+                                    className="block text-xs text-red-600 my-1"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleDeleteMarker("essentials", marker.id)
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </Popup>
+                    </Marker>
+                ))}
 
-                {showGettingAround && gettingAroundMarkers
-                    .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.position}
-                            icon={gettingAroundIcon}
-                            draggable={true}
-                            eventHandlers={{
-                                dragend: (event) => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("gettingAround", marker.id, newLatLong)
-                                }
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Address:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Day:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="day"
-                                            type="number"
-                                            value={marker.day || 1}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> URL:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
-                                        <input
-                                            className="px-1 py-0.2 text-sm"
-                                            name="comments"
-                                            type="text"
-                                            value={marker.comments || ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="block text-xs text-red-600 my-1"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("gettingAround", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
+            {showGettingAround && gettingAroundMarkers
+                .filter(marker => Array.isArray(marker.position) && marker.position.length === 2 && (showDays[marker.day] ?? true))
+                .map((marker, index) => (
+                    <Marker
+                        key={index}
+                        position={marker.position}
+                        icon={gettingAroundIcon}
+                        draggable={true}
+                        eventHandlers={{
+                            dragend: (event) => {
+                                const newLatLong = [
+                                    event.target.getLatLng().lat,
+                                    event.target.getLatLng().lng
+                                ]
+                                handleMarkerDragEnd("gettingAround", marker.id, newLatLong)
+                            }
+                        }}>
+                        <Popup>
+                            <div className="space-x-2">
+                                <label className="block text-xs text-gray-700"> Name:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="name"
+                                        type="text"
+                                        value={marker.name || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Address:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="address"
+                                        type="text"
+                                        value={marker.address || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Day:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="day"
+                                        type="number"
+                                        value={marker.day || 1}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> URL:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="url"
+                                        type="text"
+                                        value={marker.url || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <label className="block text-xs text-gray-700"> Comments:
+                                    <input
+                                        className="px-1 py-0.2 text-sm"
+                                        name="comments"
+                                        type="text"
+                                        value={marker.comments || ""}
+                                        onChange={(event) =>
+                                            handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
+                                        } />
+                                </label>
+                                <button
+                                    className="block text-xs text-red-600 my-1"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleDeleteMarker("gettingAround", marker.id)
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </Popup>
+                    </Marker>
+                ))}
 
-            </MapContainer>
+        </MapContainer>
 
-
-            <MapAISuggestions
+        {allMarkers.length > 0 && suggestionsParams && (
+            <MapSuggestions
                 tripId={tripId}
-                markers={[
-                    ...stays,
-                    ...eatDrink,
-                    ...explore,
-                    ...essentials,
-                    ...gettingAround
-                ]}
+                suggestionsParams={suggestionsParams}
                 onAddMarker={(category, newMarker) => {
                     // Decide which category array to update
-                    if (category === "stays") setStays([...staysMarkers, newMarker])
-                    if (category === "eatDrink") setEatDrink([...eatDrinkMarkers, newMarker])
-                    if (category === "explore") setExplore([...exploreMarkers, newMarker])
-                    if (category === "essentials") setEssentials([...essentialsMarkers, newMarker])
-                    if (category === "gettingAround") setGettingAround([...gettingAroundMarkers, newMarker])
+                    if (category === "stays") setStays([...stays, newMarker])
+                    if (category === "eatDrink") setEatDrink([...eatDrink, newMarker])
+                    if (category === "explore") setExplore([...explore, newMarker])
+                    if (category === "essentials") setEssentials([...essentials, newMarker])
+                    if (category === "gettingAround") setGettingAround([...gettingAround, newMarker])
                 }}
             />
-
-
-        </div>
-    )
+        )}
+    </div>
+)
 }

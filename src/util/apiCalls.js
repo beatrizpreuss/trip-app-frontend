@@ -71,12 +71,23 @@ export async function createNewTrip() {
 
 
 // Send pop-up questionnaire answers to the backend
-export async function popupToBackend(tripId, finalAnswers) {
+export async function popupToBackend(tripId, finalAnswers, suggestionsParams) {
     try {
+        const payload = { ...finalAnswers}
+
+        if (suggestionsParams) {
+            payload.lat = suggestionsParams.lat
+            payload.lon = suggestionsParams.lon
+            payload.radius = suggestionsParams.radius // already in meters
+        } else {
+            console.warn("No suggestionsParams provided, suggestions may be incorect")
+        }
+        console.log("Payload send to backend:", payload)
+        
         const res = await fetch (`${BASE_URL}/trips/${tripId}/suggestions`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(finalAnswers)
+            body: JSON.stringify(payload)
         })
         const data = await res.json()
         console.log("Backend response in apiCalls:", data)

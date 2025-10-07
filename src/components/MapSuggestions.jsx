@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { popupToBackend } from "../util/apiCalls";
 
-export default function MapAISuggestions({ tripId, markers, onAddMarker }) {
+export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarker  }) {
     // Popup + flow states
     const [isOpen, setIsOpen] = useState(false);
     const [currentNode, setCurrentNode] = useState("start") // start or category
@@ -141,7 +141,6 @@ export default function MapAISuggestions({ tripId, markers, onAddMarker }) {
         } else {
             setSelectedOptions([option])
         }
-
     }
 
 
@@ -167,6 +166,7 @@ export default function MapAISuggestions({ tripId, markers, onAddMarker }) {
             setBranchStep(branchStep + 1)
         } else { //if there are no more questions, fetch suggestions
             setLoading(true)
+            console.log("Fetching suggestions with answers", newAnswers)
             fetchSuggestions(newAnswers).finally(() => {
                 setLoading(false)
             })
@@ -175,10 +175,20 @@ export default function MapAISuggestions({ tripId, markers, onAddMarker }) {
 
 
     // Backend call (popupToBackend comes from apiCalls.js and it sends the info from the popups to the backend)
+    // suggestionsParams are the lat, long, radius that come from TripMap (based on the existing markers)
     const fetchSuggestions = async (finalAnswers) => {
-        const info = await popupToBackend(tripId, finalAnswers)
-        console.log("Backend response in MapAISuggestions:", info)
-        setSuggestions(info)
+        console.log("fetchSuggestions called")
+        if (!suggestionsParams) {
+            console.error("suggestionsParams is undefined!")
+            return
+        }
+        try {
+            const info = await popupToBackend(tripId, finalAnswers, suggestionsParams)
+            console.log("Backend response in MapAISuggestions:", info)
+            setSuggestions(info)
+        } catch (err) {
+            console.error("Failed to fetch suggestions:", err)
+        }
     }
 
 
@@ -189,19 +199,16 @@ export default function MapAISuggestions({ tripId, markers, onAddMarker }) {
         resetPopup()
     }
 
-
-
     return (
         <div>
             {/* AI Suggestions button */}
-            {markers.length > 0 &&
+
                 <button
                     onClick={() => setIsOpen(true)}
                     className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
                     font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800">
                     AI Suggestions
                 </button>
-            }
 
             {/* Popup */}
             {isOpen && (
