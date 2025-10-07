@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { popupToBackend } from "../util/apiCalls";
 
-export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarker  }) {
+export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarker }) {
     // Popup + flow states
     const [isOpen, setIsOpen] = useState(false);
     const [currentNode, setCurrentNode] = useState("start") // start or category
@@ -195,20 +195,27 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
     // User picks one suggestion → add marker
     const handleSelectSuggestion = (suggestion) => {
         const category = answers.category
-        onAddMarker(category, { lat: suggestion.lat, lng: suggestion.lng })
+        const newMarker = {
+            id: `temp-${Date.now()}`,
+            position: [suggestion.lat, suggestion.lon],
+            lat: suggestion.lat, 
+            lon: suggestion.lon,
+        name: suggestion.tags?.name || "Suggestion" }
+        
+        onAddMarker(category, newMarker)
         resetPopup()
     }
 
     return (
         <div>
-            {/* AI Suggestions button */}
+            {/* Suggestions button */}
 
-                <button
-                    onClick={() => setIsOpen(true)}
-                    className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
+            <button
+                onClick={() => setIsOpen(true)}
+                className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
                     font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800">
-                    AI Suggestions
-                </button>
+                Get Suggestions
+            </button>
 
             {/* Popup */}
             {isOpen && (
@@ -268,7 +275,20 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                                     )}
                                 </div>
                             ) : (
-                                <span>Suggestions will show here later</span>
+                                suggestions?.elements?.length > 0 && (
+                                    <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
+                                        {suggestions.elements.map(s => (
+                                            <li key={s.id} className="flex justify-between items-center last:border-b-0">
+                                                <span className="text-sm truncate">{s.tags?.name || "(unnamed)"}</span>
+                                                <button
+                                                    onClick={() => handleSelectSuggestion(s)}
+                                                    className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
+                                                        px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                                >Add</button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )
                             )
                         )}
                         {/* Cancel Button */}
