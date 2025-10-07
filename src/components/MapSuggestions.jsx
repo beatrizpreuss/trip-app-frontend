@@ -197,11 +197,17 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
         const category = answers.category
         const newMarker = {
             id: `temp-${Date.now()}`,
-            position: [suggestion.lat, suggestion.lon],
+            latLong: [suggestion.lat, suggestion.lon],
             lat: suggestion.lat, 
             lon: suggestion.lon,
-        name: suggestion.tags?.name || "Suggestion" }
-        
+            name: suggestion.tags?.name || "Suggestion",
+            status: "",
+            price: "",
+            address: suggestion.tags?.addr_street || "",
+            day: 1,
+            url: suggestion.tags?.website || "",
+            comments: "" }
+        console.log("handleSelectSuggestion:", newMarker)
         onAddMarker(category, newMarker)
         resetPopup()
     }
