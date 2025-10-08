@@ -78,7 +78,11 @@ export async function popupToBackend(tripId, finalAnswers, suggestionsParams) {
         if (suggestionsParams) {
             payload.lat = suggestionsParams.lat
             payload.lon = suggestionsParams.lon
-            payload.radius = suggestionsParams.radius // already in meters
+            if (finalAnswers.radius) { // overwrites the radius if the user can choose a different one
+                payload.radius = parseFloat(finalAnswers.radius.split(" ")[0]) * 1000 //from "5 km" to "5000"
+            } else {
+                payload.radius = suggestionsParams.radius // already in meters
+            }
         } else {
             console.warn("No suggestionsParams provided, suggestions may be incorect")
         }
