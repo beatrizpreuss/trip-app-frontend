@@ -269,7 +269,11 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                                     <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
                                         {suggestions.elements.map(s => (
                                             <li key={s.id} className="flex justify-between items-center last:border-b-0">
-                                                <span className="text-sm truncate">{s.tags?.name || "(unnamed)"}</span>
+                                                <div className="flex flex-col 0">
+                                                <span className="text-sm text-wrap truncate">{s.tags?.name || "(unnamed)"}</span>
+                                                {s.tags?.website ? (<a href={s.tags?.website} className="text-xs italic text-blue-500" target="_blank">Website</a>) : (null) }
+                                                </div>
+
                                                 <button
                                                     onClick={() => handleSelectSuggestion(s)}
                                                     className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
