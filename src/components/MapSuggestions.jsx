@@ -159,6 +159,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
             [question.key]: question.type === "multi" ? selectedOptions : selectedOptions[0] //set new answer (if type of question is "multi", answer is an array, otherwise, answer is a string)
         };
         setAnswers(newAnswers) //change answer state
+        console.log("Selected options:", selectedOptions)
         setSelectedOptions([]) //clear selectedOptions state for the next question
 
         // Move to next question or fetch suggestions
@@ -177,7 +178,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
     // Backend call (popupToBackend comes from apiCalls.js and it sends the info from the popups to the backend)
     // suggestionsParams are the lat, long, radius that come from TripMap (based on the existing markers)
     const fetchSuggestions = async (finalAnswers) => {
-        console.log("fetchSuggestions called")
+        console.log("fetchSuggestions called, final answers:", finalAnswers)
         if (!suggestionsParams) {
             console.error("suggestionsParams is undefined!")
             return
@@ -208,6 +209,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
             url: suggestion.tags?.website || "",
             comments: "" }
         console.log("handleSelectSuggestion:", newMarker)
+        
         onAddMarker(category, newMarker)
         resetPopup()
     }
@@ -229,7 +231,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                     <div className="bg-white rounded-xl shadow-lg p-6 w-96 z-[1001] dark:text-[#dddddd] dark:bg-[#222222]">
                         {/* If no results yet, show questions */}
                         {loading ? (
-                            <div>Fetching suggestions...</div>
+                            <div className="mt-5 mr-30">Fetching suggestions...</div>
                         ) : (
                             suggestions.length === 0 ? (
                                 <div>
@@ -281,7 +283,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                                     )}
                                 </div>
                             ) : (
-                                suggestions?.elements?.length > 0 && (
+                                (suggestions?.elements?.length > 0) ? (
                                     <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
                                         {suggestions.elements.map(s => (
                                             <li key={s.id} className="flex justify-between items-center last:border-b-0">
@@ -294,7 +296,9 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                                             </li>
                                         ))}
                                     </ul>
-                                )
+                                ) : (
+                                    <div className="mt-5 mr-30">No suggestions found</div>
+                            ) 
                             )
                         )}
                         {/* Cancel Button */}

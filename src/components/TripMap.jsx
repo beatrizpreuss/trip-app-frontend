@@ -539,7 +539,7 @@ export default function TripMap() {
     //getCenterOfMarkers and getRadiusFromMarkers come from util/geo.js
     const suggestionsParams = useMemo(() => {
         if (!allMarkers.length) return null
-        const center = getCenterOfMarkers(allMarkers)
+        const center = getCenterOfMarkers(allMarkers) 
         const radius = getRadiusFromMarkers(allMarkers, center)
         return { lat: center.lat, lon: center.lon, radius }
     }, [allMarkers])
@@ -597,7 +597,7 @@ export default function TripMap() {
                 </Link>
                 <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
             </div>
-            <MapContainer ref={mapRef} zoomControl={false} className="h-[500px] w-full">
+            <MapContainer ref={mapRef} zoomControl={false} className="h-[500px] w-full" id="map">
                 <ZoomControl position="bottomright" />
                 <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
                 <TileLayer
