@@ -41,12 +41,6 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                 text: "Do you prefer casual or fine dining?",
                 options: ["Casual", "Fine"],
                 type: "single"
-            },
-            {
-                key: "radius",
-                text: "How far from your markers should we search?",
-                options: ["1 km", "5 km", "10 km", "20 km"],
-                type: "single"
             }
         ],
         explore: [
@@ -69,12 +63,6 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                 text: "What type of essential do you need?",
                 options: ["Supermarket", "Pharmacy", "ATM", "Hospital", "Other"],
                 type: "single"
-            },
-            {
-                key: "radius",
-                text: "How far from your markers should we search?",
-                options: ["1 km", "5 km", "10 km", "20 km"],
-                type: "single"
             }
         ],
         gettingAround: [
@@ -83,12 +71,6 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                 text: "What do you need?",
                 options: ["Train stations", "Bus stops", "Parking spots", "Bike rentals", "Charging Stations", "Car rental"],
                 type: "multi"
-            },
-            {
-                key: "radius",
-                text: "How far from your markers should we search?",
-                options: ["1 km", "5 km", "10 km", "20 km"],
-                type: "single"
             }
         ]
     }
