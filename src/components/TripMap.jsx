@@ -269,13 +269,13 @@ export default function TripMap() {
     // Helper function that checks it a marker is temporary or not, and makes it black and white if it is
     const getMarkerIcon = (marker, baseIcon) => {
         const isTemp = String(marker?.id || "").startsWith("temp-")
-      
+
         // Return a new icon with the same image but adjusted class
         return new Icon({
-          ...baseIcon.options,
-          className: isTemp ? "opacity-60 grayscale" : "",
+            ...baseIcon.options,
+            className: isTemp ? "grayscale" : "",
         })
-      }
+    }
 
 
     // Create and add a new marker to state when there is a map click
@@ -545,13 +545,13 @@ export default function TripMap() {
 
     }, [loading, stays, explore, eatDrink, essentials, gettingAround])
 
-    const {allMarkers, initialMarkers} = allMarkersData
+    const { allMarkers, initialMarkers } = allMarkersData
 
     // Calculate Center and Radius to be used for MapSuggestions
     //getCenterOfMarkers and getRadiusFromMarkers come from util/geo.js
     const suggestionsParams = useMemo(() => {
         if (!allMarkers.length) return null
-        const center = getCenterOfMarkers(allMarkers) 
+        const center = getCenterOfMarkers(allMarkers)
         const radius = getRadiusFromMarkers(allMarkers, center)
         return { lat: center.lat, lon: center.lon, radius }
     }, [allMarkers])
@@ -1098,11 +1098,20 @@ export default function TripMap() {
                         if (category === "explore") setExplore([...explore, newMarker])
                         if (category === "essentials") setEssentials([...essentials, newMarker])
                         if (category === "gettingAround") setGettingAround([...gettingAround, newMarker])
+
+                        switch (category) {
+                            case "stays": if (!showStays) setShowStays(true); break;
+                            case "eatDrink": if (!showEatDrink) setShowEatDrink(true); break;
+                            case "explore": if (!showExplore) setShowExplore(true); break;
+                            case "essentials": if (!showEssentials) setShowEssentials(true); break;
+                            case "gettingAround": if (!showGettingAround) setShowGettingAround(true); break;
+                        }
+                        
                         setHasChanges(true)
                         console.log("TripMap:", newMarker)
                         if (mapRef.current) {
                             mapRef.current.flyTo(newMarker.latLong, 15, { duration: 1.5 })
-                        
+
                         }
                     }}
                 />
