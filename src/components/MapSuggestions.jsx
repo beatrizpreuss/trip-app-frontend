@@ -178,11 +178,15 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
     // User picks one suggestion → add marker
     const handleSelectSuggestion = (suggestion) => {
         const category = answers.category
+        const lat = suggestion.lat ?? suggestion.center?.lat
+        const lon = suggestion.lon ?? suggestion.center?.lon
+
+        if (lat == null || lon == null) {
+            console.error("No valid coordinates found for ", suggestion)
+        }
         const newMarker = {
             id: `temp-${Date.now()}`,
-            latLong: [suggestion.lat, suggestion.lon],
-            lat: suggestion.lat, 
-            lon: suggestion.lon,
+            latLong: [lat, lon],
             name: suggestion.tags?.name || "Suggestion",
             status: "",
             price: "",
