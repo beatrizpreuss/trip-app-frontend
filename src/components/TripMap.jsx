@@ -266,6 +266,18 @@ export default function TripMap() {
     const gettingAroundIcon = createIcon(gettingAroundIconImage)
 
 
+    // Helper function that checks it a marker is temporary or not, and makes it black and white if it is
+    const getMarkerIcon = (marker, baseIcon) => {
+        const isTemp = String(marker?.id || "").startsWith("temp-")
+      
+        // Return a new icon with the same image but adjusted class
+        return new Icon({
+          ...baseIcon.options,
+          className: isTemp ? "opacity-60 grayscale" : "",
+        })
+      }
+
+
     // Create and add a new marker to state when there is a map click
 
     // Callback: Because the TripMap component (parent component) re-renders every time there is a change in any state, 
@@ -378,7 +390,7 @@ export default function TripMap() {
 
     // Delete a marker
     function handleDeleteMarker(category, id) {
-        const isTemp = id.toString().startsWith("temp");
+        const isTemp = id.toString().startsWith("temp")
 
         const updateMarkers = (markers) =>
             isTemp
@@ -634,7 +646,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.latLong}
-                            icon={staysIcon}
+                            icon={getMarkerIcon(marker, staysIcon)}
                             draggable={true} //Make it possible to drag marker to change the location
                             eventHandlers={{
                                 dragend: (event) => {
@@ -737,7 +749,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.latLong}
-                            icon={eatDrinkIcon}
+                            icon={getMarkerIcon(marker, eatDrinkIcon)}
                             draggable={true}
                             eventHandlers={{
                                 dragend: (event) => {
@@ -820,7 +832,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.latLong}
-                            icon={exploreIcon}
+                            icon={getMarkerIcon(marker, exploreIcon)}
                             draggable={true}
                             eventHandlers={{
                                 dragend: (event => {
@@ -913,7 +925,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.latLong}
-                            icon={essentialsIcon}
+                            icon={getMarkerIcon(marker, essentialsIcon)}
                             draggable={true}
                             eventHandlers={{
                                 dragend: (event) => {
@@ -996,7 +1008,7 @@ export default function TripMap() {
                         <Marker
                             key={index}
                             position={marker.latLong}
-                            icon={gettingAroundIcon}
+                            icon={getMarkerIcon(marker, gettingAroundIcon)}
                             draggable={true}
                             eventHandlers={{
                                 dragend: (event) => {
