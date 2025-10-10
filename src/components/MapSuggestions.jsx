@@ -168,7 +168,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
         try {
             const info = await popupToBackend(tripId, finalAnswers, suggestionsParams)
             console.log("Backend response in MapAISuggestions:", info)
-            setSuggestions(info)
+            setSuggestions(info)            
         } catch (err) {
             console.error("Failed to fetch suggestions:", err)
         }
@@ -269,14 +269,15 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                                     )}
                                 </div>
                             ) : (
-                                (suggestions?.elements?.length > 0) ? (
+                                (suggestions?.length > 0) ? (
                                     <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
-                                        {suggestions.elements.map(s => (
+                                        {suggestions.map(s => (
                                             <li key={s.id} className="flex justify-between items-center last:border-b-0">
-                                                <div className="flex flex-col 0">
-                                                <span className="text-sm text-wrap truncate">{s.tags?.name || "(unnamed)"}</span>
-                                                {s.tags?.website ? (<a href={s.tags?.website} className="text-xs italic text-blue-500" target="_blank">Website</a>) : (null) }
-                                                </div>
+                                                <a href={s.tags?.website || s.tags["contact:website"]} target="_blank" className={`flex flex-col ${(s.tags?.website || s.tags?.["contact:website"]) ? "hover:text-blue-500" : ""}`}>
+                                                    <span className="text-sm text-wrap truncate font-bold">{s.tags?.name || "(unnamed)"}</span>
+                                                    <span className="text-xs text-wrap truncate">{s.description || ""}</span>
+                                                </a>
+                                               
 
                                                 <button
                                                     onClick={() => handleSelectSuggestion(s)}
