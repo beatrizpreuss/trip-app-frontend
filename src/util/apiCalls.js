@@ -98,7 +98,7 @@ export async function popupToBackend(tripId, finalAnswers, suggestionsParams) {
         if (data.length > 0) {
             return data
         } else {
-            return "No results found"
+            return ["No results found"]
         }
         
     } catch (err) {

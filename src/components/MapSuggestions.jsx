@@ -291,7 +291,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                             </div>
                         )}
 
-                        {!loading && Array.isArray(suggestions) && suggestions?.length > 0 && (
+                        {!loading && Array.isArray(suggestions) && suggestions?.length > 0 && suggestions[0] !== "No results found" && (
                             <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
                                 {suggestions.map(s => (
                                     <li key={s.id} className="flex justify-between items-center last:border-b-0">
@@ -311,7 +311,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                             </ul>
                         )}
 
-                        {!loading && suggestions === "No results found" &&
+                        {!loading && suggestions[0] === "No results found" &&
                             <div className="mt-5 mr-30">No suggestions found</div>
                         }
                     </div>
