@@ -10,6 +10,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
     const [selectedOptions, setSelectedOptions] = useState([])
     const [textInput, setTextInput] = useState("")
     const [suggestions, setSuggestions] = useState([])
+    const [selectedSuggestions, setSelectedSuggestions] = useState([])
 
     const [loading, setLoading] = useState(false)
 
@@ -168,7 +169,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
         try {
             const info = await popupToBackend(tripId, finalAnswers, suggestionsParams)
             console.log("Backend response in MapAISuggestions:", info)
-            setSuggestions(info)            
+            setSuggestions(info)
         } catch (err) {
             console.error("Failed to fetch suggestions:", err)
         }
@@ -193,11 +194,12 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
             address: suggestion.tags?.addr_street || "",
             day: 1,
             url: suggestion.tags?.website || "",
-            comments: "" }
+            comments: ""
+        }
         console.log("handleSelectSuggestion:", newMarker)
-        
+
         onAddMarker(category, newMarker)
-        resetPopup()
+        setSelectedSuggestions(prev => [...prev, suggestion])
     }
 
     return (
@@ -214,7 +216,15 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
             {/* Popup */}
             {isOpen && (
                 <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-[1000] dark:bg-[#222222]/80">
-                    <div className="bg-white rounded-xl shadow-lg p-6 w-96 z-[1001] dark:text-[#dddddd] dark:bg-[#222222]">
+                    <div className="relative bg-white rounded-xl shadow-lg p-6 w-96 z-[1001] dark:text-[#dddddd] dark:bg-[#222222]">
+                        {/* Close button always visible */}
+                        <button
+                            onClick={resetPopup}
+                            className="absolute top-2 right-2 text-zinc-500 hover:text-zinc-800 dark:hover:text-[#dddddd] text-lg font-bold"
+                            aria-label="Close popup"
+                        >
+                            ✕
+                        </button>
                         {/* If no results yet, show questions */}
                         {loading ? (
                             <div className="mt-5 mr-30">Fetching suggestions...</div>
@@ -267,7 +277,16 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                                             </button>
                                         </div>
                                     )}
+                                    {/* Cancel Button */}
+                                    <button
+                                        onClick={resetPopup}
+                                        className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
+                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                    >
+                                        Cancel
+                                    </button>
                                 </div>
+
                             ) : (
                                 (suggestions?.length > 0) ? (
                                     <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
@@ -277,30 +296,21 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                                                     <span className="text-sm text-wrap truncate font-bold">{s.tags?.name || "(unnamed)"}</span>
                                                     <span className="text-xs text-wrap truncate">{s.description || ""}</span>
                                                 </a>
-                                               
+
 
                                                 <button
                                                     onClick={() => handleSelectSuggestion(s)}
                                                     className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
                                                         px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                                >Add</button>
+                                                >{selectedSuggestions.some(sel => sel.id === s.id) ? "Added" : "Add"}</button>
                                             </li>
                                         ))}
                                     </ul>
                                 ) : (
                                     <div className="mt-5 mr-30">No suggestions found</div>
-                            ) 
+                                )
                             )
                         )}
-                        {/* Cancel Button */}
-                        <button
-                            onClick={resetPopup}
-                            className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
-                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                        >
-                            Cancel
-                        </button>
-
                     </div>
                 </div>
             )}
