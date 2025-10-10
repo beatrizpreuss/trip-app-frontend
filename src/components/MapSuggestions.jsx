@@ -170,13 +170,14 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
             const info = await popupToBackend(tripId, finalAnswers, suggestionsParams)
             console.log("Backend response in MapAISuggestions:", info)
             setSuggestions(info)
+            console.log(suggestions)
         } catch (err) {
             console.error("Failed to fetch suggestions:", err)
         }
     }
 
 
-    // User picks one suggestion → add marker
+    // User picks one suggestion & add marker / remove marker
     const handleSelectSuggestion = (suggestion) => {
         const category = answers.category
         const lat = suggestion.lat ?? suggestion.center?.lat
@@ -194,13 +195,14 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
             address: suggestion.tags?.addr_street || "",
             day: 1,
             url: suggestion.tags?.website || "",
-            comments: ""
+            comments: suggestion.description || ""
         }
         console.log("handleSelectSuggestion:", newMarker)
 
         onAddMarker(category, newMarker)
         setSelectedSuggestions(prev => [...prev, suggestion])
     }
+
 
     return (
         <div>
@@ -226,91 +228,92 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                             ✕
                         </button>
                         {/* If no results yet, show questions */}
-                        {loading ? (
+                        {loading && (
                             <div className="mt-5 mr-30">Fetching suggestions...</div>
-                        ) : (
-                            suggestions.length === 0 ? (
-                                <div>
-                                    <p className="mb-4 font-semibold">{currentQuestion.text}</p>
-
-                                    {/* Questions with options */}
-                                    {currentQuestion.options ? (
-                                        <div className="flex flex-col gap-2">
-                                            {currentQuestion.options.map((opt) => (
-                                                <button
-                                                    key={opt}
-                                                    onClick={() => handleOptionClick(opt, currentQuestion.type)}
-                                                    className={`px-4 py-2 rounded shadow mb-2 ${selectedOptions.includes(opt) ? "bg-[#a9a9a9] text-white" : "bg-[#dddddd] dark:bg-[#8d8d8d] dark:text-[#dddddd]"}`}
-                                                >
-                                                    {optionLabels[opt] || opt}
-                                                </button>
-                                            ))}
-                                            <button
-                                                onClick={() => {
-                                                    if (selectedOptions.length > 0) {
-                                                        submitAnswer(selectedOptions)
-                                                    }
-                                                }}
-                                                className="my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
-                                            font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                            >
-                                                Next
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        /* Questions with text input */
-                                        <div className="flex gap-2">
-                                            <input
-                                                type="text"
-                                                placeholder="Type your answer"
-                                                className="border rounded px-2 py-1 flex-grow"
-                                                value={textInput}
-                                                onChange={(e) => setTextInput(e.target.value)}
-                                            />
-                                            <button
-                                                onClick={() => submitAnswer([textInput.trim()])}
-                                                disabled={textInput.trim() === ""}
-                                                className="text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm 
-                                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                            >
-                                                OK
-                                            </button>
-                                        </div>
-                                    )}
-                                    {/* Cancel Button */}
-                                    <button
-                                        onClick={resetPopup}
-                                        className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
-                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-
-                            ) : (
-                                (suggestions?.length > 0) ? (
-                                    <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
-                                        {suggestions.map(s => (
-                                            <li key={s.id} className="flex justify-between items-center last:border-b-0">
-                                                <a href={s.tags?.website || s.tags["contact:website"]} target="_blank" className={`flex flex-col ${(s.tags?.website || s.tags?.["contact:website"]) ? "hover:text-blue-500" : ""}`}>
-                                                    <span className="text-sm text-wrap truncate font-bold">{s.tags?.name || "(unnamed)"}</span>
-                                                    <span className="text-xs text-wrap truncate">{s.description || ""}</span>
-                                                </a>
-
-
-                                                <button
-                                                    onClick={() => handleSelectSuggestion(s)}
-                                                    className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
-                                                        px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                                >{selectedSuggestions.some(sel => sel.id === s.id) ? "Added" : "Add"}</button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <div className="mt-5 mr-30">No suggestions found</div>
-                                )
-                            )
                         )}
+
+                        {!loading && suggestions.length === 0 && (
+                            <div>
+                                <p className="mb-4 font-semibold">{currentQuestion.text}</p>
+
+                                {/* Questions with options */}
+                                {currentQuestion.options ? (
+                                    <div className="flex flex-col gap-2">
+                                        {currentQuestion.options.map((opt) => (
+                                            <button
+                                                key={opt}
+                                                onClick={() => handleOptionClick(opt, currentQuestion.type)}
+                                                className={`px-4 py-2 rounded shadow mb-2 ${selectedOptions.includes(opt) ? "bg-[#a9a9a9] text-white" : "bg-[#dddddd] dark:bg-[#8d8d8d] dark:text-[#dddddd]"}`}
+                                            >
+                                                {optionLabels[opt] || opt}
+                                            </button>
+                                        ))}
+                                        <button
+                                            onClick={() => {
+                                                if (selectedOptions.length > 0) {
+                                                    submitAnswer(selectedOptions)
+                                                }
+                                            }}
+                                            className="my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
+                                            font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                ) : (
+                                    /* Questions with text input */
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Type your answer"
+                                            className="border rounded px-2 py-1 flex-grow"
+                                            value={textInput}
+                                            onChange={(e) => setTextInput(e.target.value)}
+                                        />
+                                        <button
+                                            onClick={() => submitAnswer([textInput.trim()])}
+                                            disabled={textInput.trim() === ""}
+                                            className="text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm 
+                                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                        >
+                                            OK
+                                        </button>
+                                    </div>
+                                )}
+                                {/* Cancel Button */}
+                                <button
+                                    onClick={resetPopup}
+                                    className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
+                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
+
+                        {!loading && Array.isArray(suggestions) && suggestions?.length > 0 && (
+                            <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
+                                {suggestions.map(s => (
+                                    <li key={s.id} className="flex justify-between items-center last:border-b-0">
+                                        <a href={s.tags?.website || s.tags["contact:website"]} target="_blank" className={`flex flex-col ${(s.tags?.website || s.tags?.["contact:website"]) ? "hover:text-blue-500" : ""}`}>
+                                            <span className="text-sm text-wrap truncate font-bold">{s.tags?.name || "(unnamed)"}</span>
+                                            <span className="text-xs text-wrap truncate">{s.description || ""}</span>
+                                        </a>
+
+
+                                        <button
+                                            onClick={() => handleSelectSuggestion(s)}
+                                            className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
+                                                        px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                        >{selectedSuggestions.some(sel => sel.id === s.id) ? "Added" : "Add"}</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                        {!loading && suggestions === "No results found" &&
+                            <div className="mt-5 mr-30">No suggestions found</div>
+                        }
                     </div>
                 </div>
             )}

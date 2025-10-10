@@ -95,7 +95,12 @@ export async function popupToBackend(tripId, finalAnswers, suggestionsParams) {
         })
         const data = await res.json()
         console.log("Backend response in apiCalls:", data)
-        return data
+        if (data.length > 0) {
+            return data
+        } else {
+            return "No results found"
+        }
+        
     } catch (err) {
         console.error("Error in popupToBackend", err)
     }
