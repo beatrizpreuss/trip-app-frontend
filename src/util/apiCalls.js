@@ -78,11 +78,15 @@ export async function popupToBackend(tripId, finalAnswers, suggestionsParams) {
         if (suggestionsParams) {
             payload.lat = suggestionsParams.lat
             payload.lon = suggestionsParams.lon
-            payload.radius = suggestionsParams.radius // already in meters
+            if (suggestionsParams.radius >= 2000) { // minimum radius is always 2km
+                payload.radius = suggestionsParams.radius
+            } else {
+                payload.radius = 2000
+            }
         } else {
             console.warn("No suggestionsParams provided, suggestions may be incorect")
         }
-        console.log("Payload send to backend:", payload)
+        console.log("Payload sent to backend:", payload)
         
         const res = await fetch (`${BASE_URL}/trips/${tripId}/suggestions`, {
             method: "POST",

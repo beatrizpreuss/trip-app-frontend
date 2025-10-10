@@ -23,7 +23,6 @@ export function getCenterOfMarkers(markers = []) {
 // Get radius from markers (calculates a radius that covers all markers)
 export function getRadiusFromMarkers(markers = [], center) {
     if (!markers.length || !center) return 2000 // fallback 2km
-    if (markers.length === 1) return 2000 //2km if there is only one marker
   
     const toRadians = degrees => (degrees * Math.PI) / 180
     const R = 6371000 // Earth radius in meters
