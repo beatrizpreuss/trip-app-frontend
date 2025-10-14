@@ -17,24 +17,18 @@ import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
 import SaveButton from "./SaveButton"
 import MapSuggestions from "./MapSuggestions"
 import { combineMarkers, getCenterOfMarkers, getRadiusFromMarkers } from "../util/geo.js"
+import suggestionsIconImage from "../assets/images/placeholder1.png"
+
 
 
 export default function TripMap() {
     //Pulling state from Context
     const { tripName, setTripName, stays, setStays, eatDrink, setEatDrink, explore, setExplore, essentials, setEssentials, gettingAround, setGettingAround } = useTrip()
 
-    // State for the search bar result
-    const [searchResult, setSearchResult] = useState(null)
-
-    // Extract dinamic URL parameter
-    const { tripId } = useParams()
-
-    // Was the FitBounds (initialMarkers) already defined? Then set this to true (I need this to only render the map zoomed in on my markers once)
-    const [hasFitBounds, setHasFitBounds] = useState(false)
-
-    // used to track unsaved changes to make the Save Changes button another color
-    const [hasChanges, setHasChanges] = useState(false)
-
+    const { tripId } = useParams() // Extract dinamic URL parameter 
+    const [searchResult, setSearchResult] = useState(null) // State for the search bar result
+    const [hasFitBounds, setHasFitBounds] = useState(false) // Was the FitBounds (initialMarkers) already defined? Then set this to true (I need this to only render the map zoomed in on my markers once)
+    const [hasChanges, setHasChanges] = useState(false) // used to track unsaved changes to make the Save Changes button another color
     const [loading, setLoading] = useState(true)
 
     // States used to show markers in the LayerFilter component
@@ -44,11 +38,14 @@ export default function TripMap() {
     const [showEssentials, setShowEssentials] = useState(true)
     const [showGettingAround, setShowGettingAround] = useState(true)
 
-    // State for the dropdown inside the map (lets the user choose the category of the next marker to be added)
-    const [activeCategory, setActiveCategory] = useState("")
+    const [activeCategory, setActiveCategory] = useState("") // State for the dropdown inside the map (lets the user choose the category of the next marker to be added)
+    const [suggestions, setSuggestions] = useState([]) // Suggestions that come from openAI
+    const [selectedSuggestions, setSelectedSuggestions] = useState([]) // Suggestions the user has selected to add to their trip
+    const [isSuggestionsPopupOpen, setIsSuggestionsPopupOpen] = useState(false) //State of main popup (in MapSuggestions, it's [isOpen, setIsOpen] - passed down as props)
+    const [showSuggestionsOnMap, setShowSuggestionsOnMap] = useState(false) // State for showing suggestion markers   
+    const [activeSuggestionCategory, setActiveSuggestionCategory] = useState(null) // State to keep track of the category of the suggestions, defined in the first popup question in MapSuggestions (as onCategorySelect)
 
-    // ref to be used to zoom in to the new suggested marker added (in the MapSuggestions component)
-    const mapRef = useRef(null)
+    const mapRef = useRef(null) // ref to be used to zoom in to the new suggested marker added (in the MapSuggestions component)
 
     // MAP DESIGN
     // Category Dropdown component - lets the user choose the category of the next marker to be added
@@ -122,7 +119,6 @@ export default function TripMap() {
                 })
             })
 
-
             // Stop clicks from propagating to the map
             L.DomEvent.disableClickPropagation(controlDiv)
             L.DomEvent.disableScrollPropagation(controlDiv)
@@ -163,7 +159,6 @@ export default function TripMap() {
     }, [stays, eatDrink, explore, essentials, gettingAround])
 
 
-
     // Day Filter component - lets the user filter the map to see points of interest for different days of the trip
     function DayFilter({ showDays, setShowDays }) {
         const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
@@ -178,13 +173,12 @@ export default function TripMap() {
                 checkbox.type = "checkbox"
                 checkbox.checked = showDays[day]
 
-                label.appendChild(document.createTextNode(` Day ${day}`));
+                label.appendChild(document.createTextNode(` Day ${day}`))
 
                 checkbox.addEventListener("change", (e) => {
-                    setShowDays(prev => ({ ...prev, [day]: e.target.checked }));
-                });
-            });
-
+                    setShowDays(prev => ({ ...prev, [day]: e.target.checked }))
+                })
+            })
 
             // Stop clicks from propagating to the map
             L.DomEvent.disableClickPropagation(controlDiv)
@@ -264,9 +258,10 @@ export default function TripMap() {
     const exploreIcon = createIcon(exploreIconImage)
     const essentialsIcon = createIcon(essentialsIconImage)
     const gettingAroundIcon = createIcon(gettingAroundIconImage)
+    const suggestionsIcon = createIcon(suggestionsIconImage)
 
 
-    // Helper function that checks it a marker is temporary or not, and makes it black and white if it is
+    // Helper function that checks it a marker is temporary or not, and makes it black & white if it is
     const getMarkerIcon = (marker, baseIcon) => {
         const isTemp = String(marker?.id || "").startsWith("temp-")
 
@@ -276,6 +271,25 @@ export default function TripMap() {
             className: isTemp ? "grayscale" : "",
         })
     }
+
+    // Suggestion Marker: when it's just a suggestion, use general icon. When it's a selected suggestion (added to my trip), then change to the category's item (grayscale)
+    const getSuggestionMarkerIcon = (s) => {
+        const selected = selectedSuggestions.find(sel => sel.originalId === s.id)
+        const isAdded = !!selected
+        const category = selected?.category || activeSuggestionCategory
+        if (isAdded) {
+          // find category icon and make it grayscale
+          switch (category) {
+            case "stays": return getMarkerIcon({ id: "temp-" }, staysIcon)
+            case "eatDrink": return getMarkerIcon({ id: "temp-" }, eatDrinkIcon)
+            case "explore": return getMarkerIcon({ id: "temp-" }, exploreIcon)
+            case "essentials": return getMarkerIcon({ id: "temp-" }, essentialsIcon)
+            case "gettingAround": return getMarkerIcon({ id: "temp-" }, gettingAroundIcon)
+            default: return suggestionsIcon
+          }
+        }
+        return suggestionsIcon
+      }
 
 
     // Create and add a new marker to state when there is a map click
@@ -333,7 +347,7 @@ export default function TripMap() {
         }
     }, [activeCategory, stays, eatDrink, explore, essentials, gettingAround])
 
-    // Component that helps the click event happen (wrapper for addMarker that listens to click events)
+    // Component that helps the click event happen (wrapper for addMarker that listens to click events - component)
     function AddMarkerOnClick({ activeCategory, onClick }) { //onClick = addMarker
         const map = useMap() //get map instance
 
@@ -412,8 +426,8 @@ export default function TripMap() {
         }
 
         setHasChanges(true)
-
     }
+
     // Component that turns a temporary marker resultant from a search to one of the trip's marker
     function SearchResultHandler({ result }) {
         const map = useMap() // get an instance of the map
@@ -516,7 +530,6 @@ export default function TripMap() {
                     })
                     return marker
                 })
-
         // Only markers loaded from backend at the start
         const initialMarkers = [
             ...prepareMarkers(stays, ["status", "price"]).filter(m => !m.id.toString().startsWith("temp-")),
@@ -525,7 +538,6 @@ export default function TripMap() {
             ...prepareMarkers(essentials).filter(m => !m.id.toString().startsWith("temp-")),
             ...prepareMarkers(gettingAround).filter(m => !m.id.toString().startsWith("temp-"))
         ]
-
         // combine all markers to be used in the calculation of the center point and radius for MapSuggestions
         const allMarkers = combineMarkers([
             prepareMarkers(stays, ["status", "price"]),
@@ -538,17 +550,15 @@ export default function TripMap() {
             const lon = marker.position?.[1] ?? null
             return lat != null && lon != null ? { lat, lon } : null
         }).filter(Boolean)
-
-
         //return markers per category, combined markers, and initial markers
         return { allMarkers, initialMarkers }
-
     }, [loading, stays, explore, eatDrink, essentials, gettingAround])
 
     const { allMarkers, initialMarkers } = allMarkersData
 
-    // Calculate Center and Radius to be used for MapSuggestions
-    //getCenterOfMarkers and getRadiusFromMarkers come from util/geo.js
+
+    // MAPSUGGESTIONS (functions to pass down to MapSuggestions)
+    // Calculate Center and Radius to be used for MapSuggestions (getCenterOfMarkers and getRadiusFromMarkers come from util/geo.js)
     const suggestionsParams = useMemo(() => {
         if (!allMarkers.length) return null
         const center = getCenterOfMarkers(allMarkers)
@@ -557,13 +567,67 @@ export default function TripMap() {
     }, [allMarkers])
 
 
+    // Add a suggested marker to the map (not tied to map clicks, that's why it's different from addMarkerCallback)
+    const onAddMarker = (category, newMarker) => {
+        // Decide which category array to update
+        if (category === "stays") setStays(prev => [...prev, newMarker])
+        if (category === "eatDrink") setEatDrink(prev => [...prev, newMarker])
+        if (category === "explore") setExplore(prev => [...prev, newMarker])
+        if (category === "essentials") setEssentials(prev => [...prev, newMarker])
+        if (category === "gettingAround") setGettingAround(prev => [...prev, newMarker])
+      
+        // Make sure the category visibility toggles on
+        switch (category) {
+          case "stays": if (!showStays) setShowStays(true); break
+          case "eatDrink": if (!showEatDrink) setShowEatDrink(true); break
+          case "explore": if (!showExplore) setShowExplore(true); break
+          case "essentials": if (!showEssentials) setShowEssentials(true); break
+          case "gettingAround": if (!showGettingAround) setShowGettingAround(true); break
+        }
+      
+        setHasChanges(true);
+        console.log("TripMap added marker:", newMarker)
+      
+        if (mapRef.current) {
+          mapRef.current.flyTo(newMarker.latLong, 15, { duration: 1.5 })
+        }
+      }
+
+
+    // User picks one suggestion & add marker 
+    const handleSelectSuggestion = (suggestion) => {
+        const category = activeSuggestionCategory
+        const lat = suggestion.lat ?? suggestion.center?.lat
+        const lon = suggestion.lon ?? suggestion.center?.lon
+
+        if (lat == null || lon == null) {
+            console.error("No valid coordinates found for ", suggestion)
+        }
+        const tempId = `temp-${Date.now()}`
+        const newMarker = {
+            id: tempId,
+            latLong: [lat, lon],
+            name: suggestion.tags?.name || "Suggestion",
+            status: "",
+            price: "",
+            address: suggestion.tags?.addr_street || "",
+            day: 1,
+            url: suggestion.tags?.website || "",
+            comments: suggestion.description || ""
+        }
+        console.log("handleSelectSuggestion:", newMarker)
+
+        onAddMarker(category, newMarker)
+        setSelectedSuggestions(prev => [...prev,
+            { ...suggestion, id: tempId, originalId: suggestion.id, isTemp: true }])
+    }
+
     if (loading) return <h2>Loading map...</h2>
 
     // Everything below the if needs the data to be loaded to run
 
 
     // Make the map automatically open on my markers, not on a fixed location (and update the hasFitBounds state so this function will only run the first time the map opens, when hasFitBounds is still false)
-    // !! hasFitBound state has also resolved the problem of the zoom not working with addresses !! ******************** DEBUGGED
     function FitBounds({ markers }) {
         const map = useMap()
 
@@ -1085,35 +1149,67 @@ export default function TripMap() {
                         </Marker>
                     ))}
 
-            </MapContainer>
+                {/* Rendering the suggestions that come from AI from the user clicks the 'Show on map' button (rendered in MapSuggestions)*/}
+                {showSuggestionsOnMap && suggestions.map((s, index) => {
+                    const lat = s.lat ?? s.center?.lat
+                    const lon = s.lon ?? s.center?.lon
+                    if (!lat || !lon) return null
+                    
+                    return (
+                        <Marker
+                            key={`suggestion-${index}`}
+                            position={[lat, lon]}
+                            icon={getSuggestionMarkerIcon(s)} // different icon for suggestions
+                        >
+                            <Popup>
+                                <div>
+                                    <strong>{s.tags?.name || "Suggestion"}</strong>
+                                    <br />
+                                    {s.description && <span className="text-xs">{s.description}</span>}
+                                    <br />
+                                    <button
+                                        onClick={() => handleSelectSuggestion(s)}
+                                        className="text-sm bg-zinc-900 text-white px-2 py-1 rounded mt-2"
+                                    >
+                                        {selectedSuggestions.some(sel => sel.originalId === s.id) ? "Added" : "Add"}
+                                    </button>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    )
+                })}
 
+                {showSuggestionsOnMap && (
+                    <div className="absolute top-50 right-4 z-[1001]">
+                        <button
+                            onClick={() => {
+                                setShowSuggestionsOnMap(false)
+                                setIsSuggestionsPopupOpen(true)
+                            }}
+                            className="bg-white text-zinc-800 border-5 px-3 py-2 shadow hover:bg-zinc-100 dark:bg-[#333333] dark:text-[#dddddd]"
+                        >
+                            Back to list
+                        </button>
+                    </div>
+                )}
+
+            </MapContainer>
+            
+            {/* Suggestions is only an option when the user already has a marker */}
             {allMarkers.length > 0 && suggestionsParams && (
                 <MapSuggestions
                     tripId={tripId}
                     suggestionsParams={suggestionsParams}
-                    onAddMarker={(category, newMarker) => {
-                        // Decide which category array to update
-                        if (category === "stays") setStays([...stays, newMarker])
-                        if (category === "eatDrink") setEatDrink([...eatDrink, newMarker])
-                        if (category === "explore") setExplore([...explore, newMarker])
-                        if (category === "essentials") setEssentials([...essentials, newMarker])
-                        if (category === "gettingAround") setGettingAround([...gettingAround, newMarker])
-
-                        switch (category) {
-                            case "stays": if (!showStays) setShowStays(true); break;
-                            case "eatDrink": if (!showEatDrink) setShowEatDrink(true); break;
-                            case "explore": if (!showExplore) setShowExplore(true); break;
-                            case "essentials": if (!showEssentials) setShowEssentials(true); break;
-                            case "gettingAround": if (!showGettingAround) setShowGettingAround(true); break;
-                        }
-                        
-                        setHasChanges(true)
-                        console.log("TripMap:", newMarker)
-                        if (mapRef.current) {
-                            mapRef.current.flyTo(newMarker.latLong, 15, { duration: 1.5 })
-
-                        }
-                    }}
+                    handleSelectSuggestion={handleSelectSuggestion}
+                    selectedSuggestions={selectedSuggestions}
+                    setSelectedSuggestions={setSelectedSuggestions}
+                    showSuggestionsOnMap={showSuggestionsOnMap}
+                    setShowSuggestionsOnMap={setShowSuggestionsOnMap}
+                    isOpen={isSuggestionsPopupOpen}
+                    setIsOpen={setIsSuggestionsPopupOpen}
+                    suggestions={suggestions}
+                    setSuggestions={setSuggestions}
+                    onCategorySelect={setActiveSuggestionCategory}
                 />
             )}
         </div>

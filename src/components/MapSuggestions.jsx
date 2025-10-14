@@ -1,16 +1,26 @@
 import { useState } from "react"
 import { popupToBackend } from "../util/apiCalls";
 
-export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarker }) {
+export default function MapAISuggestions({
+    tripId,
+    suggestionsParams,
+    suggestions,
+    setSuggestions,
+    selectedSuggestions,
+    setSelectedSuggestions,
+    showSuggestionsOnMap,
+    setShowSuggestionsOnMap,
+    isOpen,
+    setIsOpen,
+    onCategorySelect,
+    handleSelectSuggestion }) {
     // Popup + flow states
-    const [isOpen, setIsOpen] = useState(false);
     const [currentNode, setCurrentNode] = useState("start") // start or category
     const [branchStep, setBranchStep] = useState(0) // question index inside branch
     const [answers, setAnswers] = useState({})
     const [selectedOptions, setSelectedOptions] = useState([])
     const [textInput, setTextInput] = useState("")
-    const [suggestions, setSuggestions] = useState([])
-    const [selectedSuggestions, setSelectedSuggestions] = useState([])
+
 
     const [loading, setLoading] = useState(false)
 
@@ -110,7 +120,6 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
         //if the current question has no options, it means it's an open question (text input)
         if (!currentQuestion.options) {
             setSelectedOptions([option]) // option is the typed text
-
             // multipe-choice questions (toggle what is selected and what's not, and add it to selectedOptions state)
         } else if (type === "multi") {
             let newOptions
@@ -119,7 +128,6 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
             } else {
                 setSelectedOptions([...selectedOptions, option]) // if the clicked option is not selected (not in selectedOptions), select
             }
-
             // Single-choice questions
         } else {
             setSelectedOptions([option])
@@ -154,6 +162,7 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
             fetchSuggestions(newAnswers).finally(() => {
                 setLoading(false)
             })
+            onCategorySelect(newAnswers.category) //define category in a state (activeSuggestionCategory in TripMap). Passing this up to TripMap as prop of MapSuggestions
         }
     }
 
@@ -174,33 +183,6 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
         } catch (err) {
             console.error("Failed to fetch suggestions:", err)
         }
-    }
-
-
-    // User picks one suggestion & add marker / remove marker
-    const handleSelectSuggestion = (suggestion) => {
-        const category = answers.category
-        const lat = suggestion.lat ?? suggestion.center?.lat
-        const lon = suggestion.lon ?? suggestion.center?.lon
-
-        if (lat == null || lon == null) {
-            console.error("No valid coordinates found for ", suggestion)
-        }
-        const newMarker = {
-            id: `temp-${Date.now()}`,
-            latLong: [lat, lon],
-            name: suggestion.tags?.name || "Suggestion",
-            status: "",
-            price: "",
-            address: suggestion.tags?.addr_street || "",
-            day: 1,
-            url: suggestion.tags?.website || "",
-            comments: suggestion.description || ""
-        }
-        console.log("handleSelectSuggestion:", newMarker)
-
-        onAddMarker(category, newMarker)
-        setSelectedSuggestions(prev => [...prev, suggestion])
     }
 
 
@@ -292,24 +274,35 @@ export default function MapAISuggestions({ tripId, suggestionsParams, onAddMarke
                         )}
 
                         {!loading && Array.isArray(suggestions) && suggestions?.length > 0 && suggestions[0] !== "No results found" && (
-                            <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
-                                {suggestions.map(s => (
-                                    <li key={s.id} className="flex justify-between items-center last:border-b-0">
-                                        <a href={s.tags?.website || s.tags["contact:website"]} target="_blank" className={`flex flex-col ${(s.tags?.website || s.tags?.["contact:website"]) ? "hover:text-blue-500" : ""}`}>
-                                            <span className="text-sm text-wrap truncate font-bold">{s.tags?.name || "(unnamed)"}</span>
-                                            <span className="text-xs text-wrap truncate">{s.description || ""}</span>
-                                        </a>
+                            <>
+                                <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
+                                    {suggestions.map(s => (
+                                        <li key={s.id} className="flex justify-between items-center last:border-b-0">
+                                            <a href={s.tags?.website || s.tags["contact:website"]} target="_blank" className={`flex flex-col ${(s.tags?.website || s.tags?.["contact:website"]) ? "hover:text-blue-500" : ""}`}>
+                                                <span className="text-sm text-wrap truncate font-bold">{s.tags?.name || "(unnamed)"}</span>
+                                                <span className="text-xs text-wrap truncate">{s.description || ""}</span>
+                                            </a>
 
 
-                                        <button
-                                            onClick={() => handleSelectSuggestion(s)}
-                                            disabled={selectedSuggestions.some(sel => sel.id === (s.id || s.tempId))}
-                                            className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
+                                            <button
+                                                onClick={() => handleSelectSuggestion(s)}
+                                                disabled={selectedSuggestions.some(sel => sel.originalId === s.id)}
+                                                className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
                                                         px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                        >{selectedSuggestions.some(sel => sel.id === (s.id || s.tempId)) ? "Added" : "Add"}</button>
-                                    </li>
-                                ))}
-                            </ul>
+                                            >{selectedSuggestions.some(sel => sel.originalId === s.id) ? "Added" : "Add"}</button>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button
+                                    onClick={() => {
+                                        setShowSuggestionsOnMap(true);
+                                        setIsOpen(false) // close popup, show map markers
+                                    }}
+                                    className="text-sm text-blue-600 hover:underline"
+                                >Show on map</button>
+
+                            </>
                         )}
 
                         {!loading && suggestions[0] === "No results found" &&
