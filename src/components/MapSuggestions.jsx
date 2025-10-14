@@ -4,22 +4,17 @@ import { popupToBackend } from "../util/apiCalls";
 export default function MapAISuggestions({
     tripId,
     suggestionsParams,
-    suggestions,
-    setSuggestions,
-    selectedSuggestions,
-    setSelectedSuggestions,
-    showSuggestionsOnMap,
-    setShowSuggestionsOnMap,
-    isOpen,
-    setIsOpen,
+    suggestions, setSuggestions,
+    selectedSuggestions, setSelectedSuggestions,
+    showSuggestionsOnMap, setShowSuggestionsOnMap,
+    isOpen, setIsOpen,
     onCategorySelect,
-    handleSelectSuggestion }) {
-    // Popup + flow states
-    const [currentNode, setCurrentNode] = useState("start") // start or category
-    const [branchStep, setBranchStep] = useState(0) // question index inside branch
-    const [answers, setAnswers] = useState({})
-    const [selectedOptions, setSelectedOptions] = useState([])
-    const [textInput, setTextInput] = useState("")
+    handleSelectSuggestion,
+    currentNode, setCurrentNode,
+    branchStep, setBranchStep,
+    answers, setAnswers,
+    selectedOptions, setSelectedOptions,
+    textInput, setTextInput }) {
 
 
     const [loading, setLoading] = useState(false)

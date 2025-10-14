@@ -45,6 +45,12 @@ export default function TripMap() {
     const [showSuggestionsOnMap, setShowSuggestionsOnMap] = useState(false) // State for showing suggestion markers   
     const [activeSuggestionCategory, setActiveSuggestionCategory] = useState(null) // State to keep track of the category of the suggestions, defined in the first popup question in MapSuggestions (as onCategorySelect)
 
+    // Popup + flow states (to be used here and passed down to MapSuggestions)
+    const [currentNode, setCurrentNode] = useState("start") // start or category
+    const [branchStep, setBranchStep] = useState(0) // question index inside branch
+    const [answers, setAnswers] = useState({})
+    const [selectedOptions, setSelectedOptions] = useState([])
+    const [textInput, setTextInput] = useState("")
     const mapRef = useRef(null) // ref to be used to zoom in to the new suggested marker added (in the MapSuggestions component)
 
     // MAP DESIGN
@@ -278,18 +284,18 @@ export default function TripMap() {
         const isAdded = !!selected
         const category = selected?.category || activeSuggestionCategory
         if (isAdded) {
-          // find category icon and make it grayscale
-          switch (category) {
-            case "stays": return getMarkerIcon({ id: "temp-" }, staysIcon)
-            case "eatDrink": return getMarkerIcon({ id: "temp-" }, eatDrinkIcon)
-            case "explore": return getMarkerIcon({ id: "temp-" }, exploreIcon)
-            case "essentials": return getMarkerIcon({ id: "temp-" }, essentialsIcon)
-            case "gettingAround": return getMarkerIcon({ id: "temp-" }, gettingAroundIcon)
-            default: return suggestionsIcon
-          }
+            // find category icon and make it grayscale
+            switch (category) {
+                case "stays": return getMarkerIcon({ id: "temp-" }, staysIcon)
+                case "eatDrink": return getMarkerIcon({ id: "temp-" }, eatDrinkIcon)
+                case "explore": return getMarkerIcon({ id: "temp-" }, exploreIcon)
+                case "essentials": return getMarkerIcon({ id: "temp-" }, essentialsIcon)
+                case "gettingAround": return getMarkerIcon({ id: "temp-" }, gettingAroundIcon)
+                default: return suggestionsIcon
+            }
         }
         return suggestionsIcon
-      }
+    }
 
 
     // Create and add a new marker to state when there is a map click
@@ -575,23 +581,23 @@ export default function TripMap() {
         if (category === "explore") setExplore(prev => [...prev, newMarker])
         if (category === "essentials") setEssentials(prev => [...prev, newMarker])
         if (category === "gettingAround") setGettingAround(prev => [...prev, newMarker])
-      
+
         // Make sure the category visibility toggles on
         switch (category) {
-          case "stays": if (!showStays) setShowStays(true); break
-          case "eatDrink": if (!showEatDrink) setShowEatDrink(true); break
-          case "explore": if (!showExplore) setShowExplore(true); break
-          case "essentials": if (!showEssentials) setShowEssentials(true); break
-          case "gettingAround": if (!showGettingAround) setShowGettingAround(true); break
+            case "stays": if (!showStays) setShowStays(true); break
+            case "eatDrink": if (!showEatDrink) setShowEatDrink(true); break
+            case "explore": if (!showExplore) setShowExplore(true); break
+            case "essentials": if (!showEssentials) setShowEssentials(true); break
+            case "gettingAround": if (!showGettingAround) setShowGettingAround(true); break
         }
-      
+
         setHasChanges(true);
         console.log("TripMap added marker:", newMarker)
-      
+
         if (mapRef.current) {
-          mapRef.current.flyTo(newMarker.latLong, 15, { duration: 1.5 })
+            mapRef.current.flyTo(newMarker.latLong, 15, { duration: 1.5 })
         }
-      }
+    }
 
 
     // User picks one suggestion & add marker 
@@ -619,7 +625,18 @@ export default function TripMap() {
 
         onAddMarker(category, newMarker)
         setSelectedSuggestions(prev => [...prev,
-            { ...suggestion, id: tempId, originalId: suggestion.id, isTemp: true }])
+        { ...suggestion, id: tempId, originalId: suggestion.id, isTemp: true }])
+    }
+
+    // Reset popup to initial state
+    const resetPopup = () => {
+        setCurrentNode("start")
+        setBranchStep(0)
+        setAnswers({})
+        setSuggestions([])
+        setTextInput("")
+        setSelectedOptions([])
+        setIsSuggestionsPopupOpen(false)
     }
 
     if (loading) return <h2>Loading map...</h2>
@@ -1154,7 +1171,7 @@ export default function TripMap() {
                     const lat = s.lat ?? s.center?.lat
                     const lon = s.lon ?? s.center?.lon
                     if (!lat || !lon) return null
-                    
+
                     return (
                         <Marker
                             key={`suggestion-${index}`}
@@ -1180,21 +1197,34 @@ export default function TripMap() {
                 })}
 
                 {showSuggestionsOnMap && (
-                    <div className="absolute top-50 right-4 z-[1001]">
+                    <div className="z-[1001] absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3">
+
                         <button
                             onClick={() => {
                                 setShowSuggestionsOnMap(false)
                                 setIsSuggestionsPopupOpen(true)
                             }}
-                            className="bg-white text-zinc-800 border-5 px-3 py-2 shadow hover:bg-zinc-100 dark:bg-[#333333] dark:text-[#dddddd]"
+                            className="w-40 z-[1001] bg-white text-zinc-800 border-5 px-3 py-2 shadow hover:bg-zinc-100 dark:bg-[#333333] dark:text-[#dddddd]"
                         >
                             Back to list
                         </button>
+                        <button
+                            onClick={() => {
+                                resetPopup()
+                                setShowSuggestionsOnMap(false)
+                            }}
+                            className="w-40 z-[1001] bg-white text-zinc-800 border-5 px-3 py-2 shadow hover:bg-zinc-100 dark:bg-[#333333] dark:text-[#dddddd]"
+                            title="Close suggestions"
+                        >
+                            Close suggestions
+                        </button>
+
+
                     </div>
                 )}
 
             </MapContainer>
-            
+
             {/* Suggestions is only an option when the user already has a marker */}
             {allMarkers.length > 0 && suggestionsParams && (
                 <MapSuggestions
@@ -1210,7 +1240,16 @@ export default function TripMap() {
                     suggestions={suggestions}
                     setSuggestions={setSuggestions}
                     onCategorySelect={setActiveSuggestionCategory}
-                />
+                    currentNode={currentNode}
+                    setCurrentNode={setCurrentNode}
+                    branchStep={branchStep}
+                    setBranchStep={setBranchStep}
+                    answers={answers}
+                    setAnswers={setAnswers}
+                    selectedOptions={selectedOptions}
+                    setSelectedOptions={setSelectedOptions}
+                    textInput={textInput}
+                    setTextInput={setTextInput} />
             )}
         </div>
     )
