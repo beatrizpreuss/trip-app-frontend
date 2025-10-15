@@ -600,7 +600,7 @@ export default function TripMap() {
     }
 
 
-    // User picks one suggestion & add marker 
+    // User picks one suggestion & add or remove marker 
     const handleSelectSuggestion = (suggestion) => {
         const category = activeSuggestionCategory
         const lat = suggestion.lat ?? suggestion.center?.lat
@@ -608,7 +608,22 @@ export default function TripMap() {
 
         if (lat == null || lon == null) {
             console.error("No valid coordinates found for ", suggestion)
+            return
         }
+        // check if the suggestion has been added or not
+        const isSelected = selectedSuggestions.some(sel => sel.originalId === suggestion.id)
+        // if it has, remove
+        if (isSelected) {
+            const existing = selectedSuggestions.find(
+                sel => sel.originalId === suggestion.id || sel.id === suggestion.id
+            )     
+            removeTempMarker(category, existing.id)
+            
+            setSelectedSuggestions(prev =>
+                prev.filter(sel => sel.originalId !== suggestion.id)
+            )
+        // if it hasn't, add
+        } else {
         const tempId = `temp-${Date.now()}`
         const newMarker = {
             id: tempId,
@@ -626,7 +641,24 @@ export default function TripMap() {
         onAddMarker(category, newMarker)
         setSelectedSuggestions(prev => [...prev,
         { ...suggestion, id: tempId, originalId: suggestion.id, isTemp: true }])
+        }
     }
+
+
+    //Delete temporary marker that came from suggestions
+    function removeTempMarker(category, id) {
+        const removeMarker = (markers) => markers.filter(marker => marker.id !== id)
+    
+        switch (category) {
+            case "stays": setStays(prev => removeMarker(prev)); break
+            case "eatDrink": setEatDrink(prev => removeMarker(prev)); break
+            case "explore": setExplore(prev => removeMarker(prev)); break
+            case "essentials": setEssentials(prev => removeMarker(prev)); break
+            case "gettingAround": setGettingAround(prev => removeMarker(prev)); break
+        }
+        setHasChanges(true)
+    }
+
 
     // Reset popup to initial state
     const resetPopup = () => {

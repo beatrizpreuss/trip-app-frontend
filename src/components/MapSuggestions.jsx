@@ -173,6 +173,7 @@ export default function MapAISuggestions({
         try {
             const info = await popupToBackend(tripId, finalAnswers, suggestionsParams)
             console.log("Backend response in MapAISuggestions:", info)
+            setSelectedSuggestions([])
             setSuggestions(info)
             console.log(suggestions)
         } catch (err) {
@@ -281,7 +282,6 @@ export default function MapAISuggestions({
 
                                             <button
                                                 onClick={() => handleSelectSuggestion(s)}
-                                                disabled={selectedSuggestions.some(sel => sel.originalId === s.id)}
                                                 className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
                                                         px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
                                             >{selectedSuggestions.some(sel => sel.originalId === s.id) ? "Added" : "Add"}</button>
