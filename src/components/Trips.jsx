@@ -1,25 +1,29 @@
-import { useState } from "react"
-import { useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { getAllTrips, createNewTrip } from "../util/apiCalls"
+import { AuthContext } from "./AuthContext"
 
 
 export default function Trips() {
-
     const [trips, setTrips] = useState([])
     const [loading, setLoading] = useState(true)
 
+    const { token } = useContext(AuthContext)
+
     useEffect(() => {
-        getAllTrips()
+        if (!token) return
+
+        getAllTrips(token)
             .then(data => {
-                setTrips(data)
-                setLoading(false)
-            })
+                    setTrips(data)
+                    setLoading(false)
+                })
             .catch(err => {
                 console.error("Error fetching trips", err)
                 setLoading(false)
             })
-    }, [])
+    }, [token])
+
 
     function NewTripButton() {
         const navigate = useNavigate()
@@ -42,7 +46,7 @@ export default function Trips() {
         )
     }
 
-    
+
     return (
         <div className="m-25 mx-15">
             <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
@@ -52,7 +56,7 @@ export default function Trips() {
 
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
 
-                <NewTripButton/>
+                <NewTripButton />
 
                 {/* Trip cards */}
                 {trips.map((trip) => (

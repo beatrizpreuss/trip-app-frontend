@@ -2,9 +2,14 @@ import { BASE_URL } from './config'
 
 
 // Get all trips
-export async function getAllTrips() {
+export async function getAllTrips(token) {
     try {
-        const res = await fetch(`${BASE_URL}/trips`)
+        const res = await fetch(`${BASE_URL}/trips`, {
+            headers: {
+            Authorization: `Bearer ${token}`, 
+            "Content-Type": "application/json"
+            }
+        })
         return await res.json()
       } catch (err) {
         console.error('Error in getAllTrips:', err)
@@ -13,9 +18,14 @@ export async function getAllTrips() {
 
 
 // Get a trip by its ID (in the backend: open_trip function)
-export async function getTripById(tripId) {
+export async function getTripById(tripId, token) {
   try {
-    const res = await fetch(`${BASE_URL}/trips/${tripId}`)
+    const res = await fetch(`${BASE_URL}/trips/${tripId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`, 
+            "Content-Type": "application/json"
+            }
+    })
     return await res.json()
   } catch (err) {
     console.error('Error in getTripById:', err)

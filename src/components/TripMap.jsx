@@ -1,7 +1,7 @@
 import "leaflet/dist/leaflet.css"
 import "leaflet-geosearch/dist/geosearch.css"
 import { useParams, Link } from "react-router-dom"
-import { useCallback, useEffect, useState, useMemo, useRef } from "react"
+import { useCallback, useEffect, useState, useMemo, useRef, useContext } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent, ZoomControl } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
@@ -18,6 +18,7 @@ import SaveButton from "./SaveButton"
 import MapSuggestions from "./MapSuggestions"
 import { combineMarkers, getCenterOfMarkers, getRadiusFromMarkers } from "../util/geo.js"
 import suggestionsIconImage from "../assets/images/placeholder1.png"
+import { AuthContext } from "./AuthContext"
 
 
 
@@ -238,8 +239,12 @@ export default function TripMap() {
 
     // MAP DATA 
     // Get data from backend (getTripById comes from util/apiCalls.js, formatTripData comes from util/formatTripData)
+    const { token } = useContext(AuthContext)
+
     useEffect(() => {
-        getTripById(tripId).then(data => {
+        if (!token) return
+
+        getTripById(tripId, token).then(data => {
             const {
                 tripName, stays, eatDrink, explore, essentials, gettingAround
             } = formatTripData(data)
@@ -250,10 +255,13 @@ export default function TripMap() {
             setExplore(explore)
             setEssentials(essentials)
             setGettingAround(gettingAround)
-
             setLoading(false)
         })
-    }, [tripId])
+            .catch(err => {
+                console.error("Error fetching trips", err)
+                setLoading(false)
+            })
+    }, [token])
 
 
     // Create new marker icons
@@ -616,31 +624,31 @@ export default function TripMap() {
         if (isSelected) {
             const existing = selectedSuggestions.find(
                 sel => sel.originalId === suggestion.id || sel.id === suggestion.id
-            )     
+            )
             removeTempMarker(category, existing.id)
-            
+
             setSelectedSuggestions(prev =>
                 prev.filter(sel => sel.originalId !== suggestion.id)
             )
-        // if it hasn't, add
+            // if it hasn't, add
         } else {
-        const tempId = `temp-${Date.now()}`
-        const newMarker = {
-            id: tempId,
-            latLong: [lat, lon],
-            name: suggestion.tags?.name || "Suggestion",
-            status: "",
-            price: "",
-            address: suggestion.tags?.addr_street || "",
-            day: 1,
-            url: suggestion.tags?.website || "",
-            comments: suggestion.description || ""
-        }
-        console.log("handleSelectSuggestion:", newMarker)
+            const tempId = `temp-${Date.now()}`
+            const newMarker = {
+                id: tempId,
+                latLong: [lat, lon],
+                name: suggestion.tags?.name || "Suggestion",
+                status: "",
+                price: "",
+                address: suggestion.tags?.addr_street || "",
+                day: 1,
+                url: suggestion.tags?.website || "",
+                comments: suggestion.description || ""
+            }
+            console.log("handleSelectSuggestion:", newMarker)
 
-        onAddMarker(category, newMarker)
-        setSelectedSuggestions(prev => [...prev,
-        { ...suggestion, id: tempId, originalId: suggestion.id, isTemp: true }])
+            onAddMarker(category, newMarker)
+            setSelectedSuggestions(prev => [...prev,
+            { ...suggestion, id: tempId, originalId: suggestion.id, isTemp: true }])
         }
     }
 
@@ -648,7 +656,7 @@ export default function TripMap() {
     //Delete temporary marker that came from suggestions
     function removeTempMarker(category, id) {
         const removeMarker = (markers) => markers.filter(marker => marker.id !== id)
-    
+
         switch (category) {
             case "stays": setStays(prev => removeMarker(prev)); break
             case "eatDrink": setEatDrink(prev => removeMarker(prev)); break

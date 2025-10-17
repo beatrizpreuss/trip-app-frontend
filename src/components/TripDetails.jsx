@@ -1,5 +1,4 @@
-import { useState } from "react"
-import { useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useParams } from "react-router-dom"
 import { useTrip } from "./TripContext"
 import { useNavigate } from "react-router-dom"
@@ -8,6 +7,7 @@ import { Link } from "react-router-dom"
 import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
 import SaveButton from "./SaveButton"
+import { AuthContext } from "./AuthContext"
 
 
 export default function TripDetails() {
@@ -29,10 +29,14 @@ export default function TripDetails() {
     // used to track unsaved changes to make the Save Changes button another color
     const [hasChanges, setHasChanges] = useState(false)
 
+    const { token } = useContext(AuthContext)
+
     // GET DATA FROM BACKEND
 
     useEffect(() => {
-        getTripById(tripId).then(data => {
+        if (!token) return
+
+        getTripById(tripId, token).then(data => {
             const {
                 tripName, stays, eatDrink, explore, essentials, gettingAround
             } = formatTripData(data)
@@ -43,10 +47,13 @@ export default function TripDetails() {
             setExplore(explore)
             setEssentials(essentials)
             setGettingAround(gettingAround)
-
             setLoading(false)
         })
-    }, [])
+            .catch(err => {
+                console.error("Error fetching trips", err)
+                setLoading(false)
+            })
+    }, [token])
 
     // CHANGE TRIP NAME
 
@@ -97,13 +104,13 @@ export default function TripDetails() {
         setHasChanges(true)
     }
 
-    
+
     // DELETE A ROW FROM THE TABLE
 
     function deleteRow(id, setCategory) {
         setCategory(prev =>
             prev.map(item =>
-                item.id === id ? {...item, deleted: true} : item
+                item.id === id ? { ...item, deleted: true } : item
             )
         )
         setHasChanges(true)

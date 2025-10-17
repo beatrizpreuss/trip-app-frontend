@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import ThemeToggle from './ThemeToggle'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
+import { AuthContext } from './AuthContext'
 
 export default function NavBar() {
     const [showDropdown, setShowDropdown] = useState(false)
+    const { token, logout } = useContext(AuthContext)
 
     return (
         <>
@@ -15,14 +17,28 @@ export default function NavBar() {
 
 
                     <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                        
-                        <>
-                            <button type="button" className="hidden md:block text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                            focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                            dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">Login
+
+                        {token ? (
+                            <button
+                                onClick={logout}
+                                className="hidden md:block text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                                    dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                            >
+                                Logout
                             </button>
-                        </>
-                        
+                        ) : (
+                            <Link
+                                to="/login"
+                                className="hidden md:block text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                                    dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                            >
+                                Login
+                            </Link>
+                        )}
+
+
                         <button onClick={() => { setShowDropdown(!showDropdown) }}
                             data-collapse-toggle="navbar-sticky" type="button"
                             className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-zinc-500 
@@ -44,7 +60,7 @@ export default function NavBar() {
                             <li>
                                 <NavLink to="/"
                                     className={({ isActive }) =>
-                                        `block py-2 px-3 text-zinc-900 bg-zinc-50 rounded-sm md:bg-transparent md:text-zinc-900 
+                                        `block py-2 px-3 text-zinc-900 bg-zinc-50 rounded-sm text-center md:bg-transparent md:text-zinc-900 
                                     md:hover:font-bold md:p-0 md:dark:text-[#dddddd] dark:text-[#dddddd] dark:bg-[#222222]
                                     ${isActive ? "font-bold" : ""}`}>Home
                                 </NavLink>
@@ -52,7 +68,7 @@ export default function NavBar() {
                             <li>
                                 <NavLink to="/find-destinations"
                                     className={({ isActive }) =>
-                                        `block py-2 px-3 text-zinc-900 bg-zinc-50 rounded-sm md:bg-transparent md:text-zinc-900
+                                        `block py-2 px-3 text-zinc-900 bg-zinc-50 rounded-sm text-center md:bg-transparent md:text-zinc-900
                                     md:hover:font-bold md:p-0 md:dark:text-[#dddddd] dark:text-[#dddddd] dark:bg-[#222222]
                                     ${isActive ? "font-bold" : ""}`}>Destinations
                                 </NavLink>
@@ -60,17 +76,32 @@ export default function NavBar() {
                             <li>
                                 <NavLink to="/trips"
                                     className={({ isActive }) =>
-                                        `block py-2 px-3 text-zinc-900 bg-zinc-50 rounded-sm md:bg-transparent md:text-zinc-900 
+                                        `block py-2 px-3 text-zinc-900 bg-zinc-50 rounded-sm text-center md:bg-transparent md:text-zinc-900 
                                     md:hover:font-bold md:p-0 md:dark:text-[#dddddd] dark:text-[#dddddd] dark:bg-[#222222]
                                     ${isActive ? "font-bold" : ""}`}>My Trips
                                 </NavLink>
                             </li>
-                            <>
-                                <button type="button" className="md:hidden text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                            
+                            {token ? (
+                            <button
+                                onClick={logout}
+                                className="block md:hidden text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
                             focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                            dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">Login
-                                </button>
-                            </>
+                            dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                            >
+                                Logout
+                            </button>
+                        ) : (
+                            <Link
+                                to="/login"
+                                className="block md:hidden text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
+                            focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
+                            dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                            >
+                                Login
+                            </Link>
+                        )}
+
                             {/* <li>
                                 <NavLink to="/" 
                                     className={({isActive}) => 
