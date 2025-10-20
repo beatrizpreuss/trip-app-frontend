@@ -110,7 +110,9 @@ export async function popupToBackend(token, tripId, finalAnswers, suggestionsPar
         if (suggestionsParams) {
             payload.lat = suggestionsParams.lat
             payload.lon = suggestionsParams.lon
-            if (suggestionsParams.radius >= 2000) { // minimum radius is always 2km
+            if (suggestionsParams.radius > 100000) { // maximum radius is always 100km
+                payload.radius = 100000
+            } else if (suggestionsParams.radius >= 2000) { // minimum radius is always 2km
                 payload.radius = suggestionsParams.radius
             } else {
                 payload.radius = 2000
