@@ -1,5 +1,6 @@
-import { useState } from "react"
-import { popupToBackend } from "../util/apiCalls";
+import { useState, useContext } from "react"
+import { popupToBackend } from "../util/apiCalls"
+import { AuthContext } from "./AuthContext"
 
 export default function MapAISuggestions({
     tripId,
@@ -18,6 +19,7 @@ export default function MapAISuggestions({
 
 
     const [loading, setLoading] = useState(false)
+    const { token } = useContext(AuthContext)
 
     // Question structure (linear per category)
     const questionTree = {
@@ -171,7 +173,7 @@ export default function MapAISuggestions({
             return
         }
         try {
-            const info = await popupToBackend(tripId, finalAnswers, suggestionsParams)
+            const info = await popupToBackend(token, tripId, finalAnswers, suggestionsParams)
             console.log("Backend response in MapAISuggestions:", info)
             setSelectedSuggestions([])
             setSuggestions(info)

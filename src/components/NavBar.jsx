@@ -2,6 +2,7 @@ import { useState, useContext } from 'react'
 import ThemeToggle from './ThemeToggle'
 import { Link, NavLink } from 'react-router-dom'
 import { AuthContext } from './AuthContext'
+// import '../index.css'
 
 export default function NavBar() {
     const [showDropdown, setShowDropdown] = useState(false)

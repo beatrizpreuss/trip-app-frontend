@@ -505,7 +505,7 @@ export default function TripMap() {
         const mappedEssentials = essentials.map(mapItemForBackend)
         const mappedGettingAround = gettingAround.map(mapItemForBackend)
 
-        updateTripById(tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
+        updateTripById(token, tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
             .then(data => {
                 console.log("Saved", data)
 

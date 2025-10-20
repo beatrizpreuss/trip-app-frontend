@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, Navigate, useNavigate } from "react-router-dom"
 import { getAllTrips, createNewTrip } from "../util/apiCalls"
 import { AuthContext } from "./AuthContext"
 
@@ -8,30 +8,52 @@ export default function Trips() {
     const [trips, setTrips] = useState([])
     const [loading, setLoading] = useState(true)
 
-    const { token } = useContext(AuthContext)
+    const { token, logout } = useContext(AuthContext)
+    const navigate = useNavigate()
+
+    if (!token) return <Navigate to="login" replace />
 
     useEffect(() => {
         if (!token) return
-
-        getAllTrips(token)
-            .then(data => {
-                    setTrips(data)
-                    setLoading(false)
-                })
-            .catch(err => {
-                console.error("Error fetching trips", err)
-                setLoading(false)
-            })
-    }, [token])
+      
+        const fetchTrips = async () => {
+          try {
+            const data = await getAllTrips(token)
+            if (Array.isArray(data)) setTrips(data)
+            else setTrips([])
+          } catch (err) {
+            console.error("Error fetching trips", err)
+            if (err.message === "Unauthorized") {
+              logout()           // clear token / auth state
+              navigate("/login", { replace: true })
+            }
+          } finally {
+            setLoading(false)
+          }
+        }
+        fetchTrips()
+      }, [token, logout, navigate])
 
 
     function NewTripButton() {
         const navigate = useNavigate()
 
         const handleNewTrip = async () => {
-            const newTrip = await createNewTrip()
+            try {
+                if (!token) throw new Error("Not authenticated")
+
+                const newTrip = await createNewTrip(token)
+
+                if (!newTrip || !newTrip.trip || !newTrip.trip.id) {
+                    throw new Error("Trip creation failed")
+            }
             navigate(`/trips/${newTrip.trip.id}`)
+        } catch (err) {
+            console.error("Failed to create trip:", err)
+            alert("Could not create new trip. Please try again.")
+          }
         }
+        
         return (
             <button
                 onClick={handleNewTrip}

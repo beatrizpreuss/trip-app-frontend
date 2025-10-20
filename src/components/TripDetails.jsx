@@ -126,7 +126,7 @@ export default function TripDetails() {
         const mappedEssentials = essentials.map(mapItemForBackend)
         const mappedGettingAround = gettingAround.map(mapItemForBackend)
 
-        updateTripById(tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
+        updateTripById(token, tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
             .then(data => {
                 console.log("Saved", data)
 
@@ -147,7 +147,7 @@ export default function TripDetails() {
         if (!window.confirm("Are you sure you want to delete this trip?")) return
 
         try {
-            await deleteTripById(tripId)
+            await deleteTripById(token, tripId)
             console.log("Deleted", tripId)
             navigate("/trips")
         } catch (err) {
