@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../components/AuthContext'
 import { useContext } from 'react'
 
-// Login and Register Functions (together because they use the same hooks, and the hooks need to be needs to be inside non-component functions like async functions)
+// Login and Register Functions (together because they use the same hooks, and the hooks can't be inside non-component functions like async functions)
 export function useAuthActions() {
     const { login } = useContext(AuthContext)
     const navigate = useNavigate()
@@ -162,7 +162,7 @@ export async function createNewTrip(token) {
 
 
 // Send pop-up questionnaire answers to the backend
-export async function popupToBackend(token, tripId, finalAnswers, suggestionsParams) {
+export async function popupToBackend(token, tripId, finalAnswers, suggestionsParams, signal) {
     try {
         const payload = { ...finalAnswers }
 
@@ -187,7 +187,8 @@ export async function popupToBackend(token, tripId, finalAnswers, suggestionsPar
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal // to allow for cancellation of request
         })
         const data = await res.json()
         console.log("Backend response in apiCalls:", data)
@@ -198,6 +199,12 @@ export async function popupToBackend(token, tripId, finalAnswers, suggestionsPar
         }
 
     } catch (err) {
-        console.error("Error in popupToBackend", err)
+        if (err.name === "AbortError") {
+            console.log("popuptoBackend aborted")
+            return null
+        } else {
+            console.error("Error in popupToBackend", err)
+            throw err
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react"
+import { useState, useContext, useRef, useEffect } from "react"
 import { popupToBackend } from "../util/apiCalls"
 import { AuthContext } from "./AuthContext"
 
@@ -20,6 +20,7 @@ export default function MapAISuggestions({
 
     const [loading, setLoading] = useState(false)
     const { token } = useContext(AuthContext)
+    const controllerRef = useRef(null) // allow for cancellation of suggestion request
 
     // Question structure (linear per category)
     const questionTree = {
@@ -102,6 +103,7 @@ export default function MapAISuggestions({
 
     // Reset popup to initial state
     const resetPopup = () => {
+        controllerRef.current?.abort() // Abort any ongoing request
         setIsOpen(false)
         setCurrentNode("start")
         setBranchStep(0)
@@ -172,16 +174,32 @@ export default function MapAISuggestions({
             console.error("suggestionsParams is undefined!")
             return
         }
+        // Abort any existing request
+        controllerRef.current?.abort()
+        // Create a new controller for the current request
+        const controller = new AbortController()
+        controllerRef.current = controller
+
         try {
-            const info = await popupToBackend(token, tripId, finalAnswers, suggestionsParams)
-            console.log("Backend response in MapAISuggestions:", info)
-            setSelectedSuggestions([])
-            setSuggestions(info)
-            console.log(suggestions)
+            const info = await popupToBackend(token, tripId, finalAnswers, suggestionsParams, controller.signal)
+            if (!controller.signal.aborted) { // only update if not aborted
+                console.log("Backend response in MapAISuggestions:", info)
+                setSelectedSuggestions([])
+                setSuggestions(info)
+            }
         } catch (err) {
-            console.error("Failed to fetch suggestions:", err)
+            if (err.name === "AbortError") {
+                console.log("Fetch suggestions aborted")
+            } else {
+                console.error("Failed to fetch suggestions:", err)
+            }
         }
     }
+
+    // Clean up when component unmounts
+    useEffect(() => {
+        return () => controllerRef.current?.abort();
+      }, [])
 
 
     return (
