@@ -12,14 +12,24 @@ export default function TripLayout() {
     const [essentials, setEssentials] = useState([])
     const [gettingAround, setGettingAround] = useState([])
 
-    return (
+
+    const clearMarkers = () => {
+        setStays([])
+        setEatDrink([])
+        setExplore([])
+        setEssentials([])
+        setGettingAround([])
+    }
+
+  return (
         <TripContext.Provider value={{
             tripName, setTripName,
             stays, setStays,
             eatDrink, setEatDrink,
             explore, setExplore,
             essentials, setEssentials,
-            gettingAround, setGettingAround
+            gettingAround, setGettingAround, 
+            clearMarkers
         }}>
             <Outlet />
         </TripContext.Provider>

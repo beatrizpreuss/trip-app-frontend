@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react"
 import { Link, Navigate, useNavigate } from "react-router-dom"
 import { getAllTrips, createNewTrip } from "../util/apiCalls"
 import { AuthContext } from "./AuthContext"
+import { useTrip } from "./TripContext"
 
 
 export default function Trips() {
@@ -9,6 +10,7 @@ export default function Trips() {
     const [loading, setLoading] = useState(true)
 
     const { token, logout } = useContext(AuthContext)
+    const { clearMarkers } = useTrip()
     const navigate = useNavigate()
 
     if (!token) return <Navigate to="login" replace />
@@ -47,6 +49,7 @@ export default function Trips() {
                 if (!newTrip || !newTrip.trip || !newTrip.trip.id) {
                     throw new Error("Trip creation failed")
             }
+            clearMarkers()
             navigate(`/trips/${newTrip.trip.id}`)
         } catch (err) {
             console.error("Failed to create trip:", err)

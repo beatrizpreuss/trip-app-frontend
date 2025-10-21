@@ -24,10 +24,10 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           <Route element={<PrivateRoute />}>
-            <Route path="/trips" element={<Trips />} />
-            <Route path="/trips/:tripId" element={<TripLayout />}>
-              <Route index element={<TripDetails />} />
-              <Route path="map" element={<TripMap />} />
+            <Route path="/trips" element={<TripLayout />}>
+              <Route index element={<Trips />} />
+              <Route path=":tripId" element={<TripDetails />} />
+              <Route path=":tripId/map" element={<TripMap />} />
             </Route>
           </Route>
 
