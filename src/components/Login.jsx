@@ -1,38 +1,14 @@
-import React, { useState, useContext } from 'react'
-import { AuthContext } from './AuthContext'
-import { useNavigate } from 'react-router-dom'
-import { BASE_URL } from '../util/config'
+import React, { useState} from 'react'
+import { useAuthActions } from '../util/apiCalls'
 
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const { login } = useContext(AuthContext)
-    const navigate = useNavigate()
+    const { loginFunction } = useAuthActions()
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            const response = await fetch(`${BASE_URL}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                body: JSON.stringify({ email, password })
-            })
-
-            const data = await response.json()
-
-            if (response.ok) {
-                login(data.access_token)
-                navigate('/trips')
-            } else {
-                alert(data.msg)
-            }
-        } catch (error) {
-            console.error('Error logging in:', error)
-        }
+        e.preventDefault()
+        loginFunction(email, password)
     }
 
     return (
