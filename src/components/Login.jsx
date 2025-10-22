@@ -1,7 +1,9 @@
 import React, { useState} from 'react'
 import { useAuthActions } from '../util/apiCalls'
 
-const Login = () => {
+
+export default function Login() {
+    
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const { loginFunction } = useAuthActions()
@@ -76,7 +78,3 @@ const Login = () => {
         </div>
     )
 }
-
-
-
-export default Login
