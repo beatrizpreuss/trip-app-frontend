@@ -679,6 +679,43 @@ export default function TripMap() {
         setIsSuggestionsPopupOpen(false)
     }
 
+    // Creates the buttons on the map (Back to List and Close Suggestions)
+    function MapSuggestionsButtons({ onBackToList, onClose }) {
+        const map = useMap()
+
+        useEffect(() => {
+            const container = L.DomUtil.create("div", "map-buttons-container")
+            container.style.position = "absolute"
+            container.style.bottom = "10px"
+            container.style.left = "50%"
+            container.style.transform = "translateX(-50%)"
+            container.style.zIndex = 1000
+            container.style.display = "flex"
+            container.style.gap = "8px"
+
+            const backButton = L.DomUtil.create("button", "", container)
+            backButton.innerText = "Back to List"
+            backButton.className = "w-40 bg-white text-zinc-800 border px-3 py-2 shadow hover:bg-zinc-100 dark:bg-[#333333] dark:text-[#dddddd]"
+            L.DomEvent.on(backButton, "click", (e) => {
+                L.DomEvent.stopPropagation(e);
+                onBackToList();
+            })
+            const closeButton = L.DomUtil.create("button", "", container)
+            closeButton.innerText = "Close Suggestions"
+            closeButton.className = "w-40 bg-white text-zinc-800 border px-3 py-2 shadow hover:bg-zinc-100 dark:bg-[#333333] dark:text-[#dddddd]"
+            L.DomEvent.on(closeButton, "click", (e) => {
+                L.DomEvent.stopPropagation(e);
+                onClose();
+            })
+            map.getContainer().appendChild(container)
+
+            return () => { map.getContainer().removeChild(container) }
+        }, [map, onBackToList, onClose])
+
+        return null
+    }
+
+    
     if (loading) return <h2>Loading map...</h2>
 
     // Everything below the if needs the data to be loaded to run
@@ -1237,30 +1274,16 @@ export default function TripMap() {
                 })}
 
                 {showSuggestionsOnMap && (
-                    <div className="z-[1001] absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3">
-
-                        <button
-                            onClick={() => {
-                                setShowSuggestionsOnMap(false)
-                                setIsSuggestionsPopupOpen(true)
-                            }}
-                            className="w-40 z-[1001] bg-white text-zinc-800 border-5 px-3 py-2 shadow hover:bg-zinc-100 dark:bg-[#333333] dark:text-[#dddddd]"
-                        >
-                            Back to list
-                        </button>
-                        <button
-                            onClick={() => {
-                                resetPopup()
-                                setShowSuggestionsOnMap(false)
-                            }}
-                            className="w-40 z-[1001] bg-white text-zinc-800 border-5 px-3 py-2 shadow hover:bg-zinc-100 dark:bg-[#333333] dark:text-[#dddddd]"
-                            title="Close suggestions"
-                        >
-                            Close suggestions
-                        </button>
-
-
-                    </div>
+                    <MapSuggestionsButtons
+                        onBackToList={() => {
+                            setShowSuggestionsOnMap(false)
+                            setIsSuggestionsPopupOpen(true)
+                        }}
+                        onClose={() => {
+                            resetPopup()
+                            setShowSuggestionsOnMap(false)
+                        }}
+                    />
                 )}
 
             </MapContainer>
