@@ -192,6 +192,7 @@ export default function MapAISuggestions({
                 console.log("Fetch suggestions aborted")
             } else {
                 console.error("Failed to fetch suggestions:", err)
+                setSuggestions(["api_unreachable"])
             }
         }
     }
@@ -199,7 +200,7 @@ export default function MapAISuggestions({
     // Clean up when component unmounts
     useEffect(() => {
         return () => controllerRef.current?.abort();
-      }, [])
+    }, [])
 
 
     return (
@@ -289,40 +290,61 @@ export default function MapAISuggestions({
                             </div>
                         )}
 
-                        {!loading && Array.isArray(suggestions) && suggestions?.length > 0 && suggestions[0] !== "No results found" && (
-                            <>
-                                <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
-                                    {suggestions.map(s => (
-                                        <li key={s.id} className="flex justify-between items-center last:border-b-0">
-                                            <a href={s.tags?.website || s.tags["contact:website"]} target="_blank" className={`flex flex-col ${(s.tags?.website || s.tags?.["contact:website"]) ? "hover:text-blue-500" : ""}`}>
-                                                <span className="text-sm text-wrap truncate font-bold">{s.tags?.name || "(unnamed)"}</span>
-                                                <span className="text-xs text-wrap truncate">{s.description || ""}</span>
-                                            </a>
+                        {!loading && Array.isArray(suggestions) && suggestions.length > 0 && (
+                            // First, handle values when there are issues
+                            suggestions[0] === "No results found" ? (
+                                <div className="mt-5 mr-30">No suggestions found</div> // actual no suggestions found
+                            ) : ["backend_unreachable", "api_unreachable"].includes(suggestions[0]) ? (
+                                <div className="mt-5 mr-30">
+                                    Could not connect to the suggestion service 
+                                </div> // issues with backend or api (or internet connection, etc)
+                            ) : (
+                                // Otherwise, render the real suggestions safely
+                                <>
+                                    <ul className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
+                                        {suggestions
+                                            .filter(s => s && typeof s === "object") // extra safety
+                                            .map(s => (
+                                                <li key={s.id} className="flex justify-between items-center last:border-b-0">
+                                                    <a
+                                                        href={s.tags?.website || s.tags?.["contact:website"]}
+                                                        target="_blank"
+                                                        className={`flex flex-col ${(s.tags?.website || s.tags?.["contact:website"]) ? "hover:text-blue-500" : ""}`}
+                                                    >
+                                                        <span className="text-sm text-wrap truncate font-bold"> {s.tags?.name || "(unnamed)"}</span>
+                                                        <span className="text-xs text-wrap truncate">{s.description || ""}</span>
+                                                    </a>
 
 
-                                            <button
-                                                onClick={() => handleSelectSuggestion(s)}
-                                                className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
+                                                    <button
+                                                        onClick={() => handleSelectSuggestion(s)}
+                                                        className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
                                                         px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
-                                            >{selectedSuggestions.some(sel => sel.originalId === s.id) ? "Added" : "Add"}</button>
-                                        </li>
-                                    ))}
-                                </ul>
+                                                    >{selectedSuggestions.some(sel => sel.originalId === s.id) ? "Added" : "Add"}</button>
+                                                </li>
+                                            ))}
+                                    </ul>
 
-                                <button
-                                    onClick={() => {
-                                        setShowSuggestionsOnMap(true);
-                                        setIsOpen(false) // close popup, show map markers
-                                    }}
-                                    className="text-sm text-blue-600 hover:underline"
-                                >Show on map</button>
+                                    <button
+                                        onClick={() => {
+                                            setShowSuggestionsOnMap(true);
+                                            setIsOpen(false) // close popup, show map markers
+                                        }}
+                                        className="text-sm text-blue-600 hover:underline"
+                                    >Show on map</button>
 
-                            </>
+                                </>
+                            )
                         )}
 
                         {!loading && suggestions[0] === "No results found" &&
                             <div className="mt-5 mr-30">No suggestions found</div>
                         }
+                        {!loading && ["backend_unreachable", "openai_unreachable"].includes(suggestions[0]) && (
+                            <div className="mt-5 mr-30 text-red-500">
+                                Could not connect to the suggestion service
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

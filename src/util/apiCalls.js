@@ -13,8 +13,7 @@ export function useAuthActions() {
             const response = await fetch(`${BASE_URL}/login`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email, password })
             })
@@ -190,9 +189,28 @@ export async function popupToBackend(token, tripId, finalAnswers, suggestionsPar
             body: JSON.stringify(payload),
             signal // to allow for cancellation of request
         })
-        const data = await res.json()
+
+        let data
+        try {
+            data = await res.json()
+        } catch {
+            console.error("Failed to parse backend response")
+            return ["backend_unreachable"]
+        }
+
         console.log("Backend response in apiCalls:", data)
-        if (data.length > 0) {
+
+        // Handle backend error signals
+        if (!res.ok) {
+            if (data?.error === "openai_unreachable") {
+                return ["api_unreachable"]
+            } else {
+                return ["server_error"]
+            }
+        }
+
+        // Normal success case
+        if (Array.isArray(data) && data.length > 0) {
             return data
         } else {
             return ["No results found"]
@@ -203,8 +221,8 @@ export async function popupToBackend(token, tripId, finalAnswers, suggestionsPar
             console.log("popuptoBackend aborted")
             return null
         } else {
-            console.error("Error in popupToBackend", err)
-            throw err
+            console.error("Network or unexpected error in popupToBackend:", err)
+            return ["api_unreachable"]
         }
     }
 }
