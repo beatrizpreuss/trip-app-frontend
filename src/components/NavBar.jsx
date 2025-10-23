@@ -86,31 +86,18 @@ export default function NavBar() {
                             {token ? (
                             <button
                                 onClick={logout}
-                                className="block md:hidden text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                            focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                            dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                className="general-button w-full my-2 block md:hidden"
                             >
                                 Logout
                             </button>
                         ) : (
                             <Link
                                 to="/login"
-                                className="block md:hidden text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                            focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                            dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                className="general-button block md:hidden"
                             >
                                 Login
                             </Link>
                         )}
-
-                            {/* <li>
-                                <NavLink to="/" 
-                                    className={({isActive}) => 
-                                    `block py-2 px-3 text-zinc-900 bg-zinc-50 rounded-sm md:bg-transparent md:text-zinc-900 
-                                    md:hover:font-bold md:p-0 md:dark:text-[#dddddd] dark:text-[#dddddd] dark:bg-[#222222]
-                                    ${isActive ? "font-bold" : ""}`}>Contact
-                                </NavLink>
-                            </li> */}
                         </ul>
                     </div>
 

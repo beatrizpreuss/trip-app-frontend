@@ -282,8 +282,7 @@ export default function MapAISuggestions({
                                                     submitAnswer(selectedOptions)
                                                 }
                                             }}
-                                            className="my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
-                                            font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                            className="general-button w-full"
                                         >
                                             Next
                                         </button>
@@ -301,8 +300,7 @@ export default function MapAISuggestions({
                                         <button
                                             onClick={() => submitAnswer([textInput.trim()])}
                                             disabled={textInput.trim() === ""}
-                                            className="text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm 
-                                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                            className="general-button w-1/6 my-0"
                                         >
                                             OK
                                         </button>
@@ -311,8 +309,7 @@ export default function MapAISuggestions({
                                 {/* Cancel Button */}
                                 <button
                                     onClick={resetPopup}
-                                    className=" my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm
-                            px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800"
+                                    className="general-button w-1/2"
                                 >
                                     Cancel
                                 </button>

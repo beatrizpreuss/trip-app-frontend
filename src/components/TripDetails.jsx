@@ -173,13 +173,11 @@ export default function TripDetails() {
                     className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                 />
                 <h3 className="mt-4">Manage all your trip details in the tables, or open the map to make changes</h3>
-                <div className="flex flex-row items-center gap-5 mb-20">
+                <div className="flex flex-row items-center mb-20">
                     <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
                     <Link to="map">
                         <button
-                            className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                            focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                            dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                            className="general-button">
                             Open Map
                         </button>
                     </Link>
@@ -789,9 +787,7 @@ export default function TripDetails() {
                     <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
                     <Link to="map">
                         <button
-                            className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                        focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                        dark:bg-[#dddddd] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                            className="general-button">
                             Open Map
                         </button>
                     </Link>

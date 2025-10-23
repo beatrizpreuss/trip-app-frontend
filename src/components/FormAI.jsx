@@ -257,7 +257,7 @@ export default function FormAI() {
                         </div>
 
                         <div>
-                            <button type="submit" className="bg-zinc-900 text-zinc-100 px-4 py-2 rounded-lg hover:bg-zinc-800">Give me ideas</button>
+                            <button type="submit" className="general-button">Give me ideas</button>
                         </div>
                     </div>
                 </form>

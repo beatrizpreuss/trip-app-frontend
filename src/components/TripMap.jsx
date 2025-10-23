@@ -757,11 +757,9 @@ export default function TripMap() {
                 <h3 className="mt-4">Edit your trip details directly on the map</h3>
             </div>
             <div className="flex flex-row items-center justify-center gap-5">
-                <Link to="..">
+                <Link to="../:tripId">
                     <button
-                        className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 
-                        focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                        dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-[#222222]">
+                        className="general-button">
                         Back
                     </button>
                 </Link>
