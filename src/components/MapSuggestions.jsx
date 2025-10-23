@@ -41,6 +41,12 @@ export default function MapAISuggestions({
                 text: "Who are you traveling with?",
                 options: ["Solo", "Partner", "Kids", "Pets"],
                 type: "multi"
+            },
+            {
+                key: "quantity",
+                text: "How many suggestions would you like to see?",
+                options: [5, 10, 20],
+                type: "single"
             }
         ],
         eatDrink: [
@@ -49,6 +55,12 @@ export default function MapAISuggestions({
                 key: "diningStyle",
                 text: "Do you prefer casual or fine dining?",
                 options: ["Casual", "Fine"],
+                type: "single"
+            },
+            {
+                key: "quantity",
+                text: "How many suggestions would you like to see?",
+                options: [5, 10, 20],
                 type: "single"
             }
         ],
@@ -64,6 +76,12 @@ export default function MapAISuggestions({
                 text: "Should it be kid-friendly or pet-friendly?",
                 options: ["Yes, both", "Kid-friendly", "Pet-friendly", "No"],
                 type: "single"
+            },
+            {
+                key: "quantity",
+                text: "How many suggestions would you like to see?",
+                options: [5, 10, 20],
+                type: "single"
             }
         ],
         essentials: [
@@ -71,6 +89,12 @@ export default function MapAISuggestions({
                 key: "type",
                 text: "What type of essential do you need?",
                 options: ["Supermarket", "Pharmacy", "ATM", "Hospital", "Other"],
+                type: "single"
+            },
+            {
+                key: "quantity",
+                text: "How many suggestions would you like to see?",
+                options: [5, 10, 20],
                 type: "single"
             }
         ],
@@ -80,6 +104,12 @@ export default function MapAISuggestions({
                 text: "What do you need?",
                 options: ["Train stations", "Bus stops", "Parking spots", "Bike rentals", "Charging Stations", "Car rental"],
                 type: "multi"
+            },
+            {
+                key: "quantity",
+                text: "How many suggestions would you like to see?",
+                options: [5, 10, 20],
+                type: "single"
             }
         ]
     }
