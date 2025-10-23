@@ -89,17 +89,19 @@ export async function getAllTrips(token) {
 
 // Get a trip by its ID (in the backend: open_trip function)
 export async function getTripById(tripId, token) {
-    try {
-        const res = await fetch(`${BASE_URL}/trips/${tripId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        })
-        return await res.json()
-    } catch (err) {
-        console.error('Error in getTripById:', err)
+    const res = await fetch(`${BASE_URL}/trips/${tripId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    })
+    if (res.status === 401) {
+        throw new Error("Unauthorized")
     }
+    if (!res.ok) {
+        throw new Error(`Failed to fetch trip ${tripId}: ${res.statusText}`);
+    }
+    return await res.json()
 }
 
 // Update a trip by its ID

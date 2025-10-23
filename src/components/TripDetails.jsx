@@ -1,9 +1,7 @@
 import { useState, useEffect, useContext } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate, Link } from "react-router-dom"
 import { useTrip } from "./TripContext"
-import { useNavigate } from "react-router-dom"
 import { FaTrash, FaPlus } from "react-icons/fa"
-import { Link } from "react-router-dom"
 import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
 import SaveButton from "./SaveButton"
@@ -29,31 +27,45 @@ export default function TripDetails() {
     // used to track unsaved changes to make the Save Changes button another color
     const [hasChanges, setHasChanges] = useState(false)
 
-    const { token } = useContext(AuthContext)
+    const { token, logout } = useContext(AuthContext)
 
     // GET DATA FROM BACKEND
-
+    
     useEffect(() => {
-        if (!token) return
-
-        getTripById(tripId, token).then(data => {
-            const {
-                tripName, stays, eatDrink, explore, essentials, gettingAround
-            } = formatTripData(data)
-
+        if (!token) {
+          navigate("/login", { replace: true });
+          return
+        }
+        const fetchTripDetails = async () => {
+          try {
+            const data = await getTripById(tripId, token)
+      
+            if (!data) {
+              setLoading(false)
+              return
+            }
+            const { tripName, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
+      
             setTripName(tripName)
             setStays(stays)
             setEatDrink(eatDrink)
             setExplore(explore)
             setEssentials(essentials)
             setGettingAround(gettingAround)
+          } catch (err) {
+            console.error("Error fetching trip details", err)
+      
+            if (err.message === "Unauthorized" || err.status === 401) { // handle expired token
+              logout(); // clear token + user state
+              navigate("/login", { replace: true })
+              return;
+            }
+          } finally {
             setLoading(false)
-        })
-            .catch(err => {
-                console.error("Error fetching trips", err)
-                setLoading(false)
-            })
-    }, [token])
+          }
+        }
+        fetchTripDetails()
+      }, [tripId, token, logout, navigate])
 
     // CHANGE TRIP NAME
 
@@ -163,7 +175,7 @@ export default function TripDetails() {
 
     return (
 
-        <div className="m-25 mx-15">
+        <div className="m-25 mt-15 mx-15">
             <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
 
                 <input
@@ -173,11 +185,11 @@ export default function TripDetails() {
                     className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                 />
                 <h3 className="mt-4">Manage all your trip details in the tables, or open the map to make changes</h3>
-                <div className="flex flex-row items-center mb-20">
+                <div className="flex flex-row items-center justify-center gap-5">
                     <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
                     <Link to="map">
                         <button
-                            className="general-button ml-5">
+                            className="general-button">
                             Open Map
                         </button>
                     </Link>

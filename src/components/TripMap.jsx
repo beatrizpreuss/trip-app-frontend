@@ -1,6 +1,6 @@
 import "leaflet/dist/leaflet.css"
 import "leaflet-geosearch/dist/geosearch.css"
-import { useParams, Link } from "react-router-dom"
+import { useParams, useNavigate, Link } from "react-router-dom"
 import { useCallback, useEffect, useState, useMemo, useRef, useContext } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent, ZoomControl } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
@@ -239,29 +239,44 @@ export default function TripMap() {
 
     // MAP DATA 
     // Get data from backend (getTripById comes from util/apiCalls.js, formatTripData comes from util/formatTripData)
-    const { token } = useContext(AuthContext)
+    const { token, logout } = useContext(AuthContext)
+    const navigate = useNavigate()
 
     useEffect(() => {
-        if (!token) return
-
-        getTripById(tripId, token).then(data => {
-            const {
-                tripName, stays, eatDrink, explore, essentials, gettingAround
-            } = formatTripData(data)
-
+        if (!token) {
+          navigate("/login", { replace: true });
+          return
+        }
+        const fetchTripDetails = async () => {
+          try {
+            const data = await getTripById(tripId, token)
+      
+            if (!data) {
+              setLoading(false)
+              return
+            }
+            const { tripName, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
+      
             setTripName(tripName)
             setStays(stays)
             setEatDrink(eatDrink)
             setExplore(explore)
             setEssentials(essentials)
             setGettingAround(gettingAround)
+          } catch (err) {
+            console.error("Error fetching trip details", err)
+      
+            if (err.message === "Unauthorized" || err.status === 401) { // handle expired token
+              logout(); // clear token + user state
+              navigate("/login", { replace: true })
+              return;
+            }
+          } finally {
             setLoading(false)
-        })
-            .catch(err => {
-                console.error("Error fetching trips", err)
-                setLoading(false)
-            })
-    }, [token])
+          }
+        }
+        fetchTripDetails()
+      }, [tripId, token, logout, navigate])
 
 
     // Create new marker icons
