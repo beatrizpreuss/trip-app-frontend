@@ -875,18 +875,19 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="popup-label"> Comments:
-                                        <input
-                                            className="popup-input"
+                                    <label className="flex flex-col items-start mr-0"> 
+                                        <span className="popup-label">Comments:</span>
+                                        <textarea
+                                            className="popup-input w-full bg-gray-200"
                                             name="comments"
-                                            type="text"
+                                            rows={2}
                                             value={marker.comments || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 my-1"
+                                        className="delete-marker-button"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("stay", marker.id)
@@ -958,18 +959,19 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="popup-label"> Comments:
-                                        <input
-                                            className="popup-input"
+                                    <label className="flex flex-col items-start mr-0"> 
+                                        <span className="popup-label">Comments:</span>
+                                        <textarea
+                                            className="popup-input w-full bg-gray-200"
                                             name="comments"
-                                            type="text"
+                                            rows={2}
                                             value={marker.comments || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 my-1"
+                                        className="delete-marker-button"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("eatDrink", marker.id)
@@ -1051,18 +1053,19 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="popup-label"> Comments:
-                                        <input
-                                            className="popup-input"
+                                    <label className="flex flex-col items-start mr-0"> 
+                                        <span className="popup-label">Comments:</span>
+                                        <textarea
+                                            className="popup-input w-full bg-gray-200"
                                             name="comments"
-                                            type="text"
+                                            rows={2}
                                             value={marker.comments || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 my-1"
+                                        className="delete-marker-button"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("explore", marker.id)
@@ -1134,18 +1137,19 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="popup-label"> Comments:
-                                        <input
-                                            className="popup-input"
+                                    <label className="flex flex-col items-start mr-0"> 
+                                        <span className="popup-label">Comments:</span>
+                                        <textarea
+                                            className="popup-input w-full bg-gray-200"
                                             name="comments"
-                                            type="text"
+                                            rows={2}
                                             value={marker.comments || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 my-1"
+                                        className="delete-marker-button"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("essentials", marker.id)
@@ -1217,18 +1221,19 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="popup-label"> Comments:
-                                        <input
-                                            className="popup-input"
+                                    <label className="flex flex-col items-start mr-0"> 
+                                        <span className="popup-label">Comments:</span>
+                                        <textarea
+                                            className="popup-input w-full bg-gray-200"
                                             name="comments"
-                                            type="text"
+                                            rows={2}
                                             value={marker.comments || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
                                     <button
-                                        className="block text-xs text-red-600 my-1"
+                                        className="delete-marker-button"
                                         onClick={(e) => {
                                             e.stopPropagation()
                                             handleDeleteMarker("gettingAround", marker.id)

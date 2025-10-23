@@ -186,7 +186,8 @@ export default function TripDetails() {
 
             {/* Stays Table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                <table className="table-auto w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+
                     <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
@@ -230,9 +231,9 @@ export default function TripDetails() {
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="name"
-                                                type="text"
+                                                rows={1}
                                                 value={item.name || ""}
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
@@ -243,6 +244,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.status || ""}
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-25"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -251,6 +253,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.price || ""}
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-15"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -267,6 +270,7 @@ export default function TripDetails() {
                                                 type="number"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-0 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -275,6 +279,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.latLong || ""}
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-30 text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -283,14 +288,15 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.url || ""}
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
+                                                className="text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="comments"
-                                                type="text"
                                                 value={item.comments || ""}
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-70"
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -357,9 +363,9 @@ export default function TripDetails() {
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="name"
-                                                type="text"
+                                                rows={1}
                                                 value={item.name || ""}
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
@@ -378,6 +384,7 @@ export default function TripDetails() {
                                                 type="number"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-0 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -386,6 +393,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.latLong || ""}
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-30 text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -394,14 +402,15 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.url || ""}
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
+                                                className="text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="comments"
-                                                type="text"
                                                 value={item.comments || ""}
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-70"
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -470,8 +479,9 @@ export default function TripDetails() {
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="name"
+                                                rows={1}
                                                 type="text"
                                                 value={item.name || ""}
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
@@ -483,6 +493,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.price || ""}
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-15"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -499,6 +510,7 @@ export default function TripDetails() {
                                                 type="number"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-0 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -507,6 +519,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.latLong || ""}
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-30 text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -515,14 +528,15 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.url || ""}
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
+                                                className="text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="comments"
-                                                type="text"
                                                 value={item.comments || ""}
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-70"
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -590,8 +604,9 @@ export default function TripDetails() {
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="name"
+                                                rows={1}
                                                 type="text"
                                                 value={item.name || ""}
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
@@ -611,6 +626,7 @@ export default function TripDetails() {
                                                 type="number"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-0 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -619,6 +635,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.latLong || ""}
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-30 text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -627,14 +644,15 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.url || ""}
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
+                                                className="text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="comments"
-                                                type="text"
                                                 value={item.comments || ""}
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-70"
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -702,9 +720,9 @@ export default function TripDetails() {
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="name"
-                                                type="text"
+                                                rows={1}
                                                 value={item.name || ""}
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
@@ -723,6 +741,7 @@ export default function TripDetails() {
                                                 type="number"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-0 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -731,6 +750,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.latLong || ""}
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-30 text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -739,14 +759,15 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.url || ""}
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
+                                                className="text-xs"
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            <input
+                                            <textarea
                                                 name="comments"
-                                                type="text"
                                                 value={item.comments || ""}
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
+                                                className="w-full min-w-70"
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-right">

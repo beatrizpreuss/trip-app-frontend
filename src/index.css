@@ -64,4 +64,8 @@ body {
   .popup-input {
     @apply px-1 text-xs;
   }
+  /* Used in TripMap */
+  .delete-marker-button {
+    @apply block text-xs text-red-600 my-1;
+  }
 }
