@@ -757,7 +757,7 @@ export default function TripMap() {
                 <h3 className="mt-4">Edit your trip details directly on the map</h3>
             </div>
             <div className="flex flex-row items-center justify-center gap-5">
-                <Link to="../:tripId">
+                <Link to={`/trips/${tripId}`}>
                     <button
                         className="general-button">
                         Back
@@ -815,9 +815,9 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
+                                    <label className="popup-label"> Name:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="name"
                                             type="text"
                                             value={marker.name || ""}
@@ -825,9 +825,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Status:
+                                    <label className="popup-label"> Status:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="status"
                                             type="text"
                                             value={marker.status || ""}
@@ -835,9 +835,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Price:
+                                    <label className="popup-label"> Price:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="price"
                                             type="text"
                                             value={marker.price || ""}
@@ -845,9 +845,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Address:
+                                    <label className="popup-label"> Address:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="address"
                                             type="text"
                                             value={marker.address || ""}
@@ -855,9 +855,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Day:
+                                    <label className="popup-label"> Day:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="day"
                                             type="number"
                                             value={marker.day || 1}
@@ -865,9 +865,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> URL:
+                                    <label className="popup-label"> URL:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="url"
                                             type="text"
                                             value={marker.url || ""}
@@ -875,9 +875,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
+                                    <label className="popup-label"> Comments:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="comments"
                                             type="text"
                                             value={marker.comments || ""}
@@ -918,9 +918,9 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
+                                    <label className="popup-label"> Name:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="name"
                                             type="text"
                                             value={marker.name || ""}
@@ -928,9 +928,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Address:
+                                    <label className="popup-label"> Address:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="address"
                                             type="text"
                                             value={marker.address || ""}
@@ -938,9 +938,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Day:
+                                    <label className="popup-label"> Day:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="day"
                                             type="number"
                                             value={marker.day || 1}
@@ -948,9 +948,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> URL:
+                                    <label className="popup-label"> URL:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="url"
                                             type="text"
                                             value={marker.url || ""}
@@ -958,9 +958,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
+                                    <label className="popup-label"> Comments:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="comments"
                                             type="text"
                                             value={marker.comments || ""}
@@ -1001,9 +1001,9 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
+                                    <label className="popup-label"> Name:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="name"
                                             type="text"
                                             value={marker.name || ""}
@@ -1011,9 +1011,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Price:
+                                    <label className="popup-label"> Price:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="price"
                                             type="text"
                                             value={marker.price || ""}
@@ -1021,9 +1021,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Address:
+                                    <label className="popup-label"> Address:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="address"
                                             type="text"
                                             value={marker.address || ""}
@@ -1031,9 +1031,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Day:
+                                    <label className="popup-label"> Day:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="day"
                                             type="number"
                                             value={marker.day || 1}
@@ -1041,9 +1041,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> URL:
+                                    <label className="popup-label"> URL:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="url"
                                             type="text"
                                             value={marker.url || ""}
@@ -1051,9 +1051,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
+                                    <label className="popup-label"> Comments:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="comments"
                                             type="text"
                                             value={marker.comments || ""}
@@ -1094,9 +1094,9 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
+                                    <label className="popup-label"> Name:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="name"
                                             type="text"
                                             value={marker.name || ""}
@@ -1104,9 +1104,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Address:
+                                    <label className="popup-label"> Address:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="address"
                                             type="text"
                                             value={marker.address || ""}
@@ -1114,9 +1114,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Day:
+                                    <label className="popup-label"> Day:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="day"
                                             type="number"
                                             value={marker.day || 1}
@@ -1124,9 +1124,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> URL:
+                                    <label className="popup-label"> URL:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="url"
                                             type="text"
                                             value={marker.url || ""}
@@ -1134,9 +1134,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
+                                    <label className="popup-label"> Comments:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="comments"
                                             type="text"
                                             value={marker.comments || ""}
@@ -1177,9 +1177,9 @@ export default function TripMap() {
                             }}>
                             <Popup>
                                 <div className="space-x-2">
-                                    <label className="block text-xs text-gray-700"> Name:
+                                    <label className="popup-label"> Name:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="name"
                                             type="text"
                                             value={marker.name || ""}
@@ -1187,9 +1187,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Address:
+                                    <label className="popup-label"> Address:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="address"
                                             type="text"
                                             value={marker.address || ""}
@@ -1197,9 +1197,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Day:
+                                    <label className="popup-label"> Day:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="day"
                                             type="number"
                                             value={marker.day || 1}
@@ -1207,9 +1207,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> URL:
+                                    <label className="popup-label"> URL:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="url"
                                             type="text"
                                             value={marker.url || ""}
@@ -1217,9 +1217,9 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="block text-xs text-gray-700"> Comments:
+                                    <label className="popup-label"> Comments:
                                         <input
-                                            className="px-1 py-0.2 text-sm"
+                                            className="popup-input"
                                             name="comments"
                                             type="text"
                                             value={marker.comments || ""}

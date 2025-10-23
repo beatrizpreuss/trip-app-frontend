@@ -177,7 +177,7 @@ export default function TripDetails() {
                     <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
                     <Link to="map">
                         <button
-                            className="general-button">
+                            className="general-button ml-5">
                             Open Map
                         </button>
                     </Link>
@@ -229,7 +229,7 @@ export default function TripDetails() {
                                 .filter(stay => !stay.deleted)
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -237,7 +237,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="status"
                                                 type="text"
@@ -245,7 +245,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="price"
                                                 type="text"
@@ -253,7 +253,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -261,7 +261,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="day"
                                                 type="number"
@@ -269,7 +269,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -277,7 +277,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -285,7 +285,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -307,9 +307,7 @@ export default function TripDetails() {
                 </table>
                 <button
                     onClick={() => addRow("stay", setStays, ["status", "price"])}
-                    className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
+                    className="add-row-button">
                     <div className="flex flex-row items-center">
                         < FaPlus />
                         <span> Add Stay</span>
@@ -358,7 +356,7 @@ export default function TripDetails() {
                                 .filter(eat => !eat.deleted)
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -366,7 +364,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -374,7 +372,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="day"
                                                 type="number"
@@ -382,7 +380,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -390,7 +388,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -398,7 +396,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -420,9 +418,7 @@ export default function TripDetails() {
                 </table>
                 <button
                     onClick={() => addRow("eatDrink", setEatDrink)}
-                    className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
+                    className="add-row-button">
                     <div className="flex flex-row items-center">
                         < FaPlus />
                         <span> Add Eat & Drink</span>
@@ -473,7 +469,7 @@ export default function TripDetails() {
                                 .filter(expl => !expl.deleted)
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -481,7 +477,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="price"
                                                 type="text"
@@ -489,7 +485,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -497,7 +493,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="day"
                                                 type="number"
@@ -505,7 +501,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -513,7 +509,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -521,7 +517,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -543,9 +539,7 @@ export default function TripDetails() {
                 </table>
                 <button
                     onClick={() => addRow("explore", setExplore, ["price"])}
-                    className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
+                    className="add-row-button">
                     <div className="flex flex-row items-center">
                         < FaPlus />
                         <span> Add Place to Explore</span>
@@ -595,7 +589,7 @@ export default function TripDetails() {
                                 .filter(essential => !essential.deleted)
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -603,7 +597,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -611,7 +605,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="day"
                                                 type="number"
@@ -619,7 +613,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -627,7 +621,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -635,7 +629,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -657,9 +651,7 @@ export default function TripDetails() {
                 </table>
                 <button
                     onClick={() => addRow("essentials", setEssentials)}
-                    className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
+                    className="add-row-button">
                     <div className="flex flex-row items-center">
                         < FaPlus />
                         <span> Add Essentials</span>
@@ -709,7 +701,7 @@ export default function TripDetails() {
                                 .filter(around => !around.deleted)
                                 .map((item, index) => (
                                     <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="name"
                                                 type="text"
@@ -717,7 +709,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="address"
                                                 type="text"
@@ -725,7 +717,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="day"
                                                 type="number"
@@ -733,7 +725,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="latLong"
                                                 type="text"
@@ -741,7 +733,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="url"
                                                 type="text"
@@ -749,7 +741,7 @@ export default function TripDetails() {
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
                                             />
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd]">
+                                        <td className="table-input-box">
                                             <input
                                                 name="comments"
                                                 type="text"
@@ -771,9 +763,7 @@ export default function TripDetails() {
                 </table>
                 <button
                     onClick={() => addRow("gettingAround", setGettingAround)}
-                    className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
+                    className="add-row-button">
                     <div className="flex flex-row items-center">
                         < FaPlus />
                         <span> Add Getting Around Item</span>
@@ -787,16 +777,14 @@ export default function TripDetails() {
                     <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
                     <Link to="map">
                         <button
-                            className="general-button">
+                            className="general-button ml-5">
                             Open Map
                         </button>
                     </Link>
                 </div>
                 <button
                     onClick={deleteTrip}
-                    className="my-5 text-zinc-900 hover:font-bold focus:ring-4 
-                    focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center 
-                    dark:hover:b-2 dark:focus:ring-zinc-800 dark:text-[#dddddd]">
+                    className="delete-trip-button">
                     Delete entire trip
                 </button>
             </div>

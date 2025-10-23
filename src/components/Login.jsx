@@ -31,7 +31,7 @@ export default function Login() {
                                 type="email"
                                 name="email"
                                 id="email"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-[#8d8d8d] dark:border-gray-600 dark:placeholder-[#dddddd] dark:text-[#222222] dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="sign-input-box"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="name@company.com"
@@ -47,7 +47,7 @@ export default function Login() {
                                 name="password"
                                 id="password"
                                 placeholder="••••••••"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-[#8d8d8d] dark:border-gray-600 dark:placeholder-[#dddddd] dark:text-[#222222] dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="sign-input-box"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required />
@@ -55,13 +55,13 @@ export default function Login() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-start">
                                 <div className="flex items-center h-5">
-                                    <input id="remember" aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="" />
+                                    <input id="remember" aria-describedby="remember" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800" required="" />
                                 </div>
                                 <div className="ml-3 text-sm">
                                     <label htmlFor="remember" className="text-gray-500 dark:text-[#dddddd]">Remember me</label>
                                 </div>
                             </div>
-                            <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-[#dddddd]">Forgot password?</a>
+                            <a href="#" className="text-sm font-medium hover:underline dark:text-[#dddddd]">Forgot password?</a>
                         </div>
                         <button
                             type="submit"
@@ -69,7 +69,7 @@ export default function Login() {
                         >Sign in</button>
 
                         <p className="text-sm font-light text-gray-500 dark:text-[#dddddd]">
-                            Don’t have an account yet? <a href="./register" className="font-medium text-primary-600 hover:underline dark:text-[#dddddd]">Sign up</a>
+                            Don’t have an account yet? <a href="./register" className="font-medium hover:underline dark:text-[#dddddd]">Sign up</a>
                         </p>
                     </form>
                 </div>
