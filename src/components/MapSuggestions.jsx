@@ -209,8 +209,7 @@ export default function MapAISuggestions({
 
             <button
                 onClick={() => setIsOpen(true)}
-                className="w-50 my-5 text-zinc-100 bg-zinc-900 hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 
-                    font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[#dddddd] dark:hover:bg-zinc-300 dark:focus:ring-zinc-800 dark:text-zinc-800">
+                className="general-button">
                 Get Suggestions
             </button>
 
