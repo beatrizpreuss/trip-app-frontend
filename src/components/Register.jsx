@@ -6,10 +6,16 @@ export default function Register() {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const { registerFunction } = useAuthActions()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        
+        if (password !== confirmPassword) {
+            alert("Passwords do not match")
+            return
+        }
         await registerFunction(email, password)
     }
 
@@ -45,6 +51,8 @@ export default function Register() {
                             <label htmlFor="repeat-password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Repeat password</label>
                             <input type="password"
                                 id="repeat-password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="sign-input-box"
                                 required />
                         </div>
