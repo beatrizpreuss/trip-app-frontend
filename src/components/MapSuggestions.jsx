@@ -234,7 +234,7 @@ export default function MapAISuggestions({
 
 
     return (
-        <div>
+        <div className="flex justify-center">
             {/* Suggestions button */}
 
             <button

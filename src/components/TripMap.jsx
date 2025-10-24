@@ -2,7 +2,7 @@ import "leaflet/dist/leaflet.css"
 import "leaflet-geosearch/dist/geosearch.css"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useCallback, useEffect, useState, useMemo, useRef, useContext } from "react"
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent, ZoomControl } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent, ZoomControl, LayersControl } from "react-leaflet"
 import { getTripById } from "../util/apiCalls"
 import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
 import L, { Icon } from "leaflet" //L is not a named export from the leaflet package
@@ -20,6 +20,8 @@ import { combineMarkers, getCenterOfMarkers, getRadiusFromMarkers } from "../uti
 import suggestionsIconImage from "../assets/images/placeholder1.png"
 import { AuthContext } from "./AuthContext"
 
+const { BaseLayer } = LayersControl
+const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY
 
 
 export default function TripMap() {
@@ -336,7 +338,7 @@ export default function TripMap() {
     }, [stays, eatDrink, explore, essentials, gettingAround])
 
 
-    // Popup to Add Marker
+    // Popup to Add Marker (used in AddMarkerOnClick and SearchResultHandler)
     function openCategoryPopup({ map, lat, lng, label, onConfirm }) {
         const popup = L.popup().setLatLng([lat, lng]).openOn(map)
 
@@ -743,7 +745,7 @@ export default function TripMap() {
 
 
     return (
-        <div className="m-25 mt-15 mx-15">
+        <div className="mt-15">
             <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
 
                 <input
@@ -765,12 +767,34 @@ export default function TripMap() {
             </div>
 
             <MapContainer ref={mapRef} zoomControl={false} className="h-[500px] w-full" id="map">
+                <LayersControl position="topright">
+                    <BaseLayer checked name="Streets">
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/">MapTiler</a>'
+                            url={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`}
+                            tileSize={512}
+                            zoomOffset={-1}
+                        />
+                    </BaseLayer>
+                    <BaseLayer name="Satellite">
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/">MapTiler</a>'
+                            url={`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}`}
+                            tileSize={512}
+                            zoomOffset={-1}
+                        />
+                    </BaseLayer>
+                </LayersControl>
+                {/* MapTiler Logo */}
+                <a href="https://www.maptiler.com/" target="_blank">
+                    <img
+                        src="https://api.maptiler.com/resources/logo.svg"
+                        alt="MapTiler logo"
+                        className="absolute bottom-2 left-2 w-20 opacity-80 z-[1000]"
+                    />
+                </a>v
                 <ZoomControl position="bottomright" />
                 <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
                 <SearchControl /> {/* Search bar */}
                 {searchResult && <SearchResultHandler result={searchResult} />} {/* Add marker from search upon click */}
                 <AddMarkerOnClick
