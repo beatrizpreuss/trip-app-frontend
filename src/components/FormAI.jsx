@@ -9,13 +9,12 @@ export default function FormAI() {
                 </h3>
             </div>
 
-            {/* THIS CODE DOESN'T INCLUDE DARK MODE CSS, DON'T FORGET TO DO IT*/}
             <div className="bg-zinc-100 rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl 
                  relative shadow dark:shadow-zinc-500 overflow-hidden group dark:bg-[#222222] dark:text-[#dddddd]">
                 <h2 className="text-l font-bold dark:text-[#dddddd]">Let's find you a destination!</h2>
                 <p className="italic mb-6 text-xs dark:text-zinc-400">Answer the questions below to get AI suggestions</p>
                 <form>
-                    <div class="my-4">
+                    <div className="my-4">
                         <label for="name" className="form-question">Where are you located? <span className="italic text-xs dark:text-zinc-400">City and Country</span></label>
                         <input type="text" id="name" name="name"
                             className="form-input-box" required />
@@ -179,13 +178,13 @@ export default function FormAI() {
                         </div>
 
 
-                        <div class="my-4">
-                            <label for="preferred-places" class="form-label">Any preferred places?</label>
+                        <div className="my-4">
+                            <label for="preferred-places" className="form-label">Any preferred places?</label>
                             <input type="text" id="preferred-places" name="preferred-places"
                                 className="form-input-box" />
                         </div>
-                        <div class="my-4">
-                            <label for="avoid-places" class="form-label">Any places to avoid?</label>
+                        <div className="my-4">
+                            <label for="avoid-places" className="form-label">Any places to avoid?</label>
                             <input type="text" id="avoid-places" name="avoid-places"
                                 className="form-input-box" />
                         </div>
