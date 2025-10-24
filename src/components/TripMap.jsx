@@ -39,7 +39,6 @@ export default function TripMap() {
     const [showEssentials, setShowEssentials] = useState(true)
     const [showGettingAround, setShowGettingAround] = useState(true)
 
-    const [activeCategory, setActiveCategory] = useState("") // State for the dropdown inside the map (lets the user choose the category of the next marker to be added)
     const [suggestions, setSuggestions] = useState([]) // Suggestions that come from openAI
     const [selectedSuggestions, setSelectedSuggestions] = useState([]) // Suggestions the user has selected to add to their trip
     const [isSuggestionsPopupOpen, setIsSuggestionsPopupOpen] = useState(false) //State of main popup (in MapSuggestions, it's [isOpen, setIsOpen] - passed down as props)
@@ -55,47 +54,6 @@ export default function TripMap() {
     const mapRef = useRef(null) // ref to be used to zoom in to the new suggested marker added (in the MapSuggestions component)
 
     // MAP DESIGN
-    // Category Dropdown component - lets the user choose the category of the next marker to be added
-    function CategoryDropdown({ activeCategory, setActiveCategory, setShowStays, setShowEatDrink, setShowExplore, setShowEssentials, setShowGettingAround }) {
-        const map = useMap() //gives the Leaflet map instance so it's possible to attach a control to it
-
-        useEffect(() => {
-            const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for the dropdown
-            const select = L.DomUtil.create("select", "", controlDiv) //creates a select element inside the controlDiv
-            select.innerHTML = `
-                <option value="" disabled selected>Add Marker</option> <!-- placeholder -->
-                <option value="stay">Stays</option>
-                <option value="eatDrink">Eat & Drink</option>
-                <option value="explore">Explore</option>
-                <option value="essentials">Essentials</option>
-                <option value="gettingAround">Getting Around</option>
-            `
-            select.value = activeCategory //sets the selected option
-
-            select.addEventListener("change", (e) => {
-                const value = e.target.value
-                setActiveCategory(e.target.value) //updates state when a new category is selected
-            })
-
-            // Stop clicks from propagating to the map
-            L.DomEvent.disableClickPropagation(controlDiv)
-            L.DomEvent.disableScrollPropagation(controlDiv)
-
-            const categoryControl = L.Control.extend({ //creates a custom control class
-                onAdd: () => controlDiv, //how it should be added to the map
-                onRemove: () => { } //no need for removal
-            })
-
-            const instance = new categoryControl({ position: "topright" }) //creates an instance of the control
-            map.addControl(instance) //adds it to the map
-
-            return () => map.removeControl(instance) //cleanup function when useEffect re-runs or component unmounts
-
-        }, [map, activeCategory, setActiveCategory]) //dependencies
-
-        return null
-    }
-
 
     // Category Filter component - lets the user filter the map to see different categories
     function CategoryFilter({ showStays, showEatDrink, showExplore, showEssentials, showGettingAround,
@@ -244,39 +202,39 @@ export default function TripMap() {
 
     useEffect(() => {
         if (!token) {
-          navigate("/login", { replace: true });
-          return
+            navigate("/login", { replace: true });
+            return
         }
         const fetchTripDetails = async () => {
-          try {
-            const data = await getTripById(tripId, token)
-      
-            if (!data) {
-              setLoading(false)
-              return
+            try {
+                const data = await getTripById(tripId, token)
+
+                if (!data) {
+                    setLoading(false)
+                    return
+                }
+                const { tripName, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
+
+                setTripName(tripName)
+                setStays(stays)
+                setEatDrink(eatDrink)
+                setExplore(explore)
+                setEssentials(essentials)
+                setGettingAround(gettingAround)
+            } catch (err) {
+                console.error("Error fetching trip details", err)
+
+                if (err.message === "Unauthorized" || err.status === 401) { // handle expired token
+                    logout(); // clear token + user state
+                    navigate("/login", { replace: true })
+                    return;
+                }
+            } finally {
+                setLoading(false)
             }
-            const { tripName, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
-      
-            setTripName(tripName)
-            setStays(stays)
-            setEatDrink(eatDrink)
-            setExplore(explore)
-            setEssentials(essentials)
-            setGettingAround(gettingAround)
-          } catch (err) {
-            console.error("Error fetching trip details", err)
-      
-            if (err.message === "Unauthorized" || err.status === 401) { // handle expired token
-              logout(); // clear token + user state
-              navigate("/login", { replace: true })
-              return;
-            }
-          } finally {
-            setLoading(false)
-          }
         }
         fetchTripDetails()
-      }, [tripId, token, logout, navigate])
+    }, [tripId, token, logout, navigate])
 
 
     // Create new marker icons
@@ -327,8 +285,9 @@ export default function TripMap() {
     // React could create a new function object for addMarker, which makes AddMarkerOnClick see it as a new function and run again.
     // With useCallback, when the component re-renders, this function is being kept as the same object in memory, not triggering AddMarkerOnClick
     const addMarkerCallback = useCallback((event) => {
-        const lat = event.latlng.lat
-        const lng = event.latlng.lng // gets lat and long from the map and turns it into latLong
+        const { latlng, category } = event
+        const lat = latlng.lat
+        const lng = latlng.lng // gets lat and long from the map and turns it into latLong
 
         // checks if there's already a marker with the same coordinates.
         const exists = [...stays, ...eatDrink, ...explore, ...essentials, ...gettingAround].some(
@@ -345,7 +304,7 @@ export default function TripMap() {
             deleted: false
         }
         //add the new marker to the state
-        switch (activeCategory) {
+        switch (category) {
             case "stay":
                 setShowStays(true)
                 newMarker = { ...newMarker, name: event.label || "New stay item", status: "planned", price: "unknown" }
@@ -374,30 +333,68 @@ export default function TripMap() {
             default:
                 break
         }
-    }, [activeCategory, stays, eatDrink, explore, essentials, gettingAround])
+    }, [stays, eatDrink, explore, essentials, gettingAround])
 
-    // Component that helps the click event happen (wrapper for addMarker that listens to click events - component)
-    function AddMarkerOnClick({ activeCategory, onClick }) { //onClick = addMarker
-        const map = useMap() //get map instance
 
-        useMapEvent("click", (e) => {
-            if (!activeCategory) {
-                const tempTooltip = L.tooltip({
-                    permanent: false,
-                    direction: "top",
-                    className: "bg-red-200 text-red-800 p-1 rounded shadow"
-                })
-                    .setLatLng(e.latlng)
-                    .setContent("Please select a category first")
+    // Popup to Add Marker
+    function openCategoryPopup({ map, lat, lng, label, onConfirm }) {
+        const popup = L.popup().setLatLng([lat, lng]).openOn(map)
 
-                tempTooltip.addTo(map)
-                setTimeout(() => map.removeLayer(tempTooltip), 2000) //remove tooltip after 2 seconds
+        // Create container
+        const container = document.createElement("div")
+        container.className = "flex flex-col items-center gap-2"
+
+        // Create dropdown
+        const select = document.createElement("select")
+        select.className = "border border-gray-300 rounded-md text-xs px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm w-full"
+        const categories = [
+            { value: "stay", label: "Stays" },
+            { value: "eatDrink", label: "Eat & Drink" },
+            { value: "explore", label: "Explore" },
+            { value: "essentials", label: "Essentials" },
+            { value: "gettingAround", label: "Getting Around" }
+        ]
+        select.innerHTML = `<option value="">Select category</option>` +
+            categories.map(c => `<option value="${c.value}">${c.label}</option>`).join("")
+
+        container.appendChild(select)
+
+        // Create button
+        const button = document.createElement("button")
+        button.textContent = "Add Marker"
+        button.className = "general-button my-0 w-35 text-xs"
+        container.appendChild(button)
+
+        popup.setContent(container)
+
+        // Attach event listener
+        button.addEventListener("click", () => {
+            const selectedCategory = select.value
+            if (!selectedCategory) {
+                alert("Please select a category first")
                 return
             }
-            onClick(e)
-            setHasChanges(true)
+            // Pass the selected category to AddMarkerCallback
+            onConfirm(selectedCategory)
+            map.closePopup()
+        }, { once: true })
+    }
+
+    // Component that helps the click event happen (wrapper for addMarker that listens to click events - component)
+    // When the map is clicked, a popup opens witb category selection and Add button
+    function AddMarkerOnClick({ onClick }) { //onClick = addMarker
+        const map = useMap() //get map instance
+
+        useMapEvent("click", (mapEvent) => {
+            const { lat, lng } = mapEvent.latlng
+
+            openCategoryPopup({
+                map, lat, lng, label: "Marker", onConfirm: (category) => {
+                    addMarkerCallback({ latlng: { lat, lng }, category })
+                    setHasChanges(true)
+                }
+            })
         })
-        return null
     }
 
     // Update Trip Name Change
@@ -462,44 +459,30 @@ export default function TripMap() {
         const map = useMap() // get an instance of the map
 
         useEffect(() => {
-            if (!result?.location) return; // make sure location exists
+            if (!result?.location) return // make sure location exists
 
-            const lat = result.location.y ?? result.y;
-            const lng = result.location.x ?? result.x;
+            const lat = result.location.y ?? result.y
+            const lng = result.location.x ?? result.x
 
-            const tempMarker = L.marker([lat, lng]).addTo(map);
+            const tempMarker = L.marker([lat, lng]).addTo(map)
 
             tempMarker
                 .bindTooltip(result.label || "Search result", { permanent: false, direction: "top" })
                 .openTooltip()
 
-            map.setView([lat, lng], 15); // zoom to the search result
+            map.setView([lat, lng], 15) // zoom to the search result
 
             // Upon click
             const onClick = () => {
-                // if there is no category selected, open tooltip
-                if (!activeCategory) {
-                    const tempTooltip = L.tooltip({
-                        permanent: false,
-                        direction: "top",
-                        className: "bg-red-200 text-red-800 p-1 rounded shadow"
-                    })
-                        .setLatLng([lat, lng])
-                        .setContent("To add this place to your markers, please choose a category first")
-                        .addTo(map) // add tooltip to map
-
-                    setTimeout(() => map.removeLayer(tempTooltip), 2000) // remove it after 2 seconds
-                    return
-                }
-                // if there is a category selected, remove the default temp marker from the search, and add permanent marker
-                if (map.hasLayer(tempMarker)) { // remove temporary marker
-                    map.removeLayer(tempMarker)
-                    setHasChanges(true)
-                }
-                addMarkerCallback({ latlng: { lat, lng }, label: result.label }) // reuse this function to add permanent marker
-                setSearchResult(null) // clear results to unmount this component
+                openCategoryPopup({
+                    map, lat, lng, label: result.label, onConfirm: (category) => {
+                        if (map.hasLayer(tempMarker)) map.removeLayer(tempMarker) // Remove temporary marker
+                        addMarkerCallback({ latlng: { lat, lng }, category, label: result.label }) // Call addMarkerCallback
+                        setHasChanges(true)
+                        setSearchResult(null) // clear search result
+                    }
+                })
             }
-
             tempMarker.on("click", onClick) // when the temp marker is clicked, run the onClick function
 
             return () => {
@@ -508,7 +491,7 @@ export default function TripMap() {
                     map.removeLayer(tempMarker) //make sure there is no temp marker left on the map (clean up if unmounts or new result arrives)
                 }
             }
-        }, [result, map, activeCategory, addMarkerCallback, setSearchResult])
+        }, [result, map, addMarkerCallback, setSearchResult])
         return null
     }
 
@@ -730,7 +713,7 @@ export default function TripMap() {
         return null
     }
 
-    
+
     if (loading) return <h2>Loading map...</h2>
 
     // Everything below the if needs the data to be loaded to run
@@ -780,6 +763,7 @@ export default function TripMap() {
                 </Link>
                 <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
             </div>
+
             <MapContainer ref={mapRef} zoomControl={false} className="h-[500px] w-full" id="map">
                 <ZoomControl position="bottomright" />
                 <FitBounds markers={initialMarkers} /> {/* calls the function and sets the bounds of the map to show all markers*/}
@@ -790,18 +774,7 @@ export default function TripMap() {
                 <SearchControl /> {/* Search bar */}
                 {searchResult && <SearchResultHandler result={searchResult} />} {/* Add marker from search upon click */}
                 <AddMarkerOnClick
-                    activeCategory={activeCategory}
                     onClick={addMarkerCallback} />
-                {/* Control - Dropdown to pick category of next marker to be added*/}
-                <CategoryDropdown
-                    activeCategory={activeCategory}
-                    setActiveCategory={setActiveCategory}
-                    setShowStays={setShowStays}
-                    setShowEatDrink={setShowEatDrink}
-                    setShowExplore={setShowExplore}
-                    setShowEssentials={setShowEssentials}
-                    setShowGettingAround={setShowGettingAround}
-                />
                 <CategoryFilter
                     showStays={showStays} setShowStays={setShowStays}
                     showEatDrink={showEatDrink} setShowEatDrink={setShowEatDrink}
@@ -890,7 +863,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="flex flex-col items-start mr-0"> 
+                                    <label className="flex flex-col items-start mr-0">
                                         <span className="popup-label">Comments:</span>
                                         <textarea
                                             className="popup-input w-full bg-gray-200"
@@ -974,7 +947,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="flex flex-col items-start mr-0"> 
+                                    <label className="flex flex-col items-start mr-0">
                                         <span className="popup-label">Comments:</span>
                                         <textarea
                                             className="popup-input w-full bg-gray-200"
@@ -1068,7 +1041,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="flex flex-col items-start mr-0"> 
+                                    <label className="flex flex-col items-start mr-0">
                                         <span className="popup-label">Comments:</span>
                                         <textarea
                                             className="popup-input w-full bg-gray-200"
@@ -1152,7 +1125,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="flex flex-col items-start mr-0"> 
+                                    <label className="flex flex-col items-start mr-0">
                                         <span className="popup-label">Comments:</span>
                                         <textarea
                                             className="popup-input w-full bg-gray-200"
@@ -1236,7 +1209,7 @@ export default function TripMap() {
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
                                     </label>
-                                    <label className="flex flex-col items-start mr-0"> 
+                                    <label className="flex flex-col items-start mr-0">
                                         <span className="popup-label">Comments:</span>
                                         <textarea
                                             className="popup-input w-full bg-gray-200"
