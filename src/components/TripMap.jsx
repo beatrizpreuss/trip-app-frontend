@@ -65,6 +65,9 @@ export default function TripMap() {
         useEffect(() => {
             const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for the filter
 
+            const title = L.DomUtil.create("div", "font-semibold text-gray-700 text-sm mb-1", controlDiv)
+            title.textContent = "Filter by Category"
+
             const categories = [
                 { value: "stay", label: " Stays", show: showStays, setShow: setShowStays },
                 { value: "eatDrink", label: " Eat & Drink", show: showEatDrink, setShow: setShowEatDrink },
@@ -132,7 +135,10 @@ export default function TripMap() {
 
         useEffect(() => {
             const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for filter
-            const days = Object.keys(showDays).sort((a, b) => a - b);
+            const title = L.DomUtil.create("div", "font-semibold text-gray-700 text-sm mb-1", controlDiv)
+            title.textContent = "Filter by Day"
+            
+            const days = Object.keys(showDays).sort((a, b) => a - b)
 
             days.forEach(day => {
                 const label = L.DomUtil.create("label", "block mb-1", controlDiv)
