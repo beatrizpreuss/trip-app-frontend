@@ -228,3 +228,18 @@ export async function popupToBackend(token, tripId, finalAnswers, suggestionsPar
         }
     }
 }
+
+
+// Send form questions to backend to get destination suggestions
+export async function formToBackend(formAnswers) {
+    try{
+        const res = await fetch(`${BASE_URL}/find-destination`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formAnswers)
+        })
+        return await res.json()
+    } catch (err) {
+        console.error('Error in formToBackend')
+    }
+}
