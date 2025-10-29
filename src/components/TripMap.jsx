@@ -642,7 +642,7 @@ export default function TripMap() {
             const newMarker = {
                 id: tempId,
                 latLong: [lat, lon],
-                name: suggestion.tags?.name || "Suggestion",
+                name: suggestion.tags?.name || "(unnamed)",
                 status: "",
                 price: "",
                 address: suggestion.tags?.addr_street || "",

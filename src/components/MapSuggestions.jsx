@@ -39,14 +39,8 @@ export default function MapAISuggestions({
             {
                 key: "company",
                 text: "Who are you traveling with?",
-                options: ["Solo", "Partner", "Kids", "Pets"],
+                options: ["Solo", "Partner", "Kids", "Group", "Pets"],
                 type: "multi"
-            },
-            {
-                key: "quantity",
-                text: "How many suggestions would you like to see?",
-                options: [5, 10, 20],
-                type: "single"
             }
         ],
         eatDrink: [
@@ -55,12 +49,6 @@ export default function MapAISuggestions({
                 key: "diningStyle",
                 text: "Do you prefer casual or fine dining?",
                 options: ["Casual", "Fine"],
-                type: "single"
-            },
-            {
-                key: "quantity",
-                text: "How many suggestions would you like to see?",
-                options: [5, 10, 20],
                 type: "single"
             }
         ],
@@ -76,12 +64,6 @@ export default function MapAISuggestions({
                 text: "Should it be kid-friendly or pet-friendly?",
                 options: ["Yes, both", "Kid-friendly", "Pet-friendly", "No"],
                 type: "single"
-            },
-            {
-                key: "quantity",
-                text: "How many suggestions would you like to see?",
-                options: [5, 10, 20],
-                type: "single"
             }
         ],
         essentials: [
@@ -89,12 +71,6 @@ export default function MapAISuggestions({
                 key: "type",
                 text: "What type of essential do you need?",
                 options: ["Supermarket", "Pharmacy", "ATM", "Hospital", "Other"],
-                type: "single"
-            },
-            {
-                key: "quantity",
-                text: "How many suggestions would you like to see?",
-                options: [5, 10, 20],
                 type: "single"
             }
         ],
@@ -104,12 +80,6 @@ export default function MapAISuggestions({
                 text: "What do you need?",
                 options: ["Train stations", "Bus stops", "Parking spots", "Bike rentals", "Charging Stations", "Car rental"],
                 type: "multi"
-            },
-            {
-                key: "quantity",
-                text: "How many suggestions would you like to see?",
-                options: [5, 10, 20],
-                type: "single"
             }
         ]
     }
@@ -179,7 +149,6 @@ export default function MapAISuggestions({
             [question.key]: question.type === "multi" ? selectedOptions : selectedOptions[0] //set new answer (if type of question is "multi", answer is an array, otherwise, answer is a string)
         };
         setAnswers(newAnswers) //change answer state
-        console.log("Selected options:", selectedOptions)
         setSelectedOptions([]) //clear selectedOptions state for the next question
 
         // Move to next question or fetch suggestions
@@ -187,7 +156,6 @@ export default function MapAISuggestions({
             setBranchStep(branchStep + 1)
         } else { //if there are no more questions, fetch suggestions
             setLoading(true)
-            console.log("Fetching suggestions with answers", newAnswers)
             fetchSuggestions(newAnswers).finally(() => {
                 setLoading(false)
             })
@@ -298,8 +266,7 @@ export default function MapAISuggestions({
                                             onChange={(e) => setTextInput(e.target.value)}
                                         />
                                         <button
-                                            onClick={() => submitAnswer([textInput.trim()])}
-                                            disabled={textInput.trim() === ""}
+                                            onClick={() => submitAnswer(textInput.trim() ? [textInput.trim()] : [])}
                                             className="general-button w-1/6 my-0"
                                         >
                                             OK
@@ -362,9 +329,6 @@ export default function MapAISuggestions({
                             )
                         )}
 
-                        {!loading && suggestions[0] === "No results found" &&
-                            <div className="mt-5 mr-30">No suggestions found</div>
-                        }
                         {!loading && ["backend_unreachable", "openai_unreachable"].includes(suggestions[0]) && (
                             <div className="mt-5 mr-30 text-red-500">
                                 Could not connect to the suggestion service
