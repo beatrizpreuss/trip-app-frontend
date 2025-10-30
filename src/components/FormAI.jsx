@@ -1,7 +1,10 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { formToBackend } from "../util/apiCalls"
 
 export default function FormAI() {
+
+    const navigate = useNavigate()
 
     const [formData, setFormData] = useState({
         location: "",
@@ -47,9 +50,12 @@ export default function FormAI() {
         e.preventDefault()
         console.log("Form Submitted:", formData)
         const suggestions = await formToBackend(formData)
-        console.log(suggestions)
+        navigate("/destination-ideas", {
+            state: { destinationIdeas: suggestions.destinations },
+        })
+        console.log(suggestions.destinations)
     }
-
+    
 
     return (
         <div className="m-25 mx-15">
