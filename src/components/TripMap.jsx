@@ -607,10 +607,6 @@ export default function TripMap() {
 
         setHasChanges(true);
         console.log("TripMap added marker:", newMarker)
-
-        if (mapRef.current) {
-            mapRef.current.flyTo(newMarker.latLong, 15, { duration: 1.5 })
-        }
     }
 
 
