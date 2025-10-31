@@ -225,7 +225,10 @@ export default function MapAISuggestions({
                         </button>
                         {/* If no results yet, show questions */}
                         {loading && (
-                            <div className="mt-5 mr-30">Fetching suggestions...</div>
+                            <div className="flex flex-row gap-5 justify-center items-center">
+                                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                <p className="mr-10">Fetching suggestions...</p>
+                            </div>
                         )}
 
                         {!loading && suggestions.length === 0 && (

@@ -5,6 +5,7 @@ import { formToBackend } from "../util/apiCalls"
 export default function FormAI() {
 
     const navigate = useNavigate()
+    const [loading, setLoading] = useState(false)
 
     const [formData, setFormData] = useState({
         location: "",
@@ -18,7 +19,7 @@ export default function FormAI() {
         acc: []
     })
 
-    
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target
 
@@ -30,9 +31,9 @@ export default function FormAI() {
                 return {
                     ...prev,
                     [name]: checked // is the option checked?
-                      ? [...currentKey, value] // if so, add to the array of answers
-                      : currentKey.filter((v) => v !== value), // if not, make sure it's removed
-                  }
+                        ? [...currentKey, value] // if so, add to the array of answers
+                        : currentKey.filter((v) => v !== value), // if not, make sure it's removed
+                }
             })
         }
 
@@ -41,21 +42,28 @@ export default function FormAI() {
         }
 
         else { // when dealing with text inputs
-            setFormData((prev) => ({...prev, [name]: value }))
-          }
+            setFormData((prev) => ({ ...prev, [name]: value }))
+        }
     }
 
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setLoading(true)
         console.log("Form Submitted:", formData)
-        const suggestions = await formToBackend(formData)
-        navigate("/destination-ideas", {
-            state: { destinationIdeas: suggestions.destinations },
-        })
+        try {
+            const suggestions = await formToBackend(formData)
+            navigate("/destination-ideas", {
+                state: { destinationIdeas: suggestions.destinations },
+            })
+        } catch (err) {
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
         console.log(suggestions.destinations)
     }
-    
+
 
     return (
         <div className="m-25 mx-15">
@@ -75,7 +83,7 @@ export default function FormAI() {
                 <form onSubmit={handleSubmit} onChange={handleChange}>
                     <div className="my-4">
                         <label htmlFor="location" className="form-question">Where are you located? <span className="italic text-xs dark:text-zinc-400">City and Country</span></label>
-                        <input type="text" id="location" name="location" 
+                        <input type="text" id="location" name="location"
                             className="form-input-box" required />
                     </div>
                     <div className="mb-4">
@@ -83,7 +91,7 @@ export default function FormAI() {
                         <div className="flex flex-wrap -mx-2">
                             <div className="px-2 w-1/3">
                                 <label htmlFor="goal-relaxation" className="form-label">
-                                    <input 
+                                    <input
                                         type="radio" id="goal-relaxation" name="goal" value="relaxation" className="mr-2" />Relaxation
                                 </label>
                             </div>
@@ -321,6 +329,13 @@ export default function FormAI() {
                     </div>
                 </form>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 flex flex-col items-center justify-center bg-white/70 dark:bg-black/50 backdrop-blur-sm z-50">
+                    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="mt-4 text-zinc-900 dark:text-zinc-100">Finding the best destinations for you...</p>
+                </div>
+            )}
         </div>
 
     )
