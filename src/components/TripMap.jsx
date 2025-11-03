@@ -385,7 +385,7 @@ export default function TripMap() {
             // Pass the selected category to AddMarkerCallback
             onConfirm(selectedCategory)
             map.closePopup()
-        }, { once: true })
+        })
     }
 
     // Component that helps the click event happen (wrapper for addMarker that listens to click events - component)
