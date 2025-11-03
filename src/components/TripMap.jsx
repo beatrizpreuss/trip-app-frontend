@@ -137,7 +137,7 @@ export default function TripMap() {
             const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for filter
             const title = L.DomUtil.create("div", "font-semibold text-gray-700 text-sm mb-1", controlDiv)
             title.textContent = "Filter by Day"
-            
+
             const days = Object.keys(showDays).sort((a, b) => a - b)
 
             days.forEach(day => {
@@ -477,8 +477,6 @@ export default function TripMap() {
             tempMarker
                 .bindTooltip(result.label || "Search result", { permanent: false, direction: "top" })
                 .openTooltip()
-
-            map.setView([lat, lng], 15) // zoom to the search result
 
             // Upon click
             const onClick = () => {
