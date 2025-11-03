@@ -1,9 +1,11 @@
+import { useState } from "react"
 import { useLocation } from "react-router-dom"
 
 
 export default function DestinationIdeas() {
 
     const location = useLocation()
+    const [currentIndex, setCurrentIndex] = useState(0) // for the carousel
 
     const ideas = location.state?.destinationIdeas || {}
 
@@ -13,42 +15,104 @@ export default function DestinationIdeas() {
         return <p>No destination ideas received yet.</p>;
     }
 
+    //functioning of carousel
+    const prevSlide = () => {
+        setCurrentIndex((prev) => (prev === 0 ? ideas.length - 1 : prev - 1))
+    }
+    const nextSlide = () => {
+        setCurrentIndex((prev) => (prev === ideas.length - 1 ? 0 : prev + 1))
+    }
+    const goToSlide = (index) => setCurrentIndex(index)
+
+
     return (
         <div className="m-25 mx-15">
             <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
-                    <h1 className="text-4xl font-bold">Your Destination Ideas</h1>
-                    <h3 className="mt-4 mb-20">Explore these personalized travel suggestions curated just for you</h3>
+                <h1 className="text-4xl font-bold">Your Destination Ideas</h1>
+                <h3 className="mt-4 mb-15">Explore these personalized travel suggestions curated just for you</h3>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {ideas.map((idea, index) => (
-                <div
-                    key={index}
-                    className="p-6 relative rounded-lg shadow shadow-lg dark:shadow-[#a9a9a9] overflow-hidden group"
-                >                    
-                    <h2 className="text-2xl font-bold text-center mt-4 mb-7 text-pretty dark:text-[#dddddd]">{idea.name}</h2>
-                    <p className="dark:text-gray-300 text-sm text-center mb-4">{idea.description}</p>
-                    <div>
-                        <h3 className="font-semibold dark:text-[#dddddd] mb-2">Highlights</h3>
-                        <ul className="list-disc list-inside dark:text-[#dddddd] text-sm mb-4">
-                            {idea.highlights.map((highlight, i) => (
-                                <li key={i}>{highlight}</li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="mt-auto">
-                        <h3 className="font-semibold dark:text-[#dddddd] mb-2">Travel Practicality</h3>
-                        <ul className="list-none dark:text-[#dddddd] text-sm space-y-1">
-                            <li><strong>Distance: </strong>{idea.travel_practicality.distance}</li>
-                            <li><strong>Transport: </strong>{idea.travel_practicality.transport}</li>
-                            <li><strong>Best Time: </strong>{idea.travel_practicality.best_time_to_visit}</li>
-                        </ul>
-                    </div>
-                    <h3 className="font-semibold dark:text-[#dddddd] mt-4 mb-2">Useful tips</h3>
-                    <p className="dark:text-gray-300 text-sm mb-4">{idea.other_tips}</p>
+
+
+
+            <div id="default-carousel" className="flex flex-col relative w-2/3 mx-auto" data-carousel="slide">
+                {/*<!-- Carousel wrapper -->*/}
+                <div className="relative flex justify-center h-auto overflow-hidden shadow shadow-lg rounded-lg md:min-h-130">
+                    {/*<!-- Item 1 -->*/}
+                    {ideas.map((idea, index) => (
+                        <div
+                            key={index}
+                            className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${index === currentIndex ? "opacity-100" : "opacity-0 pointer-events-none"
+                                }`}
+                        >
+                            <div className="p-6 relative rounded-lg overflow-hidden group">
+                                <h2 className="text-2xl font-bold text-center mt-4 mb-7 text-pretty dark:text-[#dddddd]">{idea.name}</h2>
+                                <p className="dark:text-gray-300 text-sm text-center mb-4">{idea.description}</p>
+                                <div className="flex flex-row gap-5">
+                                    <div className="ml-10 rounded-lg shadow bg-zinc-200 p-5">
+                                        <h3 className="font-semibold text-center dark:text-[#dddddd] mb-2">Highlights</h3>
+                                        <ul className="list-disc list-inside dark:text-[#dddddd] text-sm mb-4">
+                                            {idea.highlights.map((highlight, i) => (
+                                                <li key={i}>{highlight}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+
+                                    <div className="mr-10 rounded-lg shadow bg-zinc-200 p-5">
+                                        <h3 className="font-semibold text-center dark:text-[#dddddd] mb-2">Travel Practicality</h3>
+                                        <ul className="list-none dark:text-[#dddddd] text-sm space-y-1">
+                                            <li><strong>Distance: </strong>{idea.travel_practicality.distance}</li>
+                                            <li><strong>Transport: </strong>{idea.travel_practicality.transport}</li>
+                                            <li><strong>Best Time: </strong>{idea.travel_practicality.best_time_to_visit}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <h3 className="font-semibold text-center dark:text-[#dddddd] mt-4 mb-2">Useful tips</h3>
+                                <p className="dark:text-gray-300 text-center text-sm mb-4">{idea.other_tips}</p>
+                                {/* Map link */}
+                                <a
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(idea.name)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:underline text-sm mt-3 block text-center"
+                                >
+                                    View on Google Maps
+                                </a>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
+                {/*<!-- Slider indicators -->*/}
+                <div className="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3">
+                    {ideas.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => goToSlide(index)}
+                            className={`w-3 h-3 rounded-full ${index === currentIndex ? "bg-blue-600" : "bg-gray-300"}`}
+                        ></button>
+                    ))}
+                </div>
+                {/*<!-- Slider controls -->*/}
+                <button onClick={prevSlide} type="button" className="absolute top-0 start-0 z-30 flex items-center h-full px-4 cursor-pointer group focus:outline-none">
+                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-zinc-900/30 dark:bg-zinc-100/30 group-hover:bg-zinc-800/50 dark:group-hover:bg-zinc-300/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                        <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
+                        </svg>
+                        <span className="sr-only">Previous</span>
+                    </span>
+                </button>
+                <button onClick={nextSlide} type="button" className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none">
+                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-zinc-900/30 dark:bg-zinc-100/30 group-hover:bg-zinc-800/50 dark:group-hover:bg-zinc-300/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                        <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                        </svg>
+                        <span className="sr-only">Next</span>
+                    </span>
+                </button>
             </div>
-        </div>
+
+
+
+        </div >
     )
 
 }

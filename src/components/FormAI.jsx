@@ -12,7 +12,7 @@ export default function FormAI() {
         goal: "",
         interests: [],
         length: "",
-        transport: "",
+        transport: [],
         preferredPlaces: "",
         avoidPlaces: "",
         season: [],
@@ -229,17 +229,17 @@ export default function FormAI() {
                             <div className="flex flex-wrap -mx-2">
                                 <div className="px-2 w-1/3">
                                     <label htmlFor="transport" className="form-label">
-                                        <input type="radio" id="transport-car" name="transport" value="car" className="mr-2" />By car
+                                        <input type="checkbox" id="transport-car" name="transport" value="car" className="mr-2" />By car
                                     </label>
                                 </div>
                                 <div className="px-2 w-1/3">
                                     <label htmlFor="transport" className="form-label">
-                                        <input type="radio" id="transport-public" name="transport" value="public" className="mr-2" />By public transportation
+                                        <input type="checkbox" id="transport-public" name="transport" value="public" className="mr-2" />By public transportation
                                     </label>
                                 </div>
                                 <div className="px-2 w-1/3">
                                     <label htmlFor="transport" className="form-label">
-                                        <input type="radio" id="transport-plane" name="transport" value="plane" className="mr-2" />By plane
+                                        <input type="checkbox" id="transport-plane" name="transport" value="plane" className="mr-2" />By plane
                                     </label>
                                 </div>
                             </div>
@@ -333,7 +333,8 @@ export default function FormAI() {
             {loading && (
                 <div className="fixed inset-0 flex flex-col items-center justify-center bg-white/70 dark:bg-black/50 backdrop-blur-sm z-50">
                     <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="mt-4 text-zinc-900 dark:text-zinc-100">Finding the best destinations for you...</p>
+                    <p className="mt-4 text-zinc-900 dark:text-zinc-100">We are finding the best destinations for you.</p>
+                    <p className="mt-4 text-sm text-zinc-900 dark:text-zinc-100">This might take a few minutes.</p>
                 </div>
             )}
         </div>
