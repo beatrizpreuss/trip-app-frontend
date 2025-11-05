@@ -186,16 +186,28 @@ export default function TripMap() {
 
     // Helper function to help the 'day' input in the popup and the filtering of it (decides whether a marker should be shown based on the day filter. Used when rendering markers)
     const matchesActiveDays = (marker, showDays) => {
-        if (!marker.day) return true //missing data: when there is no day, hide marker (return False)
-        if (Array.isArray(marker.day)) return marker.day.some(d => showDays[d.toString()]) //main case: returns true if any of the marker's day are turned on in the showDays
-        if (typeof marker.day === "string") { //editing case: when the user is typing in the popup, marker.day may temporarily be a string
+         // Case 1: if no day defined at all, show the marker while editing
+        if (marker.day === null || marker.day === undefined || marker.day === "") {
+            return true
+        }
+        // Case 2: array of days (backend-normalized)
+        if (Array.isArray(marker.day)) {
+            // Allow empty arrays during editing
+            if (marker.day.length === 0) return true
+            return marker.day.some(d => showDays[d.toString()])
+        }
+        // Case 3: string (user typing)
+        if (typeof marker.day === "string") {
             const days = marker.day
                 .split(',')
                 .map(v => parseInt(v.trim(), 10))
-                .filter(v => v)
+                .filter(v => !isNaN(v)) // ← keep only valid numbers, not falsy 0/NaN
+            // if still empty, treat as “still editing” → show marker
+            if (days.length === 0) return true
             return days.some(d => showDays[d.toString()])
         }
-        return showDays[marker.day.toString()] //fallback for when marker.day is a single number & checks if is active in showDays
+        // Case 4: single number (fallback)
+        return showDays[marker.day.toString()]
     }
 
 
@@ -334,7 +346,7 @@ export default function TripMap() {
             id: `temp-${Date.now()}`, // Temporary id, just until the data is sent to the backend
             latLong,
             address: "",
-            day: 1,
+            day: [1],
             comments: "",
             deleted: false
         }
