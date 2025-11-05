@@ -9,7 +9,7 @@ export default function MapTips({ tripId }) {
     const [loading, setLoading] = useState(false)
     const { token } = useContext(AuthContext)
     const controllerRef = useRef(null) // allow for cancellation of tip request
-    
+
     // Reset popup to initial state
     const resetPopup = () => {
         controllerRef.current?.abort() // Abort any ongoing request
@@ -44,7 +44,7 @@ export default function MapTips({ tripId }) {
                 setTips("api_unreachable")
             }
         } finally {
-        if (!controller.signal.aborted) setLoading(false)
+            if (!controller.signal.aborted) setLoading(false)
         }
     }
 
@@ -88,29 +88,33 @@ export default function MapTips({ tripId }) {
                             </div>
                         )}
 
-                    
-                        {!loading && tips && (
+
+                        {!loading && tips.length > 0 && (
                             // First, handle values when there are issues
                             tips === "No results found" ? (
-                                <div className="mt-5 mr-30">No tipss found</div> // actual no suggestions found
+                                <div className="mt-5 mr-30">No tips found</div> // actual no suggestions found
                             ) : ["backend_unreachable", "api_unreachable"].includes(tips) ? (
                                 <div className="mt-5 mr-30">
-                                    Could not connect to the suggestion service 
+                                    Could not connect to the service
                                 </div> // issues with backend or api (or internet connection, etc)
                             ) : (
                                 // Otherwise, render the real suggestions safely
-                                <div className="max-h-64 overflow-y-auto border rounded p-2 space-y-2">
-                                    <p className="text-sm">
-                                        {tips}
-                                    </p>
-
+                                <div className="max-h-64 overflow-y-auto border rounded p-4   bg-white dark:bg-[#222222]">
+                                    <h3 className="text-center font-bold mb-2">💡 Tips for your trip 🌎</h3>
+                                    <ul className="list-disc list-inside space-y-2">
+                                        {tips.map(t => (
+                                            <li key={t.id} className="text-sm text-gray-800 dark:text-gray-200 break-words">
+                                                {t || ""}
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
                             )
                         )}
 
                         {!loading && ["backend_unreachable", "openai_unreachable"].includes(tips) && (
                             <div className="mt-5 mr-30 text-red-500">
-                                Could not connect to the suggestion service
+                                Could not connect to the service
                             </div>
                         )}
                     </div>
