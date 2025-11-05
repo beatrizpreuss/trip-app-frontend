@@ -19,6 +19,7 @@ import MapSuggestions from "./MapSuggestions"
 import { combineMarkers, getCenterOfMarkers, getRadiusFromMarkers } from "../util/geo.js"
 import suggestionsIconImage from "../assets/images/placeholder1.png"
 import { AuthContext } from "./AuthContext"
+import MapTips from "./MapTips.jsx"
 
 const { BaseLayer } = LayersControl
 const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY
@@ -1328,7 +1329,8 @@ export default function TripMap() {
                 )}
 
             </MapContainer>
-
+            
+            <div className="flex flex-row justify-center gap-5">
             {/* Suggestions is only an option when the user already has a marker */}
             {allMarkers.length > 0 && suggestionsParams && (
                 <MapSuggestions
@@ -1355,6 +1357,12 @@ export default function TripMap() {
                     textInput={textInput}
                     setTextInput={setTextInput} />
             )}
+
+            {allMarkers.length > 0 &&
+            <MapTips
+                tripId={tripId}/>
+            }
+            </div>
         </div>
     )
 }

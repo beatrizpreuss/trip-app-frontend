@@ -260,3 +260,22 @@ export async function formToBackend(formAnswers) {
         console.error('Error in formToBackend')
     }
 }
+
+
+// Get tips by the ID of the trip (in the backend: get_travel_tips function)
+export async function getTipsByTripId(token, tripId, signal) {
+    const res = await fetch(`${BASE_URL}/trips/${tripId}/tips`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        signal
+    })
+    if (res.status === 401) {
+        throw new Error("Unauthorized")
+    }
+    if (!res.ok) {
+        throw new Error(`Failed to fetch trip ${tripId}: ${res.statusText}`);
+    }
+    return await res.json()
+}
