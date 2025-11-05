@@ -33,7 +33,7 @@ export const mapItemForBackend = (item) => ({
     status: item.status,
     price: item.price,
     address: item.address,
-    day: item.day,
+    day: typeof item.day === "string" ? item.day.split(",").map(v => parseInt(v.trim(), 10)).filter(v => !isNaN(v)) : item.day,
     coordinates: Array.isArray(item.latLong) ? item.latLong.join(",") : (item.latLong || null),
     external_url: item.url,
     comments: item.comments,

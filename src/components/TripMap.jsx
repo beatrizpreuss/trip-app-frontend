@@ -114,13 +114,22 @@ export default function TripMap() {
     const [showDays, setShowDays] = useState({})
     useEffect(() => {
         const allMarkers = [...stays, ...eatDrink, ...explore, ...essentials, ...gettingAround]
-        const uniqueDays = Array.from(new Set(allMarkers.map(m => m.day)))
+        const allDays = allMarkers.flatMap(marker => { //get the days from the lists
+            if (Array.isArray(marker.day)) return marker.day
+            if (typeof marker.day === "string") {
+                return marker.day.split(",").map(v => parseInt(v.trim(), 10)).filter(v => !isNaN(v))
+            }
+            return []
+        })
+
+        const uniqueDays = Array.from(new Set(allDays)) //find days without duplicates
 
         setShowDays(prev => {
             const updated = { ...prev }
             uniqueDays.forEach(day => {
-                if (!(day in updated)) {
-                    updated[day] = true
+                const key = day.toString()
+                if (!(key in updated)) {
+                    updated[key] = true
                 }
             })
             return updated
@@ -138,18 +147,20 @@ export default function TripMap() {
             const title = L.DomUtil.create("div", "font-semibold text-gray-700 text-sm mb-1", controlDiv)
             title.textContent = "Filter by Day"
 
-            const days = Object.keys(showDays).sort((a, b) => a - b)
+            const days = Object.keys(showDays)
+                .map(d => parseInt(d, 10))
+                .sort((a, b) => a - b)
 
             days.forEach(day => {
                 const label = L.DomUtil.create("label", "block mb-1", controlDiv)
                 const checkbox = L.DomUtil.create("input", "", label)
                 checkbox.type = "checkbox"
-                checkbox.checked = showDays[day]
+                checkbox.checked = showDays[day.toString()]
 
                 label.appendChild(document.createTextNode(` Day ${day}`))
 
                 checkbox.addEventListener("change", (e) => {
-                    setShowDays(prev => ({ ...prev, [day]: e.target.checked }))
+                    setShowDays(prev => ({ ...prev, [day.toString()]: e.target.checked }))
                 })
             })
 
@@ -171,6 +182,21 @@ export default function TripMap() {
 
         return null
     }
+
+    // Helper function to help the 'day' input in the popup and the filtering of it (decides whether a marker should be shown based on the day filter. Used when rendering markers)
+    const matchesActiveDays = (marker, showDays) => {
+        if (!marker.day) return true //missing data: when there is no day, hide marker (return False)
+        if (Array.isArray(marker.day)) return marker.day.some(d => showDays[d.toString()]) //main case: returns true if any of the marker's day are turned on in the showDays
+        if (typeof marker.day === "string") { //editing case: when the user is typing in the popup, marker.day may temporarily be a string
+            const days = marker.day
+                .split(',')
+                .map(v => parseInt(v.trim(), 10))
+                .filter(v => v)
+            return days.some(d => showDays[d.toString()])
+        }
+        return showDays[marker.day.toString()] //fallback for when marker.day is a single number & checks if is active in showDays
+    }
+
 
     // Search Control component - lets the user search for places, like in Google Maps
     function SearchControl() {
@@ -640,7 +666,7 @@ export default function TripMap() {
                 status: "",
                 price: "",
                 address: suggestion.tags?.addr_street || "",
-                day: 1,
+                day: [1],
                 url: suggestion.tags?.website || "",
                 comments: suggestion.description || ""
             }
@@ -809,7 +835,7 @@ export default function TripMap() {
                 <DayFilter showDays={showDays} setShowDays={setShowDays} />
 
                 {showStays && stays
-                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && (showDays[marker.day] ?? true))
+                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -871,8 +897,8 @@ export default function TripMap() {
                                         <input
                                             className="popup-input"
                                             name="day"
-                                            type="number"
-                                            value={marker.day || 1}
+                                            type="text"
+                                            value={marker.day || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
@@ -913,7 +939,7 @@ export default function TripMap() {
                     ))}
 
                 {showEatDrink && eatDrink
-                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && (showDays[marker.day] ?? true))
+                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -955,8 +981,8 @@ export default function TripMap() {
                                         <input
                                             className="popup-input"
                                             name="day"
-                                            type="number"
-                                            value={marker.day || 1}
+                                            type="text"
+                                            value={marker.day || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
@@ -997,7 +1023,7 @@ export default function TripMap() {
                     ))}
 
                 {showExplore && explore
-                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && (showDays[marker.day] ?? true))
+                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -1049,8 +1075,8 @@ export default function TripMap() {
                                         <input
                                             className="popup-input"
                                             name="day"
-                                            type="number"
-                                            value={marker.day || 1}
+                                            type="text"
+                                            value={marker.day || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1091,7 +1117,7 @@ export default function TripMap() {
                     ))}
 
                 {showEssentials && essentials
-                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && showDays[marker.day])
+                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -1133,8 +1159,8 @@ export default function TripMap() {
                                         <input
                                             className="popup-input"
                                             name="day"
-                                            type="number"
-                                            value={marker.day || 1}
+                                            type="text"
+                                            value={marker.day || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1175,7 +1201,7 @@ export default function TripMap() {
                     ))}
 
                 {showGettingAround && gettingAround
-                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && (showDays[marker.day] ?? true))
+                    .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
                     .map((marker, index) => (
                         <Marker
                             key={index}
@@ -1217,8 +1243,8 @@ export default function TripMap() {
                                         <input
                                             className="popup-input"
                                             name="day"
-                                            type="number"
-                                            value={marker.day || 1}
+                                            type="text"
+                                            value={marker.day || ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />

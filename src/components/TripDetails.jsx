@@ -103,7 +103,7 @@ export default function TripDetails() {
             id: null,
             name: "",
             address: "",
-            day: 1,
+            day: [1],
             coordinates: "",
             external_url: "",
             comments: ""
@@ -279,10 +279,11 @@ export default function TripDetails() {
                                         <td className="table-input-box">
                                             <input
                                                 name="day"
-                                                type="number"
+                                                type="text"
+                                                placeholder="e.g. 1, 3, 5"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                                className="w-full min-w-0 text-center"
+                                                className="w-full min-w-10 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -393,10 +394,10 @@ export default function TripDetails() {
                                         <td className="table-input-box">
                                             <input
                                                 name="day"
-                                                type="number"
+                                                type="text"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
-                                                className="w-full min-w-0 text-center"
+                                                className="w-full min-w-10 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -519,10 +520,10 @@ export default function TripDetails() {
                                         <td className="table-input-box">
                                             <input
                                                 name="day"
-                                                type="number"
+                                                type="text"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                                className="w-full min-w-0 text-center"
+                                                className="w-full min-w-10 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -635,10 +636,10 @@ export default function TripDetails() {
                                         <td className="table-input-box">
                                             <input
                                                 name="day"
-                                                type="number"
+                                                type="text"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                                className="w-full min-w-0 text-center"
+                                                className="w-full min-w-10 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -750,10 +751,10 @@ export default function TripDetails() {
                                         <td className="table-input-box">
                                             <input
                                                 name="day"
-                                                type="number"
+                                                type="text"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
-                                                className="w-full min-w-0 text-center"
+                                                className="w-full min-w-10 text-center"
                                             />
                                         </td>
                                         <td className="table-input-box">
