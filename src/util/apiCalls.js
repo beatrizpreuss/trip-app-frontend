@@ -31,14 +31,14 @@ export function useAuthActions() {
         }
     }
 
-    const registerFunction = async (email, password) => {
+    const registerFunction = async (username, email, password) => {
         try {
             const registerResponse = await fetch(`${BASE_URL}/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ username, email, password })
             })
 
             const registerData = await registerResponse.json()
@@ -56,6 +56,23 @@ export function useAuthActions() {
         }
     }
     return { loginFunction, registerFunction }
+}
+
+// Get username
+export async function fetchCurrentUser(token) {
+    const res = await fetch(`${BASE_URL}/me`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    })
+    if (res.status === 401) {
+        throw new Error("Unauthorized")
+    }
+    if (!res.ok) {
+        throw new Error(`Failed to fetch current user: ${res.statusText}`);
+    }
+    return await res.json()
 }
 
 
