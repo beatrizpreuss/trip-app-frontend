@@ -1,12 +1,34 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import ThemeToggle from './ThemeToggle'
 import { Link, NavLink } from 'react-router-dom'
 import { AuthContext } from './AuthContext'
-// import '../index.css'
+import { fetchCurrentUser } from '../util/apiCalls'
+
 
 export default function NavBar() {
     const [showDropdown, setShowDropdown] = useState(false)
     const { token, logout } = useContext(AuthContext)
+    const [username, setUsername] = useState("")
+
+    useEffect(() => {
+        if (!token) return
+
+        const fetchUserDetails = async () => {
+            try {
+                const data = await fetchCurrentUser(token)
+                setUsername(data.username)
+            } catch (err) {
+                console.error("Error fetching user details", err)
+
+                if (err.message === "Unauthorized") { // handle expired token
+                    logout() // clear token + user state
+                }
+            }
+        }
+        fetchUserDetails()
+
+    }, [token, logout])
+
 
     return (
         <>
@@ -20,7 +42,10 @@ export default function NavBar() {
 
                         {token ? (
                             <button
-                                onClick={logout}
+                                onClick={() => {
+                                    setUsername("")
+                                    logout()
+                                }}
                                 className="hidden md:block general-button m-0 w-25"
                             >
                                 Logout
@@ -67,22 +92,29 @@ export default function NavBar() {
                                     className={({ isActive }) => `navbar-option ${isActive ? "font-bold" : ""}`}>My Trips
                                 </NavLink>
                             </li>
-                            
+
+                            <div>
+                                <p>{username}</p>
+                            </div>
+
                             {token ? (
-                            <button
-                                onClick={logout}
-                                className="general-button w-full my-2 block md:hidden"
-                            >
-                                Logout
-                            </button>
-                        ) : (
-                            <Link
-                                to="/login"
-                                className="general-button block md:hidden"
-                            >
-                                Login
-                            </Link>
-                        )}
+                                <button
+                                    onClick={() => {
+                                        setUsername("")
+                                        logout()
+                                    }}
+                                    className="general-button w-full my-2 block md:hidden"
+                                >
+                                    Logout
+                                </button>
+                            ) : (
+                                <Link
+                                    to="/login"
+                                    className="general-button block md:hidden"
+                                >
+                                    Login
+                                </Link>
+                            )}
                         </ul>
                     </div>
 

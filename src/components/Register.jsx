@@ -4,6 +4,7 @@ import { useAuthActions } from '../util/apiCalls'
 
 export default function Register() {
 
+    const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -16,7 +17,7 @@ export default function Register() {
             alert("Passwords do not match")
             return
         }
-        await registerFunction(email, password)
+        await registerFunction(username, email, password)
     }
 
 
@@ -28,6 +29,16 @@ export default function Register() {
                         Create your account
                     </h1>
                     <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
+                    <div className="mb-5">
+                            <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your username</label>
+                            <input type="username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                id="username"
+                                className="sign-input-box"
+                                placeholder="username"
+                                required />
+                        </div>
                         <div className="mb-5">
                             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                             <input type="email"
