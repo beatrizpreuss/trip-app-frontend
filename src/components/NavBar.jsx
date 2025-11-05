@@ -38,22 +38,27 @@ export default function NavBar() {
                         <span className="logo">WanderWise</span>
                     </a>
 
-                    <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+                    <div className="flex flex-row items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
 
                         {token ? (
-                            <button
-                                onClick={() => {
-                                    setUsername("")
-                                    logout()
-                                }}
-                                className="hidden md:block general-button m-0 w-25"
-                            >
-                                Logout
-                            </button>
+                            <div className="flex flex-row">
+                                <div class="relative md:mr-5 inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-600">
+                                    <span class="font-bold text-gray-600 dark:text-gray-300">{username[0]}</span>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setUsername("")
+                                        logout()
+                                    }}
+                                    className="hidden md:block general-button m-0 w-25"
+                                >
+                                    Logout
+                                </button>
+                            </div>
                         ) : (
                             <Link
                                 to="/login"
-                                className="hidden md:block general-button w-25"
+                                className="hidden md:block general-button m-0 w-25"
                             >
                                 Login
                             </Link>
@@ -92,33 +97,33 @@ export default function NavBar() {
                                     className={({ isActive }) => `navbar-option ${isActive ? "font-bold" : ""}`}>My Trips
                                 </NavLink>
                             </li>
-
-                            <div>
-                                <p>{username}</p>
-                            </div>
-
-                            {token ? (
-                                <button
-                                    onClick={() => {
-                                        setUsername("")
-                                        logout()
-                                    }}
-                                    className="general-button w-full my-2 block md:hidden"
-                                >
-                                    Logout
-                                </button>
-                            ) : (
-                                <Link
-                                    to="/login"
-                                    className="general-button block md:hidden"
-                                >
-                                    Login
-                                </Link>
-                            )}
                         </ul>
-                    </div>
 
+
+                    {token ? (
+                        <button
+                            onClick={() => {
+                                setUsername("")
+                                logout()
+                            }}
+                            className="general-button w-full my-2 block md:hidden"
+                        >
+                            Logout
+                        </button>
+                    ) : (
+                        <div className="flex flex-row justify-center">
+                            <Link
+                                to="/login"
+                                className="general-button block md:hidden w-25"
+                            >
+                                Login
+                            </Link>
+                       </div>
+                    )}
+</div>
                 </div>
+
+
             </nav>
         </>
     )
