@@ -225,9 +225,10 @@ export default function MapAISuggestions({
                         </button>
                         {/* If no results yet, show questions */}
                         {loading && (
-                            <div className="flex flex-row gap-5 justify-center items-center">
+                            <div className="flex flex-col justify-center items-center">
                                 <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                                <p className="mr-10">Fetching suggestions...</p>
+                                <p className="mt-4 text-zinc-900 dark:text-zinc-100">Fetching suggestions...</p>
+                                <p className="mt-4 text-sm text-zinc-900 dark:text-zinc-100">This might take a few minutes.</p>
                             </div>
                         )}
 

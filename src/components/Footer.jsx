@@ -18,10 +18,10 @@ export default function Footer() {
                             <a href="#" className="hover:underline me-4 md:me-6">Privacy Policy</a>
                         </li>
                         <li>
-                            <a href="#" className="hover:underline me-4 md:me-6">Sign up</a>
+                            <a href="/register" className="hover:underline me-4 md:me-6">Sign up</a>
                         </li>
                         <li>
-                            <a href="#" className="hover:underline">Login</a>
+                            <a href="/login" className="hover:underline">Login</a>
                         </li>
                     </ul>
                 </div>

@@ -46,7 +46,7 @@ export default function Login() {
                                 type="password"
                                 name="password"
                                 id="password"
-                                placeholder="••••••••"
+                                placeholder="••••••"
                                 className="sign-input-box"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
