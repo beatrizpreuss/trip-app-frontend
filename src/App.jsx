@@ -11,6 +11,7 @@ import Trips from './components/Trips'
 import TripLayout from './components/TripLayout'
 import TripDetails from './components/TripDetails'
 import TripMap from './components/TripMap'
+import Profile from './components/Profile'
 import FormAI from './components/FormAI'
 import DestinationIdeas from './components/DestinationIdeas'
 import NotFound from './components/NotFound'
@@ -33,6 +34,7 @@ function App() {
               <Route path=":tripId" element={<TripDetails />} />
               <Route path=":tripId/map" element={<TripMap />} />
             </Route>
+            <Route path="/profile" element={<Profile />} />
           </Route>
 
           <Route path="/find-destinations" element={<FormAI />} />

@@ -76,6 +76,30 @@ export async function fetchCurrentUser(token) {
 }
 
 
+// Update user details  
+export async function updateUser(token, form) {
+    const res = await fetch(`${BASE_URL}/me`, {
+        method: 'PUT',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: form.username,
+            email: form.email,
+            password: form.password
+        })
+    })
+    if (res.status === 401) {
+        throw new Error("Unauthorized")
+    }
+    if (!res.ok) {
+        throw new Error(`Failed to update current user: ${res.statusText}`);
+    }
+    return await res.json()
+}
+
+
 // Get all trips
 export async function getAllTrips(token) {
     try {
