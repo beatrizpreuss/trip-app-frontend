@@ -41,8 +41,8 @@ export default function NavBar() {
                     <div className="flex flex-row items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
 
                         {token ? (
-                            <div className="flex flex-row">
-                                <div class="relative md:mr-5 inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-600">
+                            <div className="flex flex-row items-center">
+                                <div class="relative md:mr-5 inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-600">
                                     <span class="font-bold text-gray-600 dark:text-gray-300">{username[0]}</span>
                                 </div>
                                 <button
