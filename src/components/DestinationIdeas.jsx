@@ -37,7 +37,7 @@ export default function DestinationIdeas() {
             <div id="default-carousel" className="flex flex-col relative w-2/3 mx-auto" data-carousel="slide">
                 {/*<!-- Carousel wrapper -->*/}
                 <div className="relative flex justify-center h-auto overflow-hidden shadow shadow-lg rounded-lg md:min-h-130">
-                    {/*<!-- Item 1 -->*/}
+                    {/*<!-- Items -->*/}
                     {ideas.map((idea, index) => (
                         <div
                             key={index}
@@ -70,7 +70,9 @@ export default function DestinationIdeas() {
                                 <p className="dark:text-gray-300 text-center text-sm mb-4">{idea.other_tips}</p>
                                 {/* Map link */}
                                 <a
-                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(idea.name)}`}
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                        idea.name.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, "").trim()
+                                      )}`} // this regEx removes the emoji from the URL
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-500 hover:underline text-sm mt-3 block text-center"

@@ -11,6 +11,7 @@ export default function FormAI() {
         location: "",
         goal: "",
         interests: [],
+        type: "",
         length: "",
         transport: [],
         preferredPlaces: "",
@@ -189,6 +190,29 @@ export default function FormAI() {
                                     <input type="checkbox" id="interests-spodrivesrts" name="interests" value="drives"
                                         className="mr-2" />Road trips / Scenic drives
                                 </label>
+                            </div>
+                        </div>
+
+                        <div className="my-4">
+                            <label className="form-label">What type of destinations are you most interested in?</label>
+                            <div className="flex flex-wrap -mx-2">
+                                <div className="px-2 w-1/3">
+                                    <label htmlFor="type-famous" className="form-label">
+                                        <input
+                                            type="radio" id="type-famous" name="type" value="famous" className="mr-2" />Famous and popular spots
+                                    </label>
+                                </div>
+                                <div className="px-2 w-1/3">
+                                    <label htmlFor="type-hidden" className="form-label">
+                                        <input type="radio" id="type-hidden" name="type" value="hidden" className="mr-2" />Hidden gems and off-the-beaten-path places
+                                    </label>
+                                </div>
+                                <div className="px-2 w-1/3">
+                                    <label htmlFor="type-mix" className="form-label">
+                                        <input type="radio" id="goal-type-mix" name="type" value="mix" className="mr-2" />A mix of both
+                                    </label>
+                                </div>
+
                             </div>
                         </div>
 
