@@ -6,6 +6,7 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Layout from './components/Layout'
 import Home from './components/Home'
+import About from './components/About'
 import Trips from './components/Trips'
 import TripLayout from './components/TripLayout'
 import TripDetails from './components/TripDetails'
@@ -24,6 +25,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/about" element={<About />} /> 
 
           <Route element={<PrivateRoute />}>
             <Route path="/trips" element={<TripLayout />}>
