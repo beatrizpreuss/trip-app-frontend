@@ -2,11 +2,13 @@ import { BASE_URL } from './config'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../components/AuthContext'
 import { useContext } from 'react'
+import { useUser } from '../components/UserContext'
 
 // Login and Register Functions (together because they use the same hooks, and the hooks can't be inside non-component functions like async functions)
 export function useAuthActions() {
     const { login } = useContext(AuthContext)
     const navigate = useNavigate()
+    const { user, setUser } = useUser() //comes com UserContext
 
     const loginFunction = async (email, password) => {
         try {
@@ -22,6 +24,8 @@ export function useAuthActions() {
 
             if (response.ok) {
                 login(data.access_token)
+                const userData = await fetchCurrentUser(data.access_token) // fetch user details
+                setUser(userData)
                 navigate('/trips')
             } else {
                 alert(data.msg)

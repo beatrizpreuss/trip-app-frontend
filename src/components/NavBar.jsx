@@ -2,32 +2,13 @@ import { useState, useContext, useEffect } from 'react'
 import ThemeToggle from './ThemeToggle'
 import { Link, NavLink } from 'react-router-dom'
 import { AuthContext } from './AuthContext'
-import { fetchCurrentUser } from '../util/apiCalls'
+import { useUser } from "./UserContext"
 
 
 export default function NavBar() {
     const [showDropdown, setShowDropdown] = useState(false)
-    const { token, logout } = useContext(AuthContext)
-    const [username, setUsername] = useState("")
-
-    useEffect(() => {
-        if (!token) return
-
-        const fetchUserDetails = async () => {
-            try {
-                const data = await fetchCurrentUser(token)
-                setUsername(data.username)
-            } catch (err) {
-                console.error("Error fetching user details", err)
-
-                if (err.message === "Unauthorized") { // handle expired token
-                    logout() // clear token + user state
-                }
-            }
-        }
-        fetchUserDetails()
-
-    }, [token, logout])
+    const { token, logout } = useContext(AuthContext) //comes from AuthContext
+    const { user, setUser } = useUser() //comes from UserContext
 
 
     return (
@@ -42,12 +23,14 @@ export default function NavBar() {
 
                         {token ? (
                             <div className="flex flex-row items-center">
-                                <div class="relative md:mr-5 inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-600">
-                                    <span class="font-bold text-gray-600 dark:text-gray-300">{username[0]}</span>
-                                </div>
+                                <Link 
+                                    to="/profile"
+                                    class="relative md:mr-5 inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-600">
+                                    <span class="font-bold text-gray-600 dark:text-gray-300">{user?.username?.[0] ?? ""}</span>
+                                </Link>
                                 <button
                                     onClick={() => {
-                                        setUsername("")
+                                        setUser("")
                                         logout()
                                     }}
                                     className="hidden md:block general-button m-0 w-25"

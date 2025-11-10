@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react"
 import { AuthContext } from './AuthContext'
 import { fetchCurrentUser, updateUser } from '../util/apiCalls'
+import { useUser } from "./UserContext"
 
 
 export default function Profile() {
@@ -9,6 +10,7 @@ export default function Profile() {
     const [editing, setEditing] = useState(false)
     const [loading, setLoading] = useState(false)
     const { token, logout } = useContext(AuthContext)
+    const { user, setUser } = useUser() //Comes from UserContext
 
     useEffect(() => {
             if (!token) return
@@ -46,6 +48,7 @@ export default function Profile() {
               console.log("Profile updated successfully.")
               setForm((f) => ({ ...f, password: "" }))
               setEditing(false)
+              setUser((prev) => ({ ...prev, username: form.username })) //update global user state so navbar updates
             } catch (err) {
               console.error(err)
             } finally {
