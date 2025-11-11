@@ -161,6 +161,15 @@ export default function TripDetails() {
         try {
             await deleteTripById(token, tripId)
             console.log("Deleted", tripId)
+
+            //Clean up
+            setStays([])
+            setEatDrink([])
+            setExplore([])
+            setEssentials([])
+            setGettingAround([])
+            setTripName("")
+            
             navigate("/trips")
         } catch (err) {
             console.error("Error deleting trip:", err)
