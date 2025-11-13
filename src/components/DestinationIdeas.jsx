@@ -26,7 +26,7 @@ export default function DestinationIdeas() {
 
 
     return (
-        <div className="m-25 mx-15">
+        <div className="my-20 md:mx-15 mx-5 border border-red-500">
             <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
                 <h1 className="text-4xl font-bold">Your Destination Ideas</h1>
                 <h3 className="mt-4 mb-15">Explore these personalized travel suggestions curated just for you</h3>
@@ -34,21 +34,22 @@ export default function DestinationIdeas() {
 
 
 
-            <div id="default-carousel" className="flex flex-col relative w-2/3 mx-auto" data-carousel="slide">
+            <div id="default-carousel" className="flex flex-col relative w-full md:w-2/3 mx-auto" data-carousel="slide">
                 {/*<!-- Carousel wrapper -->*/}
-                <div className="relative flex justify-center h-auto overflow-hidden shadow shadow-lg rounded-lg md:min-h-130">
+                <div className="relative flex justify-center h-auto overflow-hidden shadow shadow-lg rounded-lg">
                     {/*<!-- Items -->*/}
                     {ideas.map((idea, index) => (
                         <div
                             key={index}
-                            className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${index === currentIndex ? "opacity-100" : "opacity-0 pointer-events-none"
-                                }`}
+                            className={`transition-opacity duration-500 ease-in-out mb-10
+                                 ${index === currentIndex ? "opacity-100" : "opacity-0 hidden pointer-events-none h-0 w-0"}
+                                 `}
                         >
                             <div className="p-6 relative rounded-lg overflow-hidden group">
                                 <h2 className="text-2xl font-bold text-center mt-4 mb-7 text-pretty dark:text-[#dddddd]">{idea.name}</h2>
                                 <p className="dark:text-gray-300 text-sm text-center mb-4">{idea.description}</p>
-                                <div className="flex flex-row gap-5">
-                                    <div className="ml-10 rounded-lg shadow bg-zinc-200 p-5">
+                                <div className="flex flex-col gap-5 md:flex-row mx-10">
+                                    <div className="rounded-lg shadow bg-zinc-200 p-5">
                                         <h3 className="font-semibold text-center dark:text-[#dddddd] mb-2">Highlights</h3>
                                         <ul className="list-disc list-inside dark:text-[#dddddd] text-sm mb-4">
                                             {idea.highlights.map((highlight, i) => (
@@ -57,7 +58,7 @@ export default function DestinationIdeas() {
                                         </ul>
                                     </div>
 
-                                    <div className="mr-10 rounded-lg shadow bg-zinc-200 p-5">
+                                    <div className="rounded-lg shadow bg-zinc-200 p-5">
                                         <h3 className="font-semibold text-center dark:text-[#dddddd] mb-2">Travel Practicality</h3>
                                         <ul className="list-none dark:text-[#dddddd] text-sm space-y-1">
                                             <li><strong>Distance: </strong>{idea.travel_practicality.distance}</li>
@@ -97,7 +98,7 @@ export default function DestinationIdeas() {
                 <button onClick={prevSlide} type="button" className="absolute top-0 start-0 z-30 flex items-center h-full px-4 cursor-pointer group focus:outline-none">
                     <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-zinc-900/30 dark:bg-zinc-100/30 group-hover:bg-zinc-800/50 dark:group-hover:bg-zinc-300/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
                         <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 1 1 5l4 4" />
                         </svg>
                         <span className="sr-only">Previous</span>
                     </span>
@@ -105,7 +106,7 @@ export default function DestinationIdeas() {
                 <button onClick={nextSlide} type="button" className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none">
                     <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-zinc-900/30 dark:bg-zinc-100/30 group-hover:bg-zinc-800/50 dark:group-hover:bg-zinc-300/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
                         <svg className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
                         </svg>
                         <span className="sr-only">Next</span>
                     </span>
