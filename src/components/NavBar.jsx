@@ -23,10 +23,10 @@ export default function NavBar() {
 
                         {token ? (
                             <div className="flex flex-row items-center">
-                                <Link 
+                                <Link
                                     to="/profile"
-                                    class="relative md:mr-5 inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-600">
-                                    <span class="font-bold text-gray-600 dark:text-gray-300">{user?.username?.[0] ?? ""}</span>
+                                    className="relative md:mr-5 inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-600">
+                                    <span className="font-bold text-gray-600 dark:text-gray-300">{user?.username?.[0] ?? ""}</span>
                                 </Link>
                                 <button
                                     onClick={() => {
@@ -83,27 +83,27 @@ export default function NavBar() {
                         </ul>
 
 
-                    {token ? (
-                        <button
-                            onClick={() => {
-                                setUsername("")
-                                logout()
-                            }}
-                            className="general-button w-full my-2 block md:hidden"
-                        >
-                            Logout
-                        </button>
-                    ) : (
-                        <div className="flex flex-row justify-center">
-                            <Link
-                                to="/login"
-                                className="general-button block md:hidden w-25"
+                        {token ? (
+                            <button
+                                onClick={() => {
+                                    setUsername("")
+                                    logout()
+                                }}
+                                className="general-button w-full my-2 block md:hidden"
                             >
-                                Login
-                            </Link>
-                       </div>
-                    )}
-</div>
+                                Logout
+                            </button>
+                        ) : (
+                            <div className="flex flex-row justify-center">
+                                <Link
+                                    to="/login"
+                                    className="general-button block md:hidden w-25"
+                                >
+                                    Login
+                                </Link>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
 
