@@ -9,7 +9,7 @@ export default function Trips() {
     const [trips, setTrips] = useState([])
     const [loading, setLoading] = useState(true)
 
-    const { token, logout } = useContext(AuthContext)
+    const { token, logout, refreshAccessToken } = useContext(AuthContext)
     const { clearMarkers } = useTrip()
     const navigate = useNavigate()
 
@@ -17,24 +17,20 @@ export default function Trips() {
 
     useEffect(() => {
         if (!token) return
-      
+
         const fetchTrips = async () => {
-          try {
-            const data = await getAllTrips(token)
-            if (Array.isArray(data)) setTrips(data)
-            else setTrips([])
-          } catch (err) {
-            console.error("Error fetching trips", err)
-            if (err.message === "Unauthorized") {
-              logout()           // clear token / auth state
-              navigate("/login", { replace: true })
+            try {
+                const data = await getAllTrips({ token, refreshAccessToken, logout, navigate })
+                setTrips(data)
+            } catch (err) {
+                console.error(err)
+                setTrips([])
+            } finally {
+                setLoading(false)
             }
-          } finally {
-            setLoading(false)
-          }
         }
         fetchTrips()
-      }, [token, logout, navigate])
+    }, [token, logout, navigate])
 
 
     function NewTripButton() {
@@ -44,19 +40,19 @@ export default function Trips() {
             try {
                 if (!token) throw new Error("Not authenticated")
 
-                const newTrip = await createNewTrip(token)
+                const newTrip = await createNewTrip({ token, refreshAccessToken, logout, navigate })
 
                 if (!newTrip || !newTrip.trip || !newTrip.trip.id) {
                     throw new Error("Trip creation failed")
+                }
+                clearMarkers()
+                navigate(`/trips/${newTrip.trip.id}`)
+            } catch (err) {
+                console.error("Failed to create trip:", err)
+                alert("Could not create new trip. Please try again.")
             }
-            clearMarkers()
-            navigate(`/trips/${newTrip.trip.id}`)
-        } catch (err) {
-            console.error("Failed to create trip:", err)
-            alert("Could not create new trip. Please try again.")
-          }
         }
-        
+
         return (
             <button
                 onClick={handleNewTrip}

@@ -27,18 +27,16 @@ export default function TripDetails() {
     // used to track unsaved changes to make the Save Changes button another color
     const [hasChanges, setHasChanges] = useState(false)
 
-    const { token, logout } = useContext(AuthContext)
+    const { token, logout, refreshAccessToken } = useContext(AuthContext)
 
     // GET DATA FROM BACKEND
     
     useEffect(() => {
-        if (!token) {
-          navigate("/login", { replace: true });
-          return
-        }
+        if (!token) return
+        
         const fetchTripDetails = async () => {
           try {
-            const data = await getTripById(tripId, token)
+            const data = await getTripById({ tripId, token , refreshAccessToken, logout, navigate})
       
             if (!data) {
               setLoading(false)
@@ -54,12 +52,7 @@ export default function TripDetails() {
             setGettingAround(gettingAround)
           } catch (err) {
             console.error("Error fetching trip details", err)
-      
-            if (err.message === "Unauthorized" || err.status === 401) { // handle expired token
-              logout(); // clear token + user state
-              navigate("/login", { replace: true })
-              return;
-            }
+    
           } finally {
             setLoading(false)
           }
@@ -138,7 +131,11 @@ export default function TripDetails() {
         const mappedEssentials = essentials.map(mapItemForBackend)
         const mappedGettingAround = gettingAround.map(mapItemForBackend)
 
-        updateTripById(token, tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
+        updateTripById({ 
+            token, tripId, tripName, 
+            mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround,
+            refreshAccessToken, logout, navigate
+         })
             .then(data => {
                 console.log("Saved", data)
 
@@ -159,7 +156,7 @@ export default function TripDetails() {
         if (!window.confirm("Are you sure you want to delete this trip?")) return
 
         try {
-            await deleteTripById(token, tripId)
+            await deleteTripById({ token, tripId, refreshAccessToken, logout, navigate })
             console.log("Deleted", tripId)
 
             //Clean up

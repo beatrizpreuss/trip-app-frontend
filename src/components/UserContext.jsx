@@ -1,5 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react"
 import { fetchCurrentUser } from '../util/apiCalls'
+import { AuthContext } from "./AuthContext"
+import { useNavigate } from "react-router-dom"
 
 
 //Use Context to store the username so that it is the same both in Profile and on the NavBar 
@@ -8,27 +10,24 @@ import { fetchCurrentUser } from '../util/apiCalls'
 const UserContext = createContext()
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const token = localStorage.getItem("token")
+    const [user, setUser] = useState(null)
+    const { token, logout, refreshAccessToken } = useContext(AuthContext)
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!token) return
 
         const fetchUserDetails = async () => {
             try {
-                const data = await fetchCurrentUser(token)
+                const data = await fetchCurrentUser({ token, refreshAccessToken, logout, navigate})
                 setUser(data)
             } catch (err) {
                 console.error("Error fetching user details", err)
-
-                if (err.message === "Unauthorized") { // handle expired token
-                    logout() // clear token + user state
-                }
             }
         }
         fetchUserDetails()
 
-    }, [token])
+    }, [token, refreshAccessToken, logout, navigate])
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

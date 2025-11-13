@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from "react"
 import { AuthContext } from './AuthContext'
 import { fetchCurrentUser, updateUser } from '../util/apiCalls'
 import { useUser } from "./UserContext"
+import { useNavigate } from "react-router-dom"
 
 
 export default function Profile() {
@@ -9,28 +10,23 @@ export default function Profile() {
     const [form, setForm] = useState({ username: "", email: "", password: ""})
     const [editing, setEditing] = useState(false)
     const [loading, setLoading] = useState(false)
-    const { token, logout } = useContext(AuthContext)
+    const { token, logout, refreshAccessToken } = useContext(AuthContext)
     const { user, setUser } = useUser() //Comes from UserContext
+    const navigate = useNavigate()
 
     useEffect(() => {
             if (!token) return
     
             const fetchUserDetails = async () => {
                 try {
-                    const data = await fetchCurrentUser(token)
+                    const data = await fetchCurrentUser({ token, refreshAccessToken, logout, navigate })
                     setForm({username: data.username, email: data.email, password: data.password})
                 } catch (err) {
                     console.error("Error fetching user details", err)
-    
-                    if (err.message === "Unauthorized") { // handle expired token
-                        logout() // clear token + user state
-                    }
                 }
             }
             fetchUserDetails()
-    
-        }, [token, logout])
-        console.log(form)
+        }, [token, refreshAccessToken, logout, navigate])
 
 
         const handleChange = (e) => {
@@ -44,13 +40,19 @@ export default function Profile() {
             try {
               const payload = { username: form.username, email: form.email }
               if (form.password) payload.password = form.password
-              updateUser(token, form)
+              await updateUser({ 
+                token, 
+                form: payload, 
+                refreshAccessToken,
+                logout, 
+                navigate })
+              
               console.log("Profile updated successfully.")
               setForm((f) => ({ ...f, password: "" }))
               setEditing(false)
               setUser((prev) => ({ ...prev, username: form.username })) //update global user state so navbar updates
             } catch (err) {
-              console.error(err)
+              console.error("Error updating profile", err)
             } finally {
               setLoading(false)
             }

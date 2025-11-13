@@ -1,6 +1,7 @@
 import { useState, useContext, useRef, useEffect } from "react"
 import { popupToBackend } from "../util/apiCalls"
 import { AuthContext } from "./AuthContext"
+import { useNavigate } from "react-router-dom"
 
 export default function MapAISuggestions({
     tripId,
@@ -19,8 +20,9 @@ export default function MapAISuggestions({
 
 
     const [loading, setLoading] = useState(false)
-    const { token } = useContext(AuthContext)
+    const { token, logout, refreshAccessToken } = useContext(AuthContext)
     const controllerRef = useRef(null) // allow for cancellation of suggestion request
+    const navigate = useNavigate
 
     // Question structure (linear per category)
     const questionTree = {
@@ -179,7 +181,7 @@ export default function MapAISuggestions({
         controllerRef.current = controller
 
         try {
-            const info = await popupToBackend(token, tripId, finalAnswers, suggestionsParams, controller.signal)
+            const info = await popupToBackend({ token, tripId, finalAnswers, suggestionsParams, signal: controller.signal, refreshAccessToken, logout, navigate})
             if (!controller.signal.aborted) { // only update if not aborted
                 console.log("Backend response in MapAISuggestions:", info)
                 setSelectedSuggestions([])

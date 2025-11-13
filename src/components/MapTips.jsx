@@ -1,13 +1,15 @@
 import { useState, useContext, useRef, useEffect } from "react"
 import { getTipsByTripId, popupToBackend } from "../util/apiCalls"
 import { AuthContext } from "./AuthContext"
+import { useNavigate } from "react-router-dom"
 
 export default function MapTips({ tripId }) {
 
     const [tips, setTips] = useState("")
     const [isOpen, setIsOpen] = useState(false)
     const [loading, setLoading] = useState(false)
-    const { token } = useContext(AuthContext)
+    const { token, logout, refreshAccessToken } = useContext(AuthContext)
+    const navigate = useNavigate
     const controllerRef = useRef(null) // allow for cancellation of tip request
 
     // Reset popup to initial state
@@ -31,7 +33,7 @@ export default function MapTips({ tripId }) {
         setTips("")
 
         try {
-            const info = await getTipsByTripId(token, tripId, controller.signal)
+            const info = await getTipsByTripId({ token, tripId, signal: controller.signal, refreshAccessToken, logout, navigate })
             if (!controller.signal.aborted) { // only update if not aborted
                 console.log("Backend response in MapTips:", info)
                 setTips(info.tips)
@@ -103,7 +105,7 @@ export default function MapTips({ tripId }) {
                                     <h3 className="text-center font-bold mb-2">💡 Tips for your trip 🌎</h3>
                                     <ul className="list-disc list-inside space-y-2">
                                         {tips.map(t => (
-                                            <li key={t.id} className="text-sm text-gray-800 dark:text-gray-200 break-words">
+                                            <li key={t} className="text-sm text-gray-800 dark:text-gray-200 break-words">
                                                 {t || ""}
                                             </li>
                                         ))}

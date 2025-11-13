@@ -186,7 +186,7 @@ export default function TripMap() {
 
     // Helper function to help the 'day' input in the popup and the filtering of it (decides whether a marker should be shown based on the day filter. Used when rendering markers)
     const matchesActiveDays = (marker, showDays) => {
-         // Case 1: if no day defined at all, show the marker while editing
+        // Case 1: if no day defined at all, show the marker while editing
         if (marker.day === null || marker.day === undefined || marker.day === "") {
             return true
         }
@@ -244,7 +244,7 @@ export default function TripMap() {
 
     // MAP DATA 
     // Get data from backend (getTripById comes from util/apiCalls.js, formatTripData comes from util/formatTripData)
-    const { token, logout } = useContext(AuthContext)
+    const { token, logout, refreshAccessToken } = useContext(AuthContext)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -254,7 +254,7 @@ export default function TripMap() {
         }
         const fetchTripDetails = async () => {
             try {
-                const data = await getTripById(tripId, token)
+                const data = await getTripById({ tripId, token, refreshAccessToken, logout, navigate })
 
                 if (!data) {
                     setLoading(false)
@@ -548,7 +548,11 @@ export default function TripMap() {
         const mappedEssentials = essentials.map(mapItemForBackend)
         const mappedGettingAround = gettingAround.map(mapItemForBackend)
 
-        updateTripById(token, tripId, tripName, mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround)
+        updateTripById({
+            token, tripId, tripName,
+            mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround,
+            refreshAccessToken, logout, navigate
+        })
             .then(data => {
                 console.log("Saved", data)
 
@@ -1341,39 +1345,39 @@ export default function TripMap() {
                 )}
 
             </MapContainer>
-            
-            <div className="flex flex-row justify-center gap-5">
-            {/* Suggestions is only an option when the user already has a marker */}
-            {allMarkers.length > 0 && suggestionsParams && (
-                <MapSuggestions
-                    tripId={tripId}
-                    suggestionsParams={suggestionsParams}
-                    handleSelectSuggestion={handleSelectSuggestion}
-                    selectedSuggestions={selectedSuggestions}
-                    setSelectedSuggestions={setSelectedSuggestions}
-                    showSuggestionsOnMap={showSuggestionsOnMap}
-                    setShowSuggestionsOnMap={setShowSuggestionsOnMap}
-                    isOpen={isSuggestionsPopupOpen}
-                    setIsOpen={setIsSuggestionsPopupOpen}
-                    suggestions={suggestions}
-                    setSuggestions={setSuggestions}
-                    onCategorySelect={setActiveSuggestionCategory}
-                    currentNode={currentNode}
-                    setCurrentNode={setCurrentNode}
-                    branchStep={branchStep}
-                    setBranchStep={setBranchStep}
-                    answers={answers}
-                    setAnswers={setAnswers}
-                    selectedOptions={selectedOptions}
-                    setSelectedOptions={setSelectedOptions}
-                    textInput={textInput}
-                    setTextInput={setTextInput} />
-            )}
 
-            {allMarkers.length > 0 &&
-            <MapTips
-                tripId={tripId}/>
-            }
+            <div className="flex flex-row justify-center gap-5">
+                {/* Suggestions is only an option when the user already has a marker */}
+                {allMarkers.length > 0 && suggestionsParams && (
+                    <MapSuggestions
+                        tripId={tripId}
+                        suggestionsParams={suggestionsParams}
+                        handleSelectSuggestion={handleSelectSuggestion}
+                        selectedSuggestions={selectedSuggestions}
+                        setSelectedSuggestions={setSelectedSuggestions}
+                        showSuggestionsOnMap={showSuggestionsOnMap}
+                        setShowSuggestionsOnMap={setShowSuggestionsOnMap}
+                        isOpen={isSuggestionsPopupOpen}
+                        setIsOpen={setIsSuggestionsPopupOpen}
+                        suggestions={suggestions}
+                        setSuggestions={setSuggestions}
+                        onCategorySelect={setActiveSuggestionCategory}
+                        currentNode={currentNode}
+                        setCurrentNode={setCurrentNode}
+                        branchStep={branchStep}
+                        setBranchStep={setBranchStep}
+                        answers={answers}
+                        setAnswers={setAnswers}
+                        selectedOptions={selectedOptions}
+                        setSelectedOptions={setSelectedOptions}
+                        textInput={textInput}
+                        setTextInput={setTextInput} />
+                )}
+
+                {allMarkers.length > 0 &&
+                    <MapTips
+                        tripId={tripId} />
+                }
             </div>
         </div>
     )
