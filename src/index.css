@@ -26,7 +26,7 @@ body {
   }
   /* Used on NavBar and Footer */
   .logo {
-    @apply self-center text-2xl font-semibold whitespace-nowrap dark:text-[#dddddd];
+    @apply w-40 m-0;
   }
   /* Used in Navbar */
   .navbar-option {

@@ -3,6 +3,7 @@ import ThemeToggle from './ThemeToggle'
 import { Link, NavLink } from 'react-router-dom'
 import { AuthContext } from './AuthContext'
 import { useUser } from "./UserContext"
+import Logo from '../assets/images/logo.png'
 
 
 export default function NavBar() {
@@ -14,9 +15,9 @@ export default function NavBar() {
     return (
         <>
             <nav className="bg-zinc-100 dark:bg-[#222222] fixed w-full z-20 top-0 start-0 border-b border-zinc-200 dark:border-zinc-600">
-                <div className="w-full flex flex-wrap items-center justify-between px-15 py-4">
+                <div className="w-full flex flex-wrap items-center justify-between px-15 py-2">
                     <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-                        <span className="logo">WanderWise</span>
+                        <img src={Logo} className="logo" />
                     </a>
 
                     <div className="flex flex-row items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
