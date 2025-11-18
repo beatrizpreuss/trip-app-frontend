@@ -182,7 +182,7 @@ export default function TripDetails() {
     return (
 
         <div className="m-25 mt-15 mx-15">
-            <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
+            <div className="flex flex-col justify-center items-center dark:text-[var(--color-stale-blue)]">
 
                 <input
                     type="text"
@@ -204,24 +204,24 @@ export default function TripDetails() {
 
             {/* Stays Table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg">
-                <table className="table-auto w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                <table className="table-auto w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
 
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[var(--color-navy)]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowStays(prev => !prev)}>
                                     {showStays ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Stays</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
                             >Make a list with all the hotels, camping sites or any other accommodation places
                                 <br /> relevant to your trip. Include all details and stay organized.</p>
                         </div>
@@ -348,17 +348,17 @@ export default function TripDetails() {
                             <div className="flex flex-row">
                                 <button onClick={() => setShowEatDrink(prev => !prev)}>
                                     {showEatDrink ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Eat & Drink</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
                             >Make a list of the restaurants you would like to try, and of possible</p>
                         </div>
                     </caption>
@@ -456,23 +456,23 @@ export default function TripDetails() {
 
             {/* Explore table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
                     <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowExplore(prev => !prev)}>
                                     {showExplore ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Places to Explore</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
                             >List all the places you would like to see, like museums, monuments,
                                 <br /> parks, nature attractions, hiking trails, etc. </p>
                         </div>
@@ -582,23 +582,23 @@ export default function TripDetails() {
 
             {/* Essentials table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
                     <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowEssentials(prev => !prev)}>
                                     {showEssentials ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Essentials</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
                             >List places that could be helpful to keep your trip up and running,
                                 <br /> like supermarkets, pharmacies, banks, etc. </p>
                         </div>
@@ -645,7 +645,7 @@ export default function TripDetails() {
                                                 type="text"
                                                 value={item.day}
                                                 onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                                className="w-full min-w-10 text-center"
+                                                className="w-full min-w-10 text-center border rounded-sm"
                                             />
                                         </td>
                                         <td className="table-input-box">
@@ -699,23 +699,23 @@ export default function TripDetails() {
 
             {/* Getting Around table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
                     <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowGettingAround(prev => !prev)}>
                                     {showGettingAround ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
                                         </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[#dddddd]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
                                         </svg>
                                     }
                                 </button>
                                 <span>Getting Around</span>
                             </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[#dddddd]"
+                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
                             >Airports, train statios, bus stops and such.</p>
                         </div>
                     </caption>

@@ -42,7 +42,7 @@ body {
   }
   /* Used in /destinations */
   .form-label {
-    @apply block text-zinc-900 mb-2 dark:text-[#dddddd];
+    @apply block text-zinc-900 mb-2 dark:text-[var(--color-stale-blue)];
   }
   /* Used in /destinations */
   .form-input-box {
@@ -58,7 +58,7 @@ body {
   }
   /* Used in TripDetails */
   .table-input-box {
-    @apply px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[#dddddd];
+    @apply px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[var(--color-stale-blue)];
   }
   /* Used in TripDetails */
   .delete-trip-button {
