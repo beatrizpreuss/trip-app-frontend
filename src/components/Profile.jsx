@@ -61,18 +61,18 @@ export default function Profile() {
 
     return (
         <div className="max-w-3xl mx-auto p-6 my-15">
-            <div className="bg-white shadow-md rounded-2xl p-6">
-                <h1 className="text-2xl font-semibold mb-2">My Profile</h1>
-                <p className="text-sm text-slate-500 mb-6">View and update your account details.</p>
+            <div className="shadow-md rounded-2xl p-6 bg-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
+                <h1 className="text-2xl font-semibold mb-2 dark:text-[var(--color-stale-blue)]">My Profile</h1>
+                <p className="text-sm mb-6  dark:text-[var(--color-stale-blue)]">View and update your account details.</p>
 
                 {!editing ? (
-                    <div className="space-y-4">
+                    <div className="space-y-4  dark:text-[var(--color-stale-blue)]">
                         <div>
-                            <p className="text-sm text-slate-500">Username</p>
+                            <p className="text-sm">Username</p>
                             <p className="text-lg font-medium">{form.username}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-slate-500">Email</p>
+                            <p className="text-sm">Email</p>
                             <p className="text-lg font-medium">{form.email}</p>
                         </div>
                         <div>
@@ -87,7 +87,7 @@ export default function Profile() {
                 ) : (
                     <form onSubmit={handleSave} className="space-y-6">
                         <div>
-                            <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-1">
+                            <label htmlFor="username" className="block text-sm font-medium mb-1  dark:text-[var(--color-stale-blue)]">
                                 Username
                             </label>
                             <input
@@ -95,11 +95,11 @@ export default function Profile() {
                                 name="username"
                                 value={form.username}
                                 onChange={handleChange}
-                                className="w-full rounded-xl border border-slate-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                className="w-full rounded-xl border border-slate-200 px-4 py-2 bg-zinc-100 dark:bg-[var(--color-stale-blue)] focus:outline-none focus:ring-2 focus:ring-indigo-300"
                             />
                         </div>
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                            <label htmlFor="email" className="block text-sm font-medium mb-1  dark:text-[var(--color-stale-blue)]">
                                 Email
                             </label>
                             <input
@@ -108,11 +108,11 @@ export default function Profile() {
                                 type="email"
                                 value={form.email}
                                 onChange={handleChange}
-                                className="w-full rounded-xl border border-slate-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                className="w-full rounded-xl border border-slate-200 px-4 py-2 bg-zinc-100 dark:bg-[var(--color-stale-blue)] focus:outline-none focus:ring-2 focus:ring-indigo-300"
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+                            <label htmlFor="password" className="block text-sm font-medium mb-1  dark:text-[var(--color-stale-blue)]">
                                 New Password
                             </label>
                             <input
@@ -121,7 +121,7 @@ export default function Profile() {
                                 type="password"
                                 value={form.password}
                                 onChange={handleChange}
-                                className="w-full rounded-xl border border-slate-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                className="w-full rounded-xl border border-slate-200 px-4 py-2 bg-zinc-100 dark:bg-[var(--color-stale-blue)] focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                 placeholder="Leave blank to keep current password"
                             />
                         </div>

@@ -799,14 +799,52 @@ export default function TripMap() {
                 />
                 <h3 className="mt-4">Edit your trip details directly on the map</h3>
             </div>
-            <div className="flex flex-row items-center justify-center gap-5">
-                <Link to={`/trips/${tripId}`}>
-                    <button
-                        className="general-button">
-                        Back
-                    </button>
-                </Link>
-                <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
+            <div className="flex flex-row justify-center items-center mb-5">
+                <div>
+                    {/* Suggestions is only an option when the user already has a marker */}
+                    {allMarkers.length > 0 && suggestionsParams && (
+                        <MapSuggestions
+                            tripId={tripId}
+                            suggestionsParams={suggestionsParams}
+                            handleSelectSuggestion={handleSelectSuggestion}
+                            selectedSuggestions={selectedSuggestions}
+                            setSelectedSuggestions={setSelectedSuggestions}
+                            showSuggestionsOnMap={showSuggestionsOnMap}
+                            setShowSuggestionsOnMap={setShowSuggestionsOnMap}
+                            isOpen={isSuggestionsPopupOpen}
+                            setIsOpen={setIsSuggestionsPopupOpen}
+                            suggestions={suggestions}
+                            setSuggestions={setSuggestions}
+                            onCategorySelect={setActiveSuggestionCategory}
+                            currentNode={currentNode}
+                            setCurrentNode={setCurrentNode}
+                            branchStep={branchStep}
+                            setBranchStep={setBranchStep}
+                            answers={answers}
+                            setAnswers={setAnswers}
+                            selectedOptions={selectedOptions}
+                            setSelectedOptions={setSelectedOptions}
+                            textInput={textInput}
+                            setTextInput={setTextInput} />
+                    )}
+                </div>
+                <div className="flex flex-row items-center justify-center gap-5">
+                    <Link to={`/trips/${tripId}`}>
+                        <button
+                            className="general-button">
+                            Back
+                        </button>
+                    </Link>
+                    <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
+                </div>
+                <div className="flex flex-row justify-center gap-5">
+                    
+
+                    {allMarkers.length > 0 &&
+                        <MapTips
+                            tripId={tripId} />
+                    }
+                </div>
             </div>
 
             <MapContainer ref={mapRef} zoomControl={false} className="h-[500px] w-full" id="map">
@@ -1346,39 +1384,7 @@ export default function TripMap() {
 
             </MapContainer>
 
-            <div className="flex flex-row justify-center gap-5">
-                {/* Suggestions is only an option when the user already has a marker */}
-                {allMarkers.length > 0 && suggestionsParams && (
-                    <MapSuggestions
-                        tripId={tripId}
-                        suggestionsParams={suggestionsParams}
-                        handleSelectSuggestion={handleSelectSuggestion}
-                        selectedSuggestions={selectedSuggestions}
-                        setSelectedSuggestions={setSelectedSuggestions}
-                        showSuggestionsOnMap={showSuggestionsOnMap}
-                        setShowSuggestionsOnMap={setShowSuggestionsOnMap}
-                        isOpen={isSuggestionsPopupOpen}
-                        setIsOpen={setIsSuggestionsPopupOpen}
-                        suggestions={suggestions}
-                        setSuggestions={setSuggestions}
-                        onCategorySelect={setActiveSuggestionCategory}
-                        currentNode={currentNode}
-                        setCurrentNode={setCurrentNode}
-                        branchStep={branchStep}
-                        setBranchStep={setBranchStep}
-                        answers={answers}
-                        setAnswers={setAnswers}
-                        selectedOptions={selectedOptions}
-                        setSelectedOptions={setSelectedOptions}
-                        textInput={textInput}
-                        setTextInput={setTextInput} />
-                )}
 
-                {allMarkers.length > 0 &&
-                    <MapTips
-                        tripId={tripId} />
-                }
-            </div>
         </div>
     )
 }

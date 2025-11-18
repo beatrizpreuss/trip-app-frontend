@@ -57,11 +57,11 @@ export default function Trips() {
             <button
                 onClick={handleNewTrip}
                 className="aspect-square flex flex-col items-center justify-center border-2 
-                        border-dashed rounded-lg cursor-pointer transition group dark:border-[#a9a9a9]"
+                        border-dashed border-[var(--color-pastel-orange)] rounded-lg cursor-pointer transition group dark:border-[#a9a9a9]"
             >
                 <div className="flex flex-col items-center transform transition group-hover:scale-110">
-                    <span className="text-7xl font-bold text-[#dddddd]">+</span>
-                    <span className="font-medium text-zinc-900 dark:text-[#dddddd]">New Trip</span>
+                    <span className="text-7xl font-bold text-[var(--color-pastel-orange)]">+</span>
+                    <span className="font-medium text-[var(--color-dark-azure)] dark:text-[var(--color-stale-blue)]">New Trip</span>
                 </div>
             </button>
         )
@@ -84,22 +84,22 @@ export default function Trips() {
                     <Link
                         key={trip.id}
                         to={`/trips/${trip.id}`}
-                        className="aspect-square relative rounded-lg shadow dark:shadow-[#a9a9a9] overflow-hidden group"
+                        className="aspect-square relative rounded-lg overflow-hidden group"
                     >
                         {/* Background image if available */}
                         {trip.image ? (
                             <img
                                 src={trip.image}
                                 alt={trip.name}
-                                className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 transition"
+                                className="inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 transition"
                             />
                         ) : (
                             <div className="absolute inset-0 bg-gray-100 dark:bg-[#222222]" />
                         )}
 
                         {/* Trip name overlay */}
-                        <div className="relative flex items-center justify-center h-full">
-                            <span className="font-medium text-center text-zinc-900 group-hover:scale-110 transition dark:text-[#dddddd]">
+                        <div className="relative flex items-center justify-center h-full absolute bg-[var(--color-dark-azure)] dark:bg-[#1E2E40]">
+                            <span className="font-medium text-center text-zinc-100 group-hover:scale-110 transition dark:text-[#dddddd]">
                                 {trip.name}
                             </span>
                         </div>

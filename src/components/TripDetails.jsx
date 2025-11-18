@@ -206,7 +206,7 @@ export default function TripDetails() {
             <div className="relative overflow-x-auto shadow-md rounded-lg">
                 <table className="table-auto w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
 
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowStays(prev => !prev)}>
@@ -227,7 +227,7 @@ export default function TripDetails() {
                         </div>
                     </caption>
 
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Status</th>
@@ -247,7 +247,7 @@ export default function TripDetails() {
                             {stays
                                 .filter(stay => !stay.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                    <tr key={index} className="bg-white border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
                                             <textarea
                                                 name="name"
@@ -342,8 +342,8 @@ export default function TripDetails() {
 
             {/* Eat & Drink Table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowEatDrink(prev => !prev)}>
@@ -362,7 +362,7 @@ export default function TripDetails() {
                             >Make a list of the restaurants you would like to try, and of possible</p>
                         </div>
                     </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
@@ -380,7 +380,7 @@ export default function TripDetails() {
                             {eatDrink
                                 .filter(eat => !eat.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                    <tr key={index} className="bg-white border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
                                             <textarea
                                                 name="name"
@@ -457,7 +457,7 @@ export default function TripDetails() {
             {/* Explore table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowExplore(prev => !prev)}>
@@ -477,7 +477,7 @@ export default function TripDetails() {
                                 <br /> parks, nature attractions, hiking trails, etc. </p>
                         </div>
                     </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Price</th>
@@ -496,7 +496,7 @@ export default function TripDetails() {
                             {explore
                                 .filter(expl => !expl.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                    <tr key={index} className="bg-white border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
                                             <textarea
                                                 name="name"
@@ -583,7 +583,7 @@ export default function TripDetails() {
             {/* Essentials table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowEssentials(prev => !prev)}>
@@ -603,7 +603,7 @@ export default function TripDetails() {
                                 <br /> like supermarkets, pharmacies, banks, etc. </p>
                         </div>
                     </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
@@ -621,7 +621,7 @@ export default function TripDetails() {
                             {essentials
                                 .filter(essential => !essential.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                    <tr key={index} className="bg-white border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
                                             <textarea
                                                 name="name"
@@ -700,7 +700,7 @@ export default function TripDetails() {
             {/* Getting Around table */}
             <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[#dddddd]">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[#dddddd] dark:bg-[#222222]">
+                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
                         <div className="flex flex-col">
                             <div className="flex flex-row">
                                 <button onClick={() => setShowGettingAround(prev => !prev)}>
@@ -719,7 +719,7 @@ export default function TripDetails() {
                             >Airports, train statios, bus stops and such.</p>
                         </div>
                     </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[#8d8d8d] dark:text-[#dddddd]">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
                         <tr>
                             <th className="px-6 py-3">Name</th>
                             <th className="px-6 py-3">Address</th>
@@ -737,7 +737,7 @@ export default function TripDetails() {
                             {gettingAround
                                 .filter(around => !around.deleted)
                                 .map((item, index) => (
-                                    <tr key={index} className="bg-white border-b dark:bg-[#5f5f5f] dark:border-gray-700 border-gray-200">
+                                    <tr key={index} className="bg-white border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
                                         <td className="table-input-box">
                                             <textarea
                                                 name="name"

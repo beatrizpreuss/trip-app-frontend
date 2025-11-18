@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { formToBackend } from "../util/apiCalls"
+import Idea from "../assets/images/idea-icon.png"
 
 export default function FormAI() {
 
@@ -68,7 +69,7 @@ export default function FormAI() {
 
     return (
         <div className="m-25 mx-15">
-            <div className="flex flex-col justify-center items-left dark:text-zinc-100">
+            <div className="flex flex-col justify-center items-left dark:text-[var(--color-stale-blue)]">
                 <h1 className="text-5xl font-bold">Discover new destinations with AI</h1>
                 <h3 className="mt-4 mb-10">
                     Select your preferences and get personalized <br />
@@ -76,8 +77,8 @@ export default function FormAI() {
                 </h3>
             </div>
 
-            <div className="bg-zinc-100 rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl 
-                 relative shadow dark:shadow-zinc-500 overflow-hidden group dark:bg-[#222222] dark:text-[#dddddd]">
+            <div className="bg-[#DCE4EA] rounded-lg px-8 py-6 mx-auto my-8 max-w-2xl 
+                 relative shadow overflow-hidden group dark:bg-[#1E2E40] dark:text-[#dddddd]">
                 <h2 className="text-l font-bold dark:text-[#dddddd]">Let's find you a destination!</h2>
                 <p className="italic mb-6 text-xs dark:text-zinc-400">Answer the questions below to get AI suggestions</p>
 
@@ -347,8 +348,11 @@ export default function FormAI() {
                             </div>
                         </div>
 
-                        <div>
-                            <button type="submit" className="general-button">Give me ideas</button>
+                        <div className="mt-10">
+                            <button type="submit" className="relative flex flex-row general-button bg-[var(--color-crimson)] items-center mr-10 pl-15 dark:text-[var(--color-stale-blue)]">
+                                <img src={Idea} className="w-20 absolute -left-7 top-1/2 -translate-y-1/2"/>
+                                <span>Give me ideas</span>
+                            </button>
                         </div>
                     </div>
                 </form>

@@ -2,6 +2,7 @@ import { useState, useContext, useRef, useEffect } from "react"
 import { getTipsByTripId, popupToBackend } from "../util/apiCalls"
 import { AuthContext } from "./AuthContext"
 import { useNavigate } from "react-router-dom"
+import Idea from "../assets/images/idea-icon.png"
 
 export default function MapTips({ tripId }) {
 
@@ -60,13 +61,13 @@ export default function MapTips({ tripId }) {
         <div className="flex justify-center">
             {/* Suggestions button */}
 
-            <button
+            <button className="relative flex flex-row general-button bg-[var(--color-crimson)] items-center ml-10 pl-15 dark:text-[var(--color-stale-blue)] "
                 onClick={() => {
                     fetchTips()
                     setIsOpen(true)
-                }}
-                className="general-button">
-                Get Tips
+                }}>
+                <span>Get Tips</span>
+                <img src={Idea} className="w-20 absolute -right-7 top-1/2 -translate-y-1/2"/>
             </button>
 
             {/* Popup */}

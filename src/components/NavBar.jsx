@@ -14,7 +14,7 @@ export default function NavBar() {
 
     return (
         <>
-            <nav className="bg-zinc-100 dark:bg-[#222222] fixed w-full z-20 top-0 start-0 border-b border-zinc-200 dark:border-zinc-600">
+            <nav className="bg-[var(--color-stale-blue)] fixed w-full z-20 top-0 start-0 shadow shadow-zinc-100 dark:border-zinc-600">
                 <div className="w-full flex flex-wrap items-center justify-between px-15 py-2">
                     <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                         <img src={Logo} className="logo" />
@@ -26,8 +26,8 @@ export default function NavBar() {
                             <div className="flex flex-row items-center">
                                 <Link
                                     to="/profile"
-                                    className="relative md:mr-5 inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-600">
-                                    <span className="font-bold text-gray-600 dark:text-gray-300">{user?.username?.[0] ?? ""}</span>
+                                    className="relative md:mr-5 inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-white rounded-full dark:bg-gray-600">
+                                    <span className="font-bold text-[var(--color-crimson)] dark:text-[var(--color-stale-blue)]">{user?.username?.[0] ?? ""}</span>
                                 </Link>
                                 <button
                                     onClick={() => {
@@ -64,8 +64,8 @@ export default function NavBar() {
 
                     <div className={`${showDropdown ? "" : "hidden"} items-center justify-between w-full md:flex md:w-auto md:order-1`} id="navbar-sticky">
                         <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-zinc-100 rounded-lg 
-                            bg-zinc-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-zinc-100 
-                            dark:bg-[#222222] md:dark:bg-[#222222] dark:border-zinc-700">
+                            md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 
+                            dark:border-zinc-700">
                             <li>
                                 <NavLink to="/"
                                     className={({ isActive }) => `navbar-option ${isActive ? "font-bold" : ""}`}>Home
@@ -107,7 +107,8 @@ export default function NavBar() {
                     </div>
                 </div>
 
-
+                
+            {/* <hr className="border-zinc-100 dark:border-[#8d8d8d]" /> */}
             </nav>
         </>
     )

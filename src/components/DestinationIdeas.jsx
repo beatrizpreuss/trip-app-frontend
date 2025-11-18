@@ -26,8 +26,8 @@ export default function DestinationIdeas() {
 
 
     return (
-        <div className="my-20 md:mx-15 mx-5 border border-red-500">
-            <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
+        <div className="my-20 md:mx-15 mx-5">
+            <div className="flex flex-col justify-center items-center dark:text-[var(--color-stale-blue)]">
                 <h1 className="text-4xl font-bold">Your Destination Ideas</h1>
                 <h3 className="mt-4 mb-15">Explore these personalized travel suggestions curated just for you</h3>
             </div>
@@ -36,7 +36,7 @@ export default function DestinationIdeas() {
 
             <div id="default-carousel" className="flex flex-col relative w-full md:w-2/3 mx-auto" data-carousel="slide">
                 {/*<!-- Carousel wrapper -->*/}
-                <div className="relative flex justify-center h-auto overflow-hidden shadow shadow-lg rounded-lg">
+                <div className="relative flex justify-center h-auto overflow-hidden shadow shadow-lg rounded-lg bg-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
                     {/*<!-- Items -->*/}
                     {ideas.map((idea, index) => (
                         <div
@@ -45,29 +45,29 @@ export default function DestinationIdeas() {
                                  ${index === currentIndex ? "opacity-100" : "opacity-0 hidden pointer-events-none h-0 w-0"}
                                  `}
                         >
-                            <div className="p-6 relative rounded-lg overflow-hidden group">
-                                <h2 className="text-2xl font-bold text-center mt-4 mb-7 text-pretty dark:text-[#dddddd]">{idea.name}</h2>
+                            <div className="p-6 relative rounded-lg overflow-hidden group bg-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
+                                <h2 className="text-2xl font-bold text-center mt-4 mb-7 text-pretty dark:text-[var(--color-stale-blue)]">{idea.name}</h2>
                                 <p className="dark:text-gray-300 text-sm text-center mb-4">{idea.description}</p>
                                 <div className="flex flex-col gap-5 md:flex-row mx-10">
-                                    <div className="rounded-lg shadow bg-zinc-200 p-5">
-                                        <h3 className="font-semibold text-center dark:text-[#dddddd] mb-2">Highlights</h3>
-                                        <ul className="list-disc list-inside dark:text-[#dddddd] text-sm mb-4">
+                                    <div className="rounded-lg shadow bg-zinc-100 p-5 dark:bg-[var(--color-dark-blue)]">
+                                        <h3 className="font-semibold text-center dark:text-[var(--color-stale-blue)] mb-2">Highlights</h3>
+                                        <ul className="list-disc list-inside dark:text-[var(--color-stale-blue)] text-sm mb-4">
                                             {idea.highlights.map((highlight, i) => (
                                                 <li key={i}>{highlight}</li>
                                             ))}
                                         </ul>
                                     </div>
 
-                                    <div className="rounded-lg shadow bg-zinc-200 p-5">
-                                        <h3 className="font-semibold text-center dark:text-[#dddddd] mb-2">Travel Practicality</h3>
-                                        <ul className="list-none dark:text-[#dddddd] text-sm space-y-1">
+                                    <div className="rounded-lg shadow bg-zinc-100 p-5 dark:bg-[var(--color-dark-blue)]">
+                                        <h3 className="font-semibold text-center dark:text-[var(--color-stale-blue)] mb-2">Travel Practicality</h3>
+                                        <ul className="list-none dark:text-[var(--color-stale-blue)] text-sm space-y-1">
                                             <li><strong>Distance: </strong>{idea.travel_practicality.distance}</li>
                                             <li><strong>Transport: </strong>{idea.travel_practicality.transport}</li>
                                             <li><strong>Best Time: </strong>{idea.travel_practicality.best_time_to_visit}</li>
                                         </ul>
                                     </div>
                                 </div>
-                                <h3 className="font-semibold text-center dark:text-[#dddddd] mt-4 mb-2">Useful tips</h3>
+                                <h3 className="font-semibold text-center dark:text-[var(--color-stale-blue)] mt-4 mb-2">Useful tips</h3>
                                 <p className="dark:text-gray-300 text-center text-sm mb-4">{idea.other_tips}</p>
                                 {/* Map link */}
                                 <a
@@ -90,7 +90,7 @@ export default function DestinationIdeas() {
                         <button
                             key={index}
                             onClick={() => goToSlide(index)}
-                            className={`w-3 h-3 rounded-full ${index === currentIndex ? "bg-blue-600" : "bg-gray-300"}`}
+                            className={`w-3 h-3 rounded-full ${index === currentIndex ? "bg-[var(--color-dark-azure)]" : "bg-white dark:bg-[var(--color-stale-blue)]"}`}
                         ></button>
                     ))}
                 </div>
