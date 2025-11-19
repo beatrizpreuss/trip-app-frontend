@@ -799,9 +799,9 @@ export default function TripMap() {
                 />
                 <h3 className="mt-4">Edit your trip details directly on the map</h3>
             </div>
-            <div className="flex flex-row justify-center items-center mb-5">
+            <div className="flex flex-row justify-center items-center mb-5 flex-wrap">
                 <div>
-                    {/* Suggestions is only an option when the user already has a marker */}
+                    {/* Get Suggestions button - is only an option when the user already has a marker */}
                     {allMarkers.length > 0 && suggestionsParams && (
                         <MapSuggestions
                             tripId={tripId}
@@ -828,7 +828,7 @@ export default function TripMap() {
                             setTextInput={setTextInput} />
                     )}
                 </div>
-                <div className="flex flex-row items-center justify-center gap-5">
+                <div className="flex flex-row items-center justify-center gap-5 mx-10">
                     <Link to={`/trips/${tripId}`}>
                         <button
                             className="general-button">
@@ -839,7 +839,7 @@ export default function TripMap() {
                 </div>
                 <div className="flex flex-row justify-center gap-5">
                     
-
+                    {/* Get Tips button */}
                     {allMarkers.length > 0 &&
                         <MapTips
                             tripId={tripId} />

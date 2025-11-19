@@ -61,7 +61,8 @@ export default function MapTips({ tripId }) {
         <div className="flex justify-center">
             {/* Suggestions button */}
 
-            <button className="relative flex flex-row general-button bg-[var(--color-crimson)] items-center ml-10 pl-15 dark:text-[var(--color-stale-blue)] "
+            <button className="relative flex flex-row general-button bg-[var(--color-crimson)] items-center pl-15 dark:text-[var(--color-stale-blue)]
+                        transition-transform transform hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg hover:font-bold cursor-pointer "
                 onClick={() => {
                     fetchTips()
                     setIsOpen(true)
@@ -85,7 +86,7 @@ export default function MapTips({ tripId }) {
                         {/* If no results yet, show questions */}
                         {loading && (
                             <div className="flex flex-col justify-center items-center">
-                                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-10 h-10 border-4 border-[var(--color-crimson)] border-t-transparent rounded-full animate-spin"></div>
                                 <p className="mt-4 text-zinc-900 dark:text-zinc-100">Fetching tips...</p>
                                 <p className="mt-4 text-sm text-zinc-900 dark:text-zinc-100">This might take a few minutes.</p>
                             </div>

@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation, Link } from "react-router-dom"
+import Button from '../assets/images/button-plan.png'
 
 
 export default function DestinationIdeas() {
@@ -36,7 +37,7 @@ export default function DestinationIdeas() {
 
             <div id="default-carousel" className="flex flex-col relative w-full md:w-2/3 mx-auto" data-carousel="slide">
                 {/*<!-- Carousel wrapper -->*/}
-                <div className="relative flex justify-center h-auto overflow-hidden shadow shadow-lg rounded-lg bg-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
+                <div className="relative flex justify-center h-auto shadow shadow-lg rounded-lg bg-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
                     {/*<!-- Items -->*/}
                     {ideas.map((idea, index) => (
                         <div
@@ -69,11 +70,11 @@ export default function DestinationIdeas() {
                                 </div>
                                 <h3 className="font-semibold text-center dark:text-[var(--color-stale-blue)] mt-4 mb-2">Useful tips</h3>
                                 <p className="dark:text-gray-300 text-center text-sm mb-4">{idea.other_tips}</p>
-                                {/* Map link */}
+                                {/* Google Maps link */}
                                 <a
                                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                                         idea.name.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, "").trim()
-                                      )}`} // this regEx removes the emoji from the URL
+                                    )}`} // this regEx removes the emoji from the URL
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-500 hover:underline text-sm mt-3 block text-center"
@@ -112,7 +113,16 @@ export default function DestinationIdeas() {
                     </span>
                 </button>
             </div>
-
+            <div className="flex justify-center">
+            <Link to="../trips" target="_blank">
+                <button
+                    className="general-button bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)] 
+                        transition-transform transform hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg hover:font-bold cursor-pointer"
+                >
+                    Create your trip
+                </button>
+            </Link>
+            </div>
 
 
         </div >

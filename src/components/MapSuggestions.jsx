@@ -182,7 +182,7 @@ export default function MapAISuggestions({
         controllerRef.current = controller
 
         try {
-            const info = await popupToBackend({ token, tripId, finalAnswers, suggestionsParams, signal: controller.signal, refreshAccessToken, logout, navigate})
+            const info = await popupToBackend({ token, tripId, finalAnswers, suggestionsParams, signal: controller.signal, refreshAccessToken, logout, navigate })
             if (!controller.signal.aborted) { // only update if not aborted
                 console.log("Backend response in MapAISuggestions:", info)
                 setSelectedSuggestions([])
@@ -208,16 +208,17 @@ export default function MapAISuggestions({
         <div className="flex justify-center">
             {/* Suggestions button */}
 
-            <button className="relative flex flex-row general-button bg-[var(--color-crimson)] items-center mr-10 pl-15 dark:text-[var(--color-stale-blue)]"
+            <button className="relative flex flex-row general-button bg-[var(--color-crimson)] items-center pl-15 dark:text-[var(--color-stale-blue)]
+                        transition-transform transform hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg hover:font-bold cursor-pointer"
                 onClick={() => setIsOpen(true)}>
-                <img src={Idea} className="w-20 absolute -left-7 top-1/2 -translate-y-1/2"/>
+                <img src={Idea} className="w-20 absolute -left-7 top-1/2 -translate-y-1/2" />
                 <span>Get Suggestions</span>
             </button>
 
             {/* Popup */}
             {isOpen && (
                 <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-[1000] dark:bg-[#222222]/80">
-                    <div className="relative bg-white rounded-xl shadow-lg p-6 w-96 z-[1001] dark:text-[#dddddd] dark:bg-[#222222]">
+                    <div className="relative bg-white rounded-xl shadow-lg p-6 w-96 z-[1001] dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
                         {/* Close button always visible */}
                         <button
                             onClick={resetPopup}
@@ -229,7 +230,7 @@ export default function MapAISuggestions({
                         {/* If no results yet, show questions */}
                         {loading && (
                             <div className="flex flex-col justify-center items-center">
-                                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-10 h-10 border-4 border-[var(--color-crimson)] border-t-transparent rounded-full animate-spin"></div>
                                 <p className="mt-4 text-zinc-900 dark:text-zinc-100">Fetching suggestions...</p>
                                 <p className="mt-4 text-sm text-zinc-900 dark:text-zinc-100">This might take a few minutes.</p>
                             </div>
@@ -246,7 +247,7 @@ export default function MapAISuggestions({
                                             <button
                                                 key={opt}
                                                 onClick={() => handleOptionClick(opt, currentQuestion.type)}
-                                                className={`px-4 py-2 rounded shadow mb-2 ${selectedOptions.includes(opt) ? "bg-[#a9a9a9] text-white" : "bg-[#dddddd] dark:bg-[#8d8d8d] dark:text-[#dddddd]"}`}
+                                                className={`px-4 py-2 rounded shadow mb-2 ${selectedOptions.includes(opt) ? "bg-[#a9a9a9] text-white" : "bg-[#dddddd] dark:bg-[var(--color-navy)] dark:text-[#dddddd]"}`}
                                             >
                                                 {optionLabels[opt] || opt}
                                             </button>
@@ -296,7 +297,7 @@ export default function MapAISuggestions({
                                 <div className="mt-5 mr-30">No suggestions found</div> // actual no suggestions found
                             ) : ["backend_unreachable", "api_unreachable"].includes(suggestions[0]) ? (
                                 <div className="mt-5 mr-30">
-                                    Could not connect to the suggestion service 
+                                    Could not connect to the suggestion service
                                 </div> // issues with backend or api (or internet connection, etc)
                             ) : (
                                 // Otherwise, render the real suggestions safely

@@ -63,7 +63,6 @@ export default function FormAI() {
         } finally {
             setLoading(false)
         }
-        console.log(suggestions.destinations)
     }
 
 
@@ -360,7 +359,7 @@ export default function FormAI() {
 
             {loading && (
                 <div className="fixed inset-0 flex flex-col items-center justify-center bg-white/70 dark:bg-black/50 backdrop-blur-sm z-50">
-                    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-10 h-10 border-4 border-[var(--color-crimson)] border-t-transparent rounded-full animate-spin"></div>
                     <p className="mt-4 text-zinc-900 dark:text-zinc-100">We are finding the best destinations for you.</p>
                     <p className="mt-4 text-sm text-zinc-900 dark:text-zinc-100">This might take a few minutes.</p>
                 </div>
