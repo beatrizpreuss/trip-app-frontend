@@ -318,10 +318,10 @@ export default function TripDetails() {
                                                 className="w-full min-w-70"
                                             />
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10 cursor">
                                             <button
                                                 onClick={() => deleteRow(item.id, setStays)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -432,10 +432,10 @@ export default function TripDetails() {
                                                 className="w-full min-w-70"
                                             />
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10">
                                             <button
                                                 onClick={() => deleteRow(item.id, setEatDrink)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -558,10 +558,10 @@ export default function TripDetails() {
                                                 className="w-full min-w-70"
                                             />
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10">
                                             <button
                                                 onClick={() => deleteRow(item.id, setExplore)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -674,10 +674,10 @@ export default function TripDetails() {
                                                 className="w-full min-w-70"
                                             />
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10">
                                             <button
                                                 onClick={() => deleteRow(item.id, setEssentials)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -789,10 +789,10 @@ export default function TripDetails() {
                                                 className="w-full min-w-70"
                                             />
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10">
                                             <button
                                                 onClick={() => deleteRow(item.id, setGettingAround)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline">
+                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
