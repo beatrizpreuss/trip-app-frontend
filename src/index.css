@@ -62,7 +62,7 @@ body {
   }
   /* Used in TripDetails */
   .delete-trip-button {
-    @apply my-5 text-zinc-900 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:focus:ring-zinc-800 dark:text-[#dddddd];
+    @apply my-5 text-red-600 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:focus:ring-zinc-800 dark:text-[#dddddd] cursor-pointer;
   }
   /* Used in TripMap */
   .popup-label {

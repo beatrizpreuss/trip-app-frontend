@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useLocation, Link } from "react-router-dom"
-import Button from '../assets/images/button-plan.png'
 
 
 export default function DestinationIdeas() {
