@@ -60,6 +60,10 @@ body {
   .table-input-box {
     @apply px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-[var(--color-stale-blue)];
   }
+
+  .table-input-field {
+    @apply bg-gray-100 w-full min-w-25 rounded-sm min-h-10 dark:bg-[var(--color-darker-blue)];
+  }
   /* Used in TripDetails */
   .delete-trip-button {
     @apply my-5 text-red-600 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:focus:ring-zinc-800 dark:text-[#dddddd] cursor-pointer;

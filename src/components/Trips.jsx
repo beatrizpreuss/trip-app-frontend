@@ -98,8 +98,8 @@ export default function Trips() {
                         )}
 
                         {/* Trip name overlay */}
-                        <div className="relative flex items-center justify-center h-full absolute bg-[var(--color-dark-azure)] dark:bg-[#1E2E40]">
-                            <span className="font-medium text-center text-zinc-100 group-hover:scale-110 transition dark:text-[#dddddd]">
+                        <div className="relative flex items-center justify-center h-full absolute bg-[var(--color-stale-blue)] dark:bg-[#1E2E40]">
+                            <span className="font-medium text-center text-[var(--color-dark-azure)] group-hover:scale-110 transition dark:text-[#dddddd]">
                                 {trip.name}
                             </span>
                         </div>
