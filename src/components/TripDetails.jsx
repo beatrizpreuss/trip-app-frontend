@@ -6,6 +6,7 @@ import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
 import SaveButton from "./SaveButton"
 import { AuthContext } from "./AuthContext"
+import ExportPDF from "./ExportPDF"
 
 
 export default function TripDetails() {
@@ -32,35 +33,36 @@ export default function TripDetails() {
     const { token, logout, refreshAccessToken } = useContext(AuthContext)
 
     // GET DATA FROM BACKEND
-    
+
     useEffect(() => {
         if (!token) return
-        
+
         const fetchTripDetails = async () => {
-          try {
-            const data = await getTripById({ tripId, token , refreshAccessToken, logout, navigate})
-      
-            if (!data) {
-              setLoading(false)
-              return
+            try {
+                const data = await getTripById({ tripId, token, refreshAccessToken, logout, navigate })
+
+                if (!data) {
+                    setLoading(false)
+                    return
+                }
+                const { tripName, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
+
+                setTripName(tripName)
+                setStays(stays)
+                setEatDrink(eatDrink)
+                setExplore(explore)
+                setEssentials(essentials)
+                setGettingAround(gettingAround)
+            } catch (err) {
+                console.error("Error fetching trip details", err)
+
+            } finally {
+                setLoading(false)
+                console.log(stays)
             }
-            const { tripName, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
-      
-            setTripName(tripName)
-            setStays(stays)
-            setEatDrink(eatDrink)
-            setExplore(explore)
-            setEssentials(essentials)
-            setGettingAround(gettingAround)
-          } catch (err) {
-            console.error("Error fetching trip details", err)
-    
-          } finally {
-            setLoading(false)
-          }
         }
         fetchTripDetails()
-      }, [tripId, token, logout, navigate])
+    }, [tripId, token, logout, navigate])
 
     // CHANGE TRIP NAME
 
@@ -133,11 +135,11 @@ export default function TripDetails() {
         const mappedEssentials = essentials.map(mapItemForBackend)
         const mappedGettingAround = gettingAround.map(mapItemForBackend)
 
-        updateTripById({ 
-            token, tripId, tripName, 
+        updateTripById({
+            token, tripId, tripName,
             mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround,
             refreshAccessToken, logout, navigate
-         })
+        })
             .then(data => {
                 console.log("Saved", data)
 
@@ -169,7 +171,7 @@ export default function TripDetails() {
             setEssentials([])
             setGettingAround([])
             setTripName("")
-            
+
             navigate("/trips")
         } catch (err) {
             console.error("Error deleting trip:", err)
@@ -315,22 +317,22 @@ export default function TripDetails() {
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            { showLatLon ? 
-                                            <input
-                                            name="latLong"
-                                            type="text"
-                                            value={item.latLong || ""}
-                                            className="table-input-field"
-                                            onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                            /> 
-                                            :
-                                            <button onClick={() => {setShowLatLon(true)}} className="table-input-field cursor-pointer" >Show</button>
+                                            {showLatLon ?
+                                                <input
+                                                    name="latLong"
+                                                    type="text"
+                                                    value={item.latLong || ""}
+                                                    className="table-input-field"
+                                                    onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
+                                                />
+                                                :
+                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
                                             }
                                         </td>
                                         <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10 cursor">
                                             <button
                                                 onClick={() => deleteRow(item.id, setStays)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
+                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -435,22 +437,22 @@ export default function TripDetails() {
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            { showLatLon ?
-                                            <input
-                                                name="latLong"
-                                                type="text"
-                                                value={item.latLong || ""}
-                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
-                                                className="table-input-field text-xs"
-                                            />
-                                            :
-                                            <button onClick={() => {setShowLatLon(true)}} className="table-input-field cursor-pointer" >Show</button>
+                                            {showLatLon ?
+                                                <input
+                                                    name="latLong"
+                                                    type="text"
+                                                    value={item.latLong || ""}
+                                                    onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
+                                                    className="table-input-field text-xs"
+                                                />
+                                                :
+                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
                                             }
                                         </td>
                                         <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10">
                                             <button
                                                 onClick={() => deleteRow(item.id, setEatDrink)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
+                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -568,21 +570,21 @@ export default function TripDetails() {
                                         </td>
                                         <td className="table-input-box">
                                             {showLatLon ?
-                                            <input
-                                                name="latLong"
-                                                type="text"
-                                                value={item.latLong || ""}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                            :
-                                            <button onClick={() => {setShowLatLon(true)}} className="table-input-field cursor-pointer" >Show</button>
+                                                <input
+                                                    name="latLong"
+                                                    type="text"
+                                                    value={item.latLong || ""}
+                                                    className="table-input-field"
+                                                    onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
+                                                />
+                                                :
+                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
                                             }
                                         </td>
                                         <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10">
                                             <button
                                                 onClick={() => deleteRow(item.id, setExplore)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
+                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -689,22 +691,22 @@ export default function TripDetails() {
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            { showLatLon ?
-                                            <input
-                                                name="latLong"
-                                                type="text"
-                                                value={item.latLong || ""}
-                                                className="table-input-field "
-                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                            :
-                                            <button onClick={() => {setShowLatLon(true)}} className="table-input-field cursor-pointer" >Show</button>
+                                            {showLatLon ?
+                                                <input
+                                                    name="latLong"
+                                                    type="text"
+                                                    value={item.latLong || ""}
+                                                    className="table-input-field "
+                                                    onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
+                                                />
+                                                :
+                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
                                             }
                                         </td>
                                         <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10">
                                             <button
                                                 onClick={() => deleteRow(item.id, setEssentials)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
+                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -810,22 +812,22 @@ export default function TripDetails() {
                                             />
                                         </td>
                                         <td className="table-input-box">
-                                            { showLatLon ?                                            
-                                            <input
-                                                name="latLong"
-                                                type="text"
-                                                value={item.latLong || ""}
-                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
-                                                className="table-input-field text-xs"
-                                            />
-                                            :
-                                            <button onClick={() => {setShowLatLon(true)}} className="table-input-field cursor-pointer" >Show</button>
+                                            {showLatLon ?
+                                                <input
+                                                    name="latLong"
+                                                    type="text"
+                                                    value={item.latLong || ""}
+                                                    onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
+                                                    className="table-input-field text-xs"
+                                                />
+                                                :
+                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
                                             }
                                         </td>
                                         <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-[var(--color-dark-blue)] z-10">
                                             <button
                                                 onClick={() => deleteRow(item.id, setGettingAround)}
-                                                className="font-medium text-red-600 dark:text-red-400 hover:underline cursor-pointer">
+                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
                                                 <FaTrash />
                                             </button>
                                         </td>
@@ -855,6 +857,13 @@ export default function TripDetails() {
                         </button>
                     </Link>
                 </div>
+                <ExportPDF 
+                stays={stays}
+                eatDrink={eatDrink}
+                explore={explore}
+                essentials={essentials}
+                gettingAround={gettingAround}
+                />
                 <button
                     onClick={deleteTrip}
                     className="delete-trip-button">
