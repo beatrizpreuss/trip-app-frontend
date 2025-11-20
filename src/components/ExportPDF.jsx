@@ -26,7 +26,7 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
             if (rows.length === 0) return;
 
             // Add category title
-            doc.setFontSize(14);
+            doc.setFontSize(12);
             doc.text(title, 14, currentY);
             currentY += 6;
 
@@ -51,7 +51,7 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
             }
 
             // Day title
-            doc.setFontSize(18);
+            doc.setFontSize(16);
             doc.text(`Day ${day}`, 14, currentY);
             currentY += 10;
 
@@ -96,7 +96,7 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
             );
         });
 
-        doc.save("My_Trip.pdf");
+        doc.save("My_Trip.pdf")
     }
 
     return (

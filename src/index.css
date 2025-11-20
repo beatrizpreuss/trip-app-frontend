@@ -3,10 +3,11 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --color-crimson: #e83f62;
-  --color-pastel-orange: #f7ad79;
+  --color-crimson: #d46a6a;
+  --color-pastel-orange: #e6c8a8;
   --color-dark-azure: #00182c;
-  --color-stale-blue: #DCE4EA;
+  --color-stale-blue: #8EA4B4;
+  --color-light-blue: #E5EAED;
   --color-steel-navy: #152333;
   --color-navy: #1E2E40;
   --color-darker-blue: #203957;
@@ -30,7 +31,10 @@ body {
 @layer components {
   /* Used everywhere */
   .general-button {
-    @apply w-50 my-5 text-zinc-100 bg-[var(--color-dark-azure)] hover:bg-zinc-800 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[var(--color-stale-blue)] dark:border dark:border-[var(--color-dark-azure)] dark:hover:bg-zinc-200 dark:focus:ring-zinc-800 dark:text-zinc-800;
+    @apply w-50 my-5 text-zinc-100 bg-[var(--color-crimson)] hover:font-bold focus:ring-2 focus:outline-none focus:ring-[var(--color-light-blue)]
+    font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[var(--color-stale-blue)] dark:border dark:border-[var(--color-dark-azure)] dark:focus:ring-zinc-800 dark:text-zinc-800
+    transition-transform transform hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg hover:font-bold cursor-pointer;
+
   }
   /* Used on NavBar and Footer */
   .logo {
@@ -38,15 +42,15 @@ body {
   }
   /* Used in Navbar */
   .navbar-option {
-    @apply block py-2 px-3 text-zinc-900 bg-[var(--color-stale-blue)] rounded-sm text-center md:bg-transparent md:text-zinc-900 md:hover:font-bold md:p-0;
+    @apply block py-2 px-3 text-[var(--color-dark-azure)] bg-[var(--color-stale-blue)] rounded-lg text-center md:bg-transparent md:text-[var(--color-dark-azure)] md:hover:bg-[#A5B7C4] md:p-3;
   }
   /* Used in /destinations */
   .form-label {
-    @apply block text-zinc-900 mb-2 dark:text-[var(--color-stale-blue)];
+    @apply block text-[var(--color-dark-azure)] mb-2 dark:text-[var(--color-stale-blue)];
   }
   /* Used in /destinations */
   .form-input-box {
-    @apply border border-zinc-400 bg-zinc-100 p-2 w-full rounded-lg focus:outline-none focus:border-zinc-900 dark:border-zinc-600 dark:bg-[var(--color-stale-blue)] dark:focus:border-zinc-300 dark:text-[#dddddd];
+    @apply border border-zinc-400 bg-zinc-100 p-2 w-full rounded-lg focus:outline-none focus:border-[var(--color-dark-azure)] dark:border-zinc-600 dark:bg-[var(--color-stale-blue)] dark:focus:border-zinc-300 dark:text-[#dddddd];
   }
   /* Used in /login and /register */
   .sign-input-box {
@@ -54,7 +58,7 @@ body {
   }
   /* Used in TripDetails */
   .add-row-button {
-    @apply my-5 text-zinc-900 hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:focus:ring-zinc-800 dark:text-[#dddddd];
+    @apply my-5 text-[var(--color-dark-azure)] hover:font-bold focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:focus:ring-zinc-800 dark:text-[#dddddd];
   }
   /* Used in TripDetails */
   .table-input-box {

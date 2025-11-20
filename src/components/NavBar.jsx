@@ -68,17 +68,17 @@ export default function NavBar() {
                             dark:border-zinc-700">
                             <li>
                                 <NavLink to="/"
-                                    className={({ isActive }) => `navbar-option ${isActive ? "font-bold" : ""}`}>Home
+                                    className={({ isActive }) => `navbar-option ${isActive ? "bg-[#A5B7C4]" : ""}`}>Home
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/find-destinations"
-                                    className={({ isActive }) => `navbar-option ${isActive ? "font-bold" : ""}`}>Destinations
+                                    className={({ isActive }) => `navbar-option ${isActive ? "bg-[#A5B7C4]" : ""}`}>Destinations
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/trips"
-                                    className={({ isActive }) => `navbar-option ${isActive ? "font-bold" : ""}`}>My Trips
+                                    className={({ isActive }) => `navbar-option ${isActive ? "bg-[#A5B7C4]" : ""}`}>My Trips
                                 </NavLink>
                             </li>
                         </ul>

@@ -3,7 +3,7 @@ import Logo from '../assets/images/logo.png'
 export default function Footer() {
     
     return (
-        <footer className="bg-[var(--color-stale-blue)] rounded-lg shadow-smm-4">
+        <footer className="bg-[var(--color-stale-blue)] shadow-sm-4">
             <div className="w-full mx-auto px-11 md:py-8">
                 <div className="sm:flex sm:items-center sm:justify-between">
                     <a href="/" className="flex items-center mb-4 sm:mb-0 ">

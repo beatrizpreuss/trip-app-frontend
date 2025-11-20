@@ -2,7 +2,6 @@ import { useState, useContext, useRef, useEffect } from "react"
 import { popupToBackend } from "../util/apiCalls"
 import { AuthContext } from "./AuthContext"
 import { useNavigate } from "react-router-dom"
-import Idea from "../assets/images/idea-icon.png"
 
 export default function MapAISuggestions({
     tripId,
@@ -208,11 +207,9 @@ export default function MapAISuggestions({
         <div className="flex justify-center">
             {/* Suggestions button */}
 
-            <button className="relative flex flex-row general-button bg-[var(--color-crimson)] items-center pl-15 dark:text-[var(--color-stale-blue)]
-                        transition-transform transform hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg hover:font-bold cursor-pointer"
+            <button className="general-button bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)]"
                 onClick={() => setIsOpen(true)}>
-                <img src={Idea} className="w-20 absolute -left-7 top-1/2 -translate-y-1/2" />
-                <span>Get Suggestions</span>
+                Get Suggestions
             </button>
 
             {/* Popup */}

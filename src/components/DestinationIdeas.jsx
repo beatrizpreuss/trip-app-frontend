@@ -27,7 +27,7 @@ export default function DestinationIdeas() {
 
     return (
         <div className="my-20 md:mx-15 mx-5">
-            <div className="flex flex-col justify-center items-center dark:text-[var(--color-stale-blue)]">
+            <div className="flex flex-col justify-center items-center dark:text-[var(--color-light-blue)]">
                 <h1 className="text-4xl font-bold">Your Destination Ideas</h1>
                 <h3 className="mt-4 mb-15">Explore these personalized travel suggestions curated just for you</h3>
             </div>
@@ -36,7 +36,7 @@ export default function DestinationIdeas() {
 
             <div id="default-carousel" className="flex flex-col relative w-full md:w-2/3 mx-auto" data-carousel="slide">
                 {/*<!-- Carousel wrapper -->*/}
-                <div className="relative flex justify-center h-auto shadow shadow-lg rounded-lg bg-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
+                <div className="relative flex justify-center h-auto shadow shadow-lg rounded-lg bg-[var(--color-light-blue)] dark:bg-[var(--color-darker-blue)]">
                     {/*<!-- Items -->*/}
                     {ideas.map((idea, index) => (
                         <div
@@ -45,7 +45,7 @@ export default function DestinationIdeas() {
                                  ${index === currentIndex ? "opacity-100" : "opacity-0 hidden pointer-events-none h-0 w-0"}
                                  `}
                         >
-                            <div className="p-6 relative rounded-lg overflow-hidden group bg-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
+                            <div className="p-6 relative rounded-lg overflow-hidden group bg-[var(--color-light-blue)] dark:bg-[var(--color-darker-blue)]">
                                 <h2 className="text-2xl font-bold text-center mt-4 mb-7 text-pretty dark:text-[var(--color-stale-blue)]">{idea.name}</h2>
                                 <p className="dark:text-gray-300 text-sm text-center mb-4">{idea.description}</p>
                                 <div className="flex flex-col gap-5 md:flex-row mx-10">
@@ -115,8 +115,7 @@ export default function DestinationIdeas() {
             <div className="flex justify-center">
             <Link to="../trips" target="_blank">
                 <button
-                    className="general-button bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)] 
-                        transition-transform transform hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg hover:font-bold cursor-pointer"
+                    className="general-button bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)]"
                 >
                     Create your trip
                 </button>

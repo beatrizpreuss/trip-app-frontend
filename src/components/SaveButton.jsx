@@ -1,10 +1,14 @@
 
-export default function SaveButton( { saveChanges, hasChanges }) {
+export default function SaveButton({ saveChanges, hasChanges }) {
     return (
         <button
             onClick={saveChanges}
-            className={`${hasChanges ? "bg-[var(--color-crimson)] hover:bg-[var(--color-pastel-orange)]" : "bg-[var(--color-dark-azure)] hover:bg-zinc-800 dark:bg-[#dddddd]"} my-5 
-                    general-button`}>
+            className={`relative my-5 general-button`}
+        >
+            {/* The dot */}
+            {hasChanges && (
+                <span className="absolute right-5 w-5 h-5 bg-[var(--color-pastel-orange)] rounded-full shadow-lg"></span>
+            )}
             Save Changes
         </button>
     )
