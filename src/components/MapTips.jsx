@@ -70,8 +70,8 @@ export default function MapTips({ tripId }) {
 
             {/* Popup */}
             {isOpen && (
-                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-[1000] dark:bg-[#222222]/80">
-                    <div className="relative bg-white rounded-xl shadow-lg p-6 w-96 z-[1001] dark:text-[#dddddd] dark:bg-[#222222]">
+                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-[5000] dark:bg-[#222222]/80">
+                    <div className="relative bg-white rounded-xl shadow-lg p-6 w-96 z-[5001] dark:text-[#dddddd] dark:bg-[#222222]">
                         {/* Close button always visible */}
                         <button
                             onClick={resetPopup}

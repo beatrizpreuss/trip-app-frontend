@@ -214,8 +214,8 @@ export default function MapAISuggestions({
 
             {/* Popup */}
             {isOpen && (
-                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-[1000] dark:bg-[#222222]/80">
-                    <div className="relative bg-white rounded-xl shadow-lg p-6 w-96 z-[1001] dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
+                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-[5000] dark:bg-[#222222]/80">
+                    <div className="relative bg-white rounded-xl shadow-lg p-6 w-96 z-[5001] dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-darker-blue)]">
                         {/* Close button always visible */}
                         <button
                             onClick={resetPopup}
