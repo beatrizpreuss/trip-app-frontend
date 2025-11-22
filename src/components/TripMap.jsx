@@ -847,7 +847,7 @@ export default function TripMap() {
                 </div>
             </div>
 
-            <MapContainer ref={mapRef} zoomControl={false} className="h-[500px] w-full" id="map">
+            <MapContainer ref={mapRef} zoomControl={false} className="h-[500px]" id="map">
                 <LayersControl position="topright">
                     <BaseLayer checked name="Streets">
                         <TileLayer
@@ -913,7 +913,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="name"
                                             type="text"
-                                            value={marker.name || ""}
+                                            value={marker.name ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
@@ -923,7 +923,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="status"
                                             type="text"
-                                            value={marker.status || ""}
+                                            value={marker.status ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
@@ -933,7 +933,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="price"
                                             type="text"
-                                            value={marker.price || ""}
+                                            value={marker.price ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
@@ -943,7 +943,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="address"
                                             type="text"
-                                            value={marker.address || ""}
+                                            value={marker.address ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
@@ -953,7 +953,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="day"
                                             type="text"
-                                            value={marker.day || ""}
+                                            value={marker.day ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
@@ -963,7 +963,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="url"
                                             type="text"
-                                            value={marker.url || ""}
+                                            value={marker.url ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
@@ -974,7 +974,7 @@ export default function TripMap() {
                                             className="popup-input w-full bg-gray-200"
                                             name="comments"
                                             rows={2}
-                                            value={marker.comments || ""}
+                                            value={marker.comments ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1017,7 +1017,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="name"
                                             type="text"
-                                            value={marker.name || ""}
+                                            value={marker.name ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1027,7 +1027,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="address"
                                             type="text"
-                                            value={marker.address || ""}
+                                            value={marker.address ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1037,7 +1037,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="day"
                                             type="text"
-                                            value={marker.day || ""}
+                                            value={marker.day ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1047,7 +1047,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="url"
                                             type="text"
-                                            value={marker.url || ""}
+                                            value={marker.url ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1058,7 +1058,7 @@ export default function TripMap() {
                                             className="popup-input w-full bg-gray-200"
                                             name="comments"
                                             rows={2}
-                                            value={marker.comments || ""}
+                                            value={marker.comments ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1101,7 +1101,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="name"
                                             type="text"
-                                            value={marker.name || ""}
+                                            value={marker.name ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1111,7 +1111,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="price"
                                             type="text"
-                                            value={marker.price || ""}
+                                            value={marker.price ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1121,7 +1121,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="address"
                                             type="text"
-                                            value={marker.address || ""}
+                                            value={marker.address ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1131,7 +1131,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="day"
                                             type="text"
-                                            value={marker.day || ""}
+                                            value={marker.day ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1141,7 +1141,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="url"
                                             type="text"
-                                            value={marker.url || ""}
+                                            value={marker.url ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1152,7 +1152,7 @@ export default function TripMap() {
                                             className="popup-input w-full bg-gray-200"
                                             name="comments"
                                             rows={2}
-                                            value={marker.comments || ""}
+                                            value={marker.comments ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1195,7 +1195,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="name"
                                             type="text"
-                                            value={marker.name || ""}
+                                            value={marker.name ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1205,7 +1205,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="address"
                                             type="text"
-                                            value={marker.address || ""}
+                                            value={marker.address ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1215,7 +1215,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="day"
                                             type="text"
-                                            value={marker.day || ""}
+                                            value={marker.day ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1225,7 +1225,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="url"
                                             type="text"
-                                            value={marker.url || ""}
+                                            value={marker.url ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1236,7 +1236,7 @@ export default function TripMap() {
                                             className="popup-input w-full bg-gray-200"
                                             name="comments"
                                             rows={2}
-                                            value={marker.comments || ""}
+                                            value={marker.comments ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1279,7 +1279,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="name"
                                             type="text"
-                                            value={marker.name || ""}
+                                            value={marker.name ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1289,7 +1289,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="address"
                                             type="text"
-                                            value={marker.address || ""}
+                                            value={marker.address ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1299,7 +1299,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="day"
                                             type="text"
-                                            value={marker.day || ""}
+                                            value={marker.day ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1309,7 +1309,7 @@ export default function TripMap() {
                                             className="popup-input"
                                             name="url"
                                             type="text"
-                                            value={marker.url || ""}
+                                            value={marker.url ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
@@ -1320,7 +1320,7 @@ export default function TripMap() {
                                             className="popup-input w-full bg-gray-200"
                                             name="comments"
                                             rows={2}
-                                            value={marker.comments || ""}
+                                            value={marker.comments ?? ""}
                                             onChange={(event) =>
                                                 handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
                                             } />
