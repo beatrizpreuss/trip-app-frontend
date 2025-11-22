@@ -26,12 +26,21 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
             if (rows.length === 0) return;
 
             // Add category title
-            doc.setFontSize(12);
+            doc.setFontSize(10);
             doc.text(title, 14, currentY);
-            currentY += 6;
+            currentY += 3;
 
             // Add table
             autoTable(doc, {
+                headStyles: {
+                    fillColor: [142, 164, 180] // header color (#8EA4B4)
+                },
+                bodyStyles: {
+                    fillColor: [244, 244, 245],   // color (#f4f4f5)
+                },
+                alternateRowStyles: {
+                    fillColor: [255, 255, 255],   // row white
+                },
                 head: [head],
                 body: rows,
                 startY: currentY,
@@ -51,7 +60,7 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
             }
 
             // Day title
-            doc.setFontSize(16);
+            doc.setFontSize(12);
             doc.text(`Day ${day}`, 14, currentY);
             currentY += 10;
 
@@ -73,10 +82,10 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
 
             // EXPLORE
             printCategory("Explore",
-                ["Name", "Address", "Comments"],
+                ["Name", "Address", "Website", "Comments"],
                 explore
                     .filter(e => matchDay(e, day) && !e.deleted)
-                    .map(e => [e.name, e.address, e.comments])
+                    .map(e => [e.name, e.address, e.url, e.comments])
             );
 
             // ESSENTIALS
