@@ -27,7 +27,7 @@ const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY
 
 export default function TripMap() {
     //Pulling state from Context
-    const { tripName, setTripName, stays, setStays, eatDrink, setEatDrink, explore, setExplore, essentials, setEssentials, gettingAround, setGettingAround } = useTrip()
+    const { tripName, setTripName, tripDate, setTripDate, stays, setStays, eatDrink, setEatDrink, explore, setExplore, essentials, setEssentials, gettingAround, setGettingAround } = useTrip()
 
     const { tripId } = useParams() // Extract dinamic URL parameter 
     const [searchResult, setSearchResult] = useState(null) // State for the search bar result
@@ -157,9 +157,12 @@ export default function TripMap() {
                 const checkbox = L.DomUtil.create("input", "", label)
                 checkbox.type = "checkbox"
                 checkbox.checked = showDays[day.toString()]
-
-                label.appendChild(document.createTextNode(` Day ${day}`))
-
+                
+                const date_obj = new Date(tripDate)
+                let nextday = new Date(date_obj.getFullYear(),date_obj.getMonth(),date_obj.getDate()+ (day - 1))
+                const date_str = nextday.toDateString()
+                
+                label.appendChild(document.createTextNode(` Day ${day}: ${date_str}`))
                 checkbox.addEventListener("change", (e) => {
                     setShowDays(prev => ({ ...prev, [day.toString()]: e.target.checked }))
                 })
@@ -260,9 +263,10 @@ export default function TripMap() {
                     setLoading(false)
                     return
                 }
-                const { tripName, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
+                const { tripName, tripDate, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
 
                 setTripName(tripName)
+                setTripDate(tripDate ? tripDate : "")
                 setStays(stays)
                 setEatDrink(eatDrink)
                 setExplore(explore)

@@ -101,7 +101,7 @@ export async function getTripById({ tripId, token, refreshAccessToken, logout, n
 // Update a trip by its ID
 export async function updateTripById({
     token,
-    tripId, tripName,
+    tripId, tripName, tripDate,
     mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround,
     refreshAccessToken, logout, navigate
 }) {
@@ -111,6 +111,7 @@ export async function updateTripById({
             method: "PUT",
             body: ({
                 name: tripName,
+                date: tripDate,
                 eat_drink: mappedEatDrink,
                 explore: mappedExplore,
                 stays: mappedStays,

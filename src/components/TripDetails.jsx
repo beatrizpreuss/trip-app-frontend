@@ -11,7 +11,7 @@ import ExportPDF from "./ExportPDF"
 
 export default function TripDetails() {
     //Pulling state from Context
-    const { tripName, setTripName, stays, setStays, eatDrink, setEatDrink, explore, setExplore, essentials, setEssentials, gettingAround, setGettingAround } = useTrip()
+    const { tripName, setTripName, tripDate, setTripDate, stays, setStays, eatDrink, setEatDrink, explore, setExplore, essentials, setEssentials, gettingAround, setGettingAround } = useTrip()
 
     const { tripId } = useParams()
     const navigate = useNavigate()
@@ -45,9 +45,10 @@ export default function TripDetails() {
                     setLoading(false)
                     return
                 }
-                const { tripName, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
+                const { tripName, tripDate, stays, eatDrink, explore, essentials, gettingAround } = formatTripData(data)
 
                 setTripName(tripName)
+                setTripDate(tripDate ? tripDate : "")
                 setStays(stays)
                 setEatDrink(eatDrink)
                 setExplore(explore)
@@ -70,6 +71,15 @@ export default function TripDetails() {
         setTripName(newName)
         setHasChanges(true)
     }
+
+    // CHANGE TRIP DATE
+
+    const handleTripDateChange = (newDate) => {
+        setTripDate(newDate ? newDate : "")
+        console.log(newDate)
+        setHasChanges(true)
+    }
+
 
     // CHANGE DATA IN THE TABLE
 
@@ -136,7 +146,7 @@ export default function TripDetails() {
         const mappedGettingAround = gettingAround.map(mapItemForBackend)
 
         updateTripById({
-            token, tripId, tripName,
+            token, tripId, tripName, tripDate,
             mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround,
             refreshAccessToken, logout, navigate
         })
@@ -188,23 +198,40 @@ export default function TripDetails() {
 
         <div className="m-25 mt-15 mx-15">
             <div className="flex flex-col justify-center items-center dark:text-[var(--color-stale-blue)]">
-
-                <input
-                    type="text"
-                    value={tripName}
-                    onChange={(e) => handleTripNameChange(e.target.value)}
-                    className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
-                />
-                <h3 className="mt-4">Manage all your trip details in the tables, or open the map to make changes</h3>
-                <div className="flex flex-row items-center justify-center gap-5">
-                    <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
-                    <Link to="map">
-                        <button
-                            className="general-button">
-                            Open Map
-                        </button>
-                    </Link>
+                <div className="relative w-full flex justify-center items-center">
+                    <input
+                        type="text"
+                        value={tripName}
+                        onChange={(e) => handleTripNameChange(e.target.value)}
+                        className="text-center text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
+                    />
+                    <div className="absolute right-0">
+                        {tripDate ? (
+                            <input
+                                type="date"
+                                value={tripDate}
+                                onChange={(e) => handleTripDateChange(e.target.value)}
+                                className="text-2xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
+                            />
+                        ) : (
+                            <button
+                                onClick={handleTripDateChange}
+                                className="general-button w-auto bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)]"
+                            >Add Date</button>
+                        )
+                        }
+                    </div>
                 </div>
+                <h3 className="mt-4">Manage all your trip details in the tables, or open the map to make changes</h3>
+            </div>
+            <div className="flex flex-row items-center justify-center gap-5">
+                <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
+                <Link to="map">
+                    <button
+                        className="general-button">
+                        Open Map
+                    </button>
+                </Link>
             </div>
 
             {/* Stays Table */}
@@ -857,12 +884,13 @@ export default function TripDetails() {
                         </button>
                     </Link>
                 </div>
-                <ExportPDF 
-                stays={stays}
-                eatDrink={eatDrink}
-                explore={explore}
-                essentials={essentials}
-                gettingAround={gettingAround}
+                <ExportPDF
+                    stays={stays}
+                    eatDrink={eatDrink}
+                    explore={explore}
+                    essentials={essentials}
+                    gettingAround={gettingAround}
+                    tripDate={tripDate}
                 />
                 <button
                     onClick={deleteTrip}
@@ -870,6 +898,6 @@ export default function TripDetails() {
                     Delete entire trip
                 </button>
             </div>
-        </div>
+        </div >
     )
 }

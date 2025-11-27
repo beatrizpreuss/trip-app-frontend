@@ -34,7 +34,6 @@ body {
     @apply w-50 my-5 text-zinc-100 bg-[var(--color-crimson)] hover:font-bold focus:ring-2 focus:outline-none focus:ring-[var(--color-light-blue)]
     font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-[var(--color-stale-blue)] dark:border dark:border-[var(--color-dark-azure)] dark:focus:ring-zinc-800 dark:text-zinc-800
     transition-transform transform hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg hover:font-bold cursor-pointer;
-
   }
   /* Used on NavBar and Footer */
   .logo {

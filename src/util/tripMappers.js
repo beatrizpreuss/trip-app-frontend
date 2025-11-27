@@ -16,6 +16,7 @@ export const mapCategoryForFrontend = (items) => {
 export const formatTripData = (data) => { 
     return {
         tripName: data.trip.name,
+        tripDate: data.trip.date,
         stays: mapCategoryForFrontend(data.stays),
         eatDrink: mapCategoryForFrontend(data.eat_drink),
         explore: mapCategoryForFrontend(data.explore),

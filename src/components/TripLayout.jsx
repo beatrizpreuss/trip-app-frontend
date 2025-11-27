@@ -6,6 +6,7 @@ export default function TripLayout() {
     
     // Passing state to the children using Context
     const [tripName, setTripName] = useState("")
+    const [tripDate, setTripDate] = useState("")
     const [stays, setStays] = useState([])
     const [eatDrink, setEatDrink] = useState([])
     const [explore, setExplore] = useState([])
@@ -24,6 +25,7 @@ export default function TripLayout() {
   return (
         <TripContext.Provider value={{
             tripName, setTripName,
+            tripDate, setTripDate,
             stays, setStays,
             eatDrink, setEatDrink,
             explore, setExplore,

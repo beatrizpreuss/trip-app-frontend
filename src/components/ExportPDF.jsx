@@ -1,11 +1,21 @@
 import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 
-export default function ExportPDF({ stays, eatDrink, explore, essentials, gettingAround }) {
+export default function ExportPDF({ stays, eatDrink, explore, essentials, gettingAround, tripDate }) {
+
+    function getFormattedDate(day) {
+        const dateObj = new Date(tripDate)
+        const nextDay = new Date(
+            dateObj.getFullYear(),
+            dateObj.getMonth(),
+            dateObj.getDate() + (day - 1)
+        )
+        return nextDay.toDateString()
+    }
 
     function generatePDF() {
         const doc = new jsPDF()
-        let currentY = 15; // manual Y-tracking
+        let currentY = 15 // manual Y-tracking
 
         // Collect all days from all entries
         const allDays = [
@@ -61,7 +71,8 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
 
             // Day title
             doc.setFontSize(12);
-            doc.text(`Day ${day}`, 14, currentY);
+            const formattedDate = getFormattedDate(day)
+            doc.text(`Day ${day} — ${formattedDate}`, 14, currentY)
             currentY += 10;
 
             // STAYS
@@ -111,8 +122,7 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
     return (
         <button
             onClick={generatePDF}
-            className="general-button bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)] 
-                    transition-transform transform hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg hover:font-bold cursor-pointer"
+            className="general-button bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)]"
         > Export to PDF
         </button>
     )
