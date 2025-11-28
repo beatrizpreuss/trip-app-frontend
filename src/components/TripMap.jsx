@@ -20,6 +20,7 @@ import { combineMarkers, getCenterOfMarkers, getRadiusFromMarkers } from "../uti
 import suggestionsIconImage from "../assets/images/placeholder1.png"
 import { AuthContext } from "./AuthContext"
 import MapTips from "./MapTips.jsx"
+import DraggableMarker from "./DraggableMarker.jsx" //Marker component that has general rendering for clean code and asks permission before moving a marker on drag
 
 const { BaseLayer } = LayersControl
 const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY
@@ -146,6 +147,8 @@ export default function TripMap() {
         useEffect(() => {
             const controlDiv = L.DomUtil.create("div", "leaflet-bar p-2 bg-white rounded shadow") //creates the container for filter
             const title = L.DomUtil.create("div", "font-semibold text-gray-700 text-sm mb-1", controlDiv)
+            controlDiv.style.maxHeight = "250px"
+            controlDiv.style.overflowY = "auto"
             title.textContent = "Filter by Day"
 
             const days = Object.keys(showDays)
@@ -895,452 +898,78 @@ export default function TripMap() {
 
                 {showStays && stays
                     .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.latLong}
+                    .map((marker) => (
+                        <DraggableMarker
+                            key={marker.id}
+                            marker={marker}
+                            category="stay"
+                            onConfirmMove={handleMarkerDragEnd}
                             icon={getMarkerIcon(marker, staysIcon)}
-                            draggable={true} //Make it possible to drag marker to change the location
-                            eventHandlers={{
-                                dragend: (event) => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("stay", marker.id, newLatLong)
-                                }
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="popup-label"> Name:
-                                        <input
-                                            className="popup-input"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Status:
-                                        <input
-                                            className="popup-input"
-                                            name="status"
-                                            type="text"
-                                            value={marker.status ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Price:
-                                        <input
-                                            className="popup-input"
-                                            name="price"
-                                            type="text"
-                                            value={marker.price ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Address:
-                                        <input
-                                            className="popup-input"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Day:
-                                        <input
-                                            className="popup-input"
-                                            name="day"
-                                            type="text"
-                                            value={marker.day ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> URL:
-                                        <input
-                                            className="popup-input"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="flex flex-col items-start mr-0">
-                                        <span className="popup-label">Comments:</span>
-                                        <textarea
-                                            className="popup-input w-full bg-gray-200"
-                                            name="comments"
-                                            rows={2}
-                                            value={marker.comments ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("stay", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="delete-marker-button"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("stay", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
+                            handleMarkerFieldChange={handleMarkerFieldChange}
+                            handleDeleteMarker={handleDeleteMarker}
+                            >
+                        </DraggableMarker>
                     ))}
 
                 {showEatDrink && eatDrink
                     .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.latLong}
+                    .map((marker) => (
+                        <DraggableMarker
+                            key={marker.id}
+                            marker={marker}
+                            category="eatDrink"
+                            onConfirmMove={handleMarkerDragEnd}
                             icon={getMarkerIcon(marker, eatDrinkIcon)}
-                            draggable={true}
-                            eventHandlers={{
-                                dragend: (event) => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("eatDrink", marker.id, newLatLong)
-                                }
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="popup-label"> Name:
-                                        <input
-                                            className="popup-input"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Address:
-                                        <input
-                                            className="popup-input"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Day:
-                                        <input
-                                            className="popup-input"
-                                            name="day"
-                                            type="text"
-                                            value={marker.day ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> URL:
-                                        <input
-                                            className="popup-input"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="flex flex-col items-start mr-0">
-                                        <span className="popup-label">Comments:</span>
-                                        <textarea
-                                            className="popup-input w-full bg-gray-200"
-                                            name="comments"
-                                            rows={2}
-                                            value={marker.comments ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("eatDrink", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="delete-marker-button"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("eatDrink", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
+                            handleMarkerFieldChange={handleMarkerFieldChange}
+                            handleDeleteMarker={handleDeleteMarker}
+                            >
+                        </DraggableMarker>
+                        
                     ))}
 
                 {showExplore && explore
                     .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.latLong}
+                    .map((marker) => (
+                        <DraggableMarker
+                            key={marker.id}
+                            marker={marker}
+                            category="explore"
+                            onConfirmMove={handleMarkerDragEnd}
                             icon={getMarkerIcon(marker, exploreIcon)}
-                            draggable={true}
-                            eventHandlers={{
-                                dragend: (event => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("explore", marker.id, newLatLong)
-                                })
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="popup-label"> Name:
-                                        <input
-                                            className="popup-input"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Price:
-                                        <input
-                                            className="popup-input"
-                                            name="price"
-                                            type="text"
-                                            value={marker.price ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Address:
-                                        <input
-                                            className="popup-input"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Day:
-                                        <input
-                                            className="popup-input"
-                                            name="day"
-                                            type="text"
-                                            value={marker.day ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> URL:
-                                        <input
-                                            className="popup-input"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="flex flex-col items-start mr-0">
-                                        <span className="popup-label">Comments:</span>
-                                        <textarea
-                                            className="popup-input w-full bg-gray-200"
-                                            name="comments"
-                                            rows={2}
-                                            value={marker.comments ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("explore", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="delete-marker-button"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("explore", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
+                            handleMarkerFieldChange={handleMarkerFieldChange}
+                            handleDeleteMarker={handleDeleteMarker}
+                            >
+                        </DraggableMarker>
                     ))}
 
                 {showEssentials && essentials
                     .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
-                    .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.latLong}
+                    .map((marker) => (
+                        <DraggableMarker
+                            key={marker.id}
+                            marker={marker}
+                            category="essentials"
+                            onConfirmMove={handleMarkerDragEnd}
                             icon={getMarkerIcon(marker, essentialsIcon)}
-                            draggable={true}
-                            eventHandlers={{
-                                dragend: (event) => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("essentials", marker.id, newLatLong)
-                                }
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="popup-label"> Name:
-                                        <input
-                                            className="popup-input"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Address:
-                                        <input
-                                            className="popup-input"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Day:
-                                        <input
-                                            className="popup-input"
-                                            name="day"
-                                            type="text"
-                                            value={marker.day ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> URL:
-                                        <input
-                                            className="popup-input"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="flex flex-col items-start mr-0">
-                                        <span className="popup-label">Comments:</span>
-                                        <textarea
-                                            className="popup-input w-full bg-gray-200"
-                                            name="comments"
-                                            rows={2}
-                                            value={marker.comments ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("essentials", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="delete-marker-button"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("essentials", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
+                            handleMarkerFieldChange={handleMarkerFieldChange}
+                            handleDeleteMarker={handleDeleteMarker}
+                            >
+                        </DraggableMarker>
                     ))}
 
                 {showGettingAround && gettingAround
                     .filter(marker => !marker.deleted && Array.isArray(marker.latLong) && marker.latLong.length === 2 && matchesActiveDays(marker, showDays))
                     .map((marker, index) => (
-                        <Marker
-                            key={index}
-                            position={marker.latLong}
+                        <DraggableMarker
+                            key={marker.id}
+                            marker={marker}
+                            category="gettingAround"
+                            onConfirmMove={handleMarkerDragEnd}
                             icon={getMarkerIcon(marker, gettingAroundIcon)}
-                            draggable={true}
-                            eventHandlers={{
-                                dragend: (event) => {
-                                    const newLatLong = [
-                                        event.target.getLatLng().lat,
-                                        event.target.getLatLng().lng
-                                    ]
-                                    handleMarkerDragEnd("gettingAround", marker.id, newLatLong)
-                                }
-                            }}>
-                            <Popup>
-                                <div className="space-x-2">
-                                    <label className="popup-label"> Name:
-                                        <input
-                                            className="popup-input"
-                                            name="name"
-                                            type="text"
-                                            value={marker.name ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Address:
-                                        <input
-                                            className="popup-input"
-                                            name="address"
-                                            type="text"
-                                            value={marker.address ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> Day:
-                                        <input
-                                            className="popup-input"
-                                            name="day"
-                                            type="text"
-                                            value={marker.day ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="popup-label"> URL:
-                                        <input
-                                            className="popup-input"
-                                            name="url"
-                                            type="text"
-                                            value={marker.url ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <label className="flex flex-col items-start mr-0">
-                                        <span className="popup-label">Comments:</span>
-                                        <textarea
-                                            className="popup-input w-full bg-gray-200"
-                                            name="comments"
-                                            rows={2}
-                                            value={marker.comments ?? ""}
-                                            onChange={(event) =>
-                                                handleMarkerFieldChange("gettingAround", marker.id, event.target.name, event.target.value)
-                                            } />
-                                    </label>
-                                    <button
-                                        className="delete-marker-button"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDeleteMarker("gettingAround", marker.id)
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </Popup>
-                        </Marker>
+                            handleMarkerFieldChange={handleMarkerFieldChange}
+                            handleDeleteMarker={handleDeleteMarker}
+                            >
+                        </DraggableMarker>
                     ))}
 
                 {/* Rendering the suggestions that come from AI from the user clicks the 'Show on map' button (rendered in MapSuggestions)*/}
