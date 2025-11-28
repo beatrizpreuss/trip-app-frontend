@@ -57,6 +57,8 @@ export default function TripMap() {
     const [textInput, setTextInput] = useState("")
     const mapRef = useRef(null) // ref to be used to zoom in to the new suggested marker added (in the MapSuggestions component)
 
+    const [isPicking, setIsPicking] = useState(false) //used from when the user is choosing a trip date
+
     // MAP DESIGN
 
     // Category Filter component - lets the user filter the map to see different categories
@@ -160,12 +162,14 @@ export default function TripMap() {
                 const checkbox = L.DomUtil.create("input", "", label)
                 checkbox.type = "checkbox"
                 checkbox.checked = showDays[day.toString()]
-                
-                const date_obj = new Date(tripDate)
-                let nextday = new Date(date_obj.getFullYear(),date_obj.getMonth(),date_obj.getDate()+ (day - 1))
-                const date_str = nextday.toDateString()
-                
-                label.appendChild(document.createTextNode(` Day ${day}: ${date_str}`))
+
+                let date_str = ""
+                if (tripDate) {
+                    const date_obj = new Date(tripDate)
+                    let nextday = new Date(date_obj.getFullYear(), date_obj.getMonth(), date_obj.getDate() + (day - 1))
+                    date_str = nextday.toDateString()
+                }
+                label.appendChild(document.createTextNode(` Day ${day}${date_str ? `: ${date_str}` : ""}`))
                 checkbox.addEventListener("change", (e) => {
                     setShowDays(prev => ({ ...prev, [day.toString()]: e.target.checked }))
                 })
@@ -451,10 +455,34 @@ export default function TripMap() {
         })
     }
 
-    // Update Trip Name Change
+    // Update Trip Name
     const handleTripNameChange = (newName) => {
         setTripName(newName)
         setHasChanges(true)
+    }
+
+    // Update Trip Date
+    const handleTripDateChange = (value) => {
+        // user cleared the date
+        if (!value) {
+            setTripDate("")        // keep it a string
+            setIsPicking(false)
+            setHasChanges(true)
+            return
+        }
+        // user selected a date
+        const [y, m, d] = value.split("-")
+        const formatted = `${d}.${m}.${y}`
+        setTripDate(value)     //keep as the actual value for the backend
+        setIsPicking(false)
+        setHasChanges(true)
+    }
+
+    // User clicks outside the date/calendar without choosing a date
+    const handleCancelPicking = () => {
+        if (tripDate === "") {
+            setIsPicking(false)
+        }
     }
 
     // Update info inside the popups
@@ -556,7 +584,7 @@ export default function TripMap() {
         const mappedGettingAround = gettingAround.map(mapItemForBackend)
 
         updateTripById({
-            token, tripId, tripName,
+            token, tripId, tripName, tripDate,
             mappedEatDrink, mappedExplore, mappedStays, mappedEssentials, mappedGettingAround,
             refreshAccessToken, logout, navigate
         })
@@ -797,13 +825,32 @@ export default function TripMap() {
     return (
         <div className="mt-15">
             <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
+                <div className="relative w-full flex justify-center items-center">
 
-                <input
-                    type="text"
-                    value={tripName}
-                    onChange={(e) => handleTripNameChange(e.target.value)}
-                    className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
-                />
+                    <input
+                        type="text"
+                        value={tripName}
+                        onChange={(e) => handleTripNameChange(e.target.value)}
+                        className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
+                    />
+                    <div className="absolute right-0">
+                        {(tripDate !== "" || isPicking) ? (
+                            <input
+                                type="date"
+                                value={tripDate ? tripDate.split('.').reverse().join('-') : ""}
+                                onChange={(e) => handleTripDateChange(e.target.value)}
+                                onBlur={handleCancelPicking}
+                                className="text-2xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center mr-15"
+                            />
+                        ) : (
+                            <button
+                                onClick={() => setIsPicking(true)}
+                                className="general-button w-auto bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)] mr-15"
+                            >Add Date</button>
+                        )
+                        }
+                    </div>
+                </div>
                 <h3 className="mt-4">Edit your trip details directly on the map</h3>
             </div>
             <div className="flex flex-row justify-center items-center mb-5 flex-wrap">
@@ -845,7 +892,7 @@ export default function TripMap() {
                     <SaveButton saveChanges={saveChanges} hasChanges={hasChanges} />
                 </div>
                 <div className="flex flex-row justify-center gap-5">
-                    
+
                     {/* Get Tips button */}
                     {allMarkers.length > 0 &&
                         <MapTips
@@ -907,7 +954,7 @@ export default function TripMap() {
                             icon={getMarkerIcon(marker, staysIcon)}
                             handleMarkerFieldChange={handleMarkerFieldChange}
                             handleDeleteMarker={handleDeleteMarker}
-                            >
+                        >
                         </DraggableMarker>
                     ))}
 
@@ -922,9 +969,9 @@ export default function TripMap() {
                             icon={getMarkerIcon(marker, eatDrinkIcon)}
                             handleMarkerFieldChange={handleMarkerFieldChange}
                             handleDeleteMarker={handleDeleteMarker}
-                            >
+                        >
                         </DraggableMarker>
-                        
+
                     ))}
 
                 {showExplore && explore
@@ -938,7 +985,7 @@ export default function TripMap() {
                             icon={getMarkerIcon(marker, exploreIcon)}
                             handleMarkerFieldChange={handleMarkerFieldChange}
                             handleDeleteMarker={handleDeleteMarker}
-                            >
+                        >
                         </DraggableMarker>
                     ))}
 
@@ -953,7 +1000,7 @@ export default function TripMap() {
                             icon={getMarkerIcon(marker, essentialsIcon)}
                             handleMarkerFieldChange={handleMarkerFieldChange}
                             handleDeleteMarker={handleDeleteMarker}
-                            >
+                        >
                         </DraggableMarker>
                     ))}
 
@@ -968,7 +1015,7 @@ export default function TripMap() {
                             icon={getMarkerIcon(marker, gettingAroundIcon)}
                             handleMarkerFieldChange={handleMarkerFieldChange}
                             handleDeleteMarker={handleDeleteMarker}
-                            >
+                        >
                         </DraggableMarker>
                     ))}
 

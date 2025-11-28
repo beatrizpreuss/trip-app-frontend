@@ -30,6 +30,9 @@ export default function TripDetails() {
     // used to track unsaved changes to make the Save Changes button another color
     const [hasChanges, setHasChanges] = useState(false)
 
+    //used from when the user is choosing a trip date
+    const [isPicking, setIsPicking] = useState(false) 
+
     const { token, logout, refreshAccessToken } = useContext(AuthContext)
 
     // GET DATA FROM BACKEND
@@ -59,7 +62,6 @@ export default function TripDetails() {
 
             } finally {
                 setLoading(false)
-                console.log(stays)
             }
         }
         fetchTripDetails()
@@ -74,10 +76,27 @@ export default function TripDetails() {
 
     // CHANGE TRIP DATE
 
-    const handleTripDateChange = (newDate) => {
-        setTripDate(newDate ? newDate : "")
-        console.log(newDate)
+    const handleTripDateChange = (value) => {
+        // user cleared the date
+        if (!value) {
+            setTripDate("")        // keep it a string
+            setIsPicking(false)
+            setHasChanges(true)
+            return
+        }
+        // user selected a date
+        const [y, m, d] = value.split("-")
+        const formatted = `${d}.${m}.${y}`
+        setTripDate(value)     //keep as the actual value for the backend
+        setIsPicking(false)
         setHasChanges(true)
+    }
+
+    // User clicks outside the date/calendar without choosing a date
+    const handleCancelPicking = () => {
+        if (tripDate === "") {
+            setIsPicking(false)
+        }
     }
 
 
@@ -206,16 +225,17 @@ export default function TripDetails() {
                         className="text-center text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                     />
                     <div className="absolute right-0">
-                        {tripDate ? (
+                        {(tripDate !== "" || isPicking) ? (
                             <input
                                 type="date"
-                                value={tripDate}
+                                value={tripDate ? tripDate.split('.').reverse().join('-') : ""}
                                 onChange={(e) => handleTripDateChange(e.target.value)}
+                                onBlur={handleCancelPicking}
                                 className="text-2xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                             />
                         ) : (
                             <button
-                                onClick={handleTripDateChange}
+                                onClick={() => setIsPicking(true)}
                                 className="general-button w-auto bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)]"
                             >Add Date</button>
                         )
