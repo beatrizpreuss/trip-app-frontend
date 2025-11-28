@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useTrip } from "./TripContext"
-import { FaTrash, FaPlus } from "react-icons/fa"
 import { deleteTripById, getTripById, updateTripById } from "../util/apiCalls"
 import { formatTripData, mapItemForBackend, mapCategoryForFrontend } from "../util/tripMappers"
 import SaveButton from "./SaveButton"
 import { AuthContext } from "./AuthContext"
 import ExportPDF from "./ExportPDF"
+import CategoryTable from "./CategoryTable"
 
 
 export default function TripDetails() {
@@ -83,21 +83,20 @@ export default function TripDetails() {
 
     // CHANGE DATA IN THE TABLE
 
-    const handleMarkerChange = (category, index, field, value, type) => {
+    const handleMarkerChange = (category, id, field, value) => {
         const categoryMap = {
-            stays: [stays, setStays],
+            stay: [stays, setStays],
             eatDrink: [eatDrink, setEatDrink],
             explore: [explore, setExplore],
             essentials: [essentials, setEssentials],
             gettingAround: [gettingAround, setGettingAround]
         }
-        const [array, setArray] = categoryMap[category]
+        const [array, setArray] = categoryMap[category];
+        if (!array || !setArray) return;
 
-        const updated = [...array]
-        updated[index] = {
-            ...updated[index],
-            [field]: type === "number" ? Number(value) : value
-        }
+        const updated = array.map(item =>
+            item.id === id ? { ...item, [field]: value } : item
+        )
         setArray(updated)
         setHasChanges(true)
     }
@@ -105,7 +104,7 @@ export default function TripDetails() {
 
     // ADD A ROW TO THE TABLE
 
-    function addRow(category, setCategory, extraFields = []) {
+    function addRow(setCategory, extraFields = []) {
         const baseRow = {
             id: null,
             name: "",
@@ -181,6 +180,7 @@ export default function TripDetails() {
             setEssentials([])
             setGettingAround([])
             setTripName("")
+            setTripDate("")
 
             navigate("/trips")
         } catch (err) {
@@ -235,644 +235,118 @@ export default function TripDetails() {
             </div>
 
             {/* Stays Table */}
-            <div className="relative overflow-x-auto shadow-md rounded-lg">
-                <table className="table-auto w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
+            <CategoryTable
+                category="stay"
+                data={stays}
+                setData={setStays}
+                show={showStays}
+                setShow={setShowStays}
+                showLatLon={showLatLon}
+                setShowLatLon={setShowLatLon}
+                columns={[
+                    { name: "name", label: "Name", type: "textarea" },
+                    { name: "status", label: "Status", type: "text" },
+                    { name: "price", label: "Price", type: "text" },
+                    { name: "address", label: "Address", type: "text" },
+                    { name: "day", label: "Day", type: "text" },
+                    { name: "url", label: "External URL", type: "text" },
+                    { name: "comments", label: "Comments", type: "textarea" },
 
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-[var(--color-light-blue)] dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
-                        <div className="flex flex-col">
-                            <div className="flex flex-row">
-                                <button onClick={() => setShowStays(prev => !prev)}>
-                                    {showStays ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
-                                        </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
-                                        </svg>
-                                    }
-                                </button>
-                                <span>Stays</span>
-                            </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
-                            >Make a list with all the hotels, camping sites or any other accommodation places
-                                <br /> relevant to your trip. Include all details and stay organized.</p>
-                        </div>
-                    </caption>
-
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
-                        <tr>
-                            <th className="px-6 py-3">Name</th>
-                            <th className="px-6 py-3">Status</th>
-                            <th className="px-6 py-3">Price</th>
-                            <th className="px-6 py-3">Address</th>
-                            <th className="px-6 py-3">Day</th>
-                            <th className="px-6 py-3">External URL</th>
-                            <th className="px-6 py-3">Comments</th>
-                            <th className="px-6 py-3">Coordinates</th>
-                            <th className="px-6 py-3">
-                                <span className="sr-only">Delete</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    {showStays && (
-                        <tbody>
-                            {stays
-                                .filter(stay => !stay.deleted)
-                                .map((item, index) => (
-                                    <tr key={index} className="bg-[var(--color-light-blue)] border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="name"
-                                                rows={1}
-                                                value={item.name ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="status"
-                                                type="text"
-                                                value={item.status ?? ""}
-                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                                className="table-input-field"
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="price"
-                                                type="text"
-                                                value={item.price ?? ""}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="address"
-                                                type="text"
-                                                value={item.address ?? ""}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="day"
-                                                type="text"
-                                                placeholder="e.g. 1, 3, 5"
-                                                value={item.day}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="url"
-                                                type="text"
-                                                value={item.url ?? ""}
-                                                className="table-input-field text-xs"
-                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="comments"
-                                                value={item.comments ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            {showLatLon ?
-                                                <input
-                                                    name="latLong"
-                                                    type="text"
-                                                    value={item.latLong ?? ""}
-                                                    className="table-input-field"
-                                                    onChange={(event) => handleMarkerChange("stays", index, event.target.name, event.target.value, event.target.type)}
-                                                />
-                                                :
-                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
-                                            }
-                                        </td>
-                                        <td className="px-6 py-4 text-right sticky right-0 bg-[var(--color-light-blue)] dark:bg-[var(--color-dark-blue)] z-10 cursor">
-                                            <button
-                                                onClick={() => deleteRow(item.id, setStays)}
-                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    )}
-                </table>
-                <button
-                    onClick={() => addRow("stay", setStays, ["status", "price"])}
-                    className="add-row-button">
-                    <div className="flex flex-row items-center">
-                        < FaPlus />
-                        <span> Add Stay</span>
-                    </div>
-                </button>
-            </div>
+                ]}
+                addRow={addRow}
+                extraFields={["status", "price"]}
+                deleteRow={deleteRow}
+                handleMarkerChange={handleMarkerChange}
+            />
 
             {/* Eat & Drink Table */}
-            <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-[var(--color-light-blue)] dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
-                        <div className="flex flex-col">
-                            <div className="flex flex-row">
-                                <button onClick={() => setShowEatDrink(prev => !prev)}>
-                                    {showEatDrink ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
-                                        </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
-                                        </svg>
-                                    }
-                                </button>
-                                <span>Eat & Drink</span>
-                            </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
-                            >Make a list of the restaurants you would like to try, and of possible</p>
-                        </div>
-                    </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
-                        <tr>
-                            <th className="px-6 py-3">Name</th>
-                            <th className="px-6 py-3">Address</th>
-                            <th className="px-6 py-3">Day</th>
-                            <th className="px-6 py-3">External URL</th>
-                            <th className="px-6 py-3">Comments</th>
-                            <th className="px-6 py-3">Coordinates</th>
-                            <th className="px-6 py-3">
-                                <span className="sr-only">Delete</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    {showEatDrink && (
-                        <tbody>
-                            {eatDrink
-                                .filter(eat => !eat.deleted)
-                                .map((item, index) => (
-                                    <tr key={index} className="bg-[var(--color-light-blue)] border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="name"
-                                                rows={1}
-                                                value={item.name ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="address"
-                                                type="text"
-                                                value={item.address ?? ""}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="day"
-                                                type="text"
-                                                value={item.day}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="url"
-                                                type="text"
-                                                value={item.url ?? ""}
-                                                className="table-input-field text-xs"
-                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="comments"
-                                                value={item.comments ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            {showLatLon ?
-                                                <input
-                                                    name="latLong"
-                                                    type="text"
-                                                    value={item.latLong ?? ""}
-                                                    onChange={(event) => handleMarkerChange("eatDrink", index, event.target.name, event.target.value, event.target.type)}
-                                                    className="table-input-field text-xs"
-                                                />
-                                                :
-                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
-                                            }
-                                        </td>
-                                        <td className="px-6 py-4 text-right sticky right-0 bg-[var(--color-light-blue)] dark:bg-[var(--color-dark-blue)] z-10">
-                                            <button
-                                                onClick={() => deleteRow(item.id, setEatDrink)}
-                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    )}
-                </table>
-                <button
-                    onClick={() => addRow("eatDrink", setEatDrink)}
-                    className="add-row-button">
-                    <div className="flex flex-row items-center">
-                        < FaPlus />
-                        <span> Add Eat & Drink</span>
-                    </div>
-                </button>
-            </div>
+            <CategoryTable
+                category="eatDrink"
+                data={eatDrink}
+                setData={setEatDrink}
+                show={showEatDrink}
+                setShow={setShowEatDrink}
+                showLatLon={showLatLon}
+                setShowLatLon={setShowLatLon}
+                columns={[
+                    { name: "name", label: "Name", type: "textarea" },
+                    { name: "address", label: "Address", type: "text" },
+                    { name: "day", label: "Day", type: "text" },
+                    { name: "url", label: "External URL", type: "text" },
+                    { name: "comments", label: "Comments", type: "textarea" },
+                ]}
+                addRow={addRow}
+                extraFields={[]}
+                deleteRow={deleteRow}
+                handleMarkerChange={handleMarkerChange}
+            />
 
-            {/* Explore table */}
-            <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-[var(--color-light-blue)] dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
-                        <div className="flex flex-col">
-                            <div className="flex flex-row">
-                                <button onClick={() => setShowExplore(prev => !prev)}>
-                                    {showExplore ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
-                                        </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
-                                        </svg>
-                                    }
-                                </button>
-                                <span>Places to Explore</span>
-                            </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
-                            >List all the places you would like to see, like museums, monuments,
-                                <br /> parks, nature attractions, hiking trails, etc. </p>
-                        </div>
-                    </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
-                        <tr>
-                            <th className="px-6 py-3">Name</th>
-                            <th className="px-6 py-3">Price</th>
-                            <th className="px-6 py-3">Address</th>
-                            <th className="px-6 py-3">Day</th>
-                            <th className="px-6 py-3">External URL</th>
-                            <th className="px-6 py-3">Comments</th>
-                            <th className="px-6 py-3">Coordinates</th>
-                            <th className="px-6 py-3">
-                                <span className="sr-only">Delete</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    {showExplore && (
-                        <tbody>
-                            {explore
-                                .filter(expl => !expl.deleted)
-                                .map((item, index) => (
-                                    <tr key={index} className="bg-[var(--color-light-blue)] border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="name"
-                                                rows={1}
-                                                type="text"
-                                                value={item.name ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="price"
-                                                type="text"
-                                                value={item.price ?? ""}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="address"
-                                                type="text"
-                                                value={item.address ?? ""}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="day"
-                                                type="text"
-                                                value={item.day}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="url"
-                                                type="text"
-                                                value={item.url ?? ""}
-                                                className="table-input-field text-xs"
-                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="comments"
-                                                value={item.comments ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            {showLatLon ?
-                                                <input
-                                                    name="latLong"
-                                                    type="text"
-                                                    value={item.latLong ?? ""}
-                                                    className="table-input-field"
-                                                    onChange={(event) => handleMarkerChange("explore", index, event.target.name, event.target.value, event.target.type)}
-                                                />
-                                                :
-                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
-                                            }
-                                        </td>
-                                        <td className="px-6 py-4 text-right sticky right-0 bg-[var(--color-light-blue)] dark:bg-[var(--color-dark-blue)] z-10">
-                                            <button
-                                                onClick={() => deleteRow(item.id, setExplore)}
-                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    )}
-                </table>
-                <button
-                    onClick={() => addRow("explore", setExplore, ["price"])}
-                    className="add-row-button">
-                    <div className="flex flex-row items-center">
-                        < FaPlus />
-                        <span> Add Place to Explore</span>
-                    </div>
-                </button>
-            </div>
+            {/* Explore Table */}
+            <CategoryTable
+                category="explore"
+                data={explore}
+                setData={setExplore}
+                show={showExplore}
+                setShow={setShowExplore}
+                showLatLon={showLatLon}
+                setShowLatLon={setShowLatLon}
+                columns={[
+                    { name: "name", label: "Name", type: "textarea" },
+                    { name: "price", label: "Price", type: "text" },
+                    { name: "address", label: "Address", type: "text" },
+                    { name: "day", label: "Day", type: "text" },
+                    { name: "url", label: "External URL", type: "text" },
+                    { name: "comments", label: "Comments", type: "textarea" },
+                ]}
+                addRow={addRow}
+                extraFields={["price"]}
+                deleteRow={deleteRow}
+                handleMarkerChange={handleMarkerChange}
+            />
 
-            {/* Essentials table */}
-            <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-[var(--color-light-blue)] dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
-                        <div className="flex flex-col">
-                            <div className="flex flex-row">
-                                <button onClick={() => setShowEssentials(prev => !prev)}>
-                                    {showEssentials ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
-                                        </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
-                                        </svg>
-                                    }
-                                </button>
-                                <span>Essentials</span>
-                            </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
-                            >List places that could be helpful to keep your trip up and running,
-                                <br /> like supermarkets, pharmacies, banks, etc. </p>
-                        </div>
-                    </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
-                        <tr>
-                            <th className="px-6 py-3">Name</th>
-                            <th className="px-6 py-3">Address</th>
-                            <th className="px-6 py-3">Day</th>
-                            <th className="px-6 py-3">External URL</th>
-                            <th className="px-6 py-3">Comments</th>
-                            <th className="px-6 py-3">Coordinates</th>
-                            <th className="px-6 py-3">
-                                <span className="sr-only">Delete</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    {showEssentials && (
-                        <tbody>
-                            {essentials
-                                .filter(essential => !essential.deleted)
-                                .map((item, index) => (
-                                    <tr key={index} className="bg-[var(--color-light-blue)] border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="name"
-                                                rows={1}
-                                                type="text"
-                                                value={item.name ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="address"
-                                                type="text"
-                                                value={item.address ?? ""}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="day"
-                                                type="text"
-                                                value={item.day}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="url"
-                                                type="text"
-                                                value={item.url ?? ""}
-                                                className="table-input-field text-xs"
-                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="comments"
-                                                value={item.comments ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            {showLatLon ?
-                                                <input
-                                                    name="latLong"
-                                                    type="text"
-                                                    value={item.latLong ?? ""}
-                                                    className="table-input-field "
-                                                    onChange={(event) => handleMarkerChange("essentials", index, event.target.name, event.target.value, event.target.type)}
-                                                />
-                                                :
-                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
-                                            }
-                                        </td>
-                                        <td className="px-6 py-4 text-right sticky right-0 bg-[var(--color-light-blue)] dark:bg-[var(--color-dark-blue)] z-10">
-                                            <button
-                                                onClick={() => deleteRow(item.id, setEssentials)}
-                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    )}
-                </table>
-                <button
-                    onClick={() => addRow("essentials", setEssentials)}
-                    className="add-row-button">
-                    <div className="flex flex-row items-center">
-                        < FaPlus />
-                        <span> Add Essentials</span>
-                    </div>
-                </button>
-            </div>
+            {/* Essentials Table */}
+            <CategoryTable
+                category="essentials"
+                data={essentials}
+                setData={setEssentials}
+                show={showEssentials}
+                setShow={setShowEssentials}
+                showLatLon={showLatLon}
+                setShowLatLon={setShowLatLon}
+                columns={[
+                    { name: "name", label: "Name", type: "textarea" },
+                    { name: "address", label: "Address", type: "text" },
+                    { name: "day", label: "Day", type: "text" },
+                    { name: "url", label: "External URL", type: "text" },
+                    { name: "comments", label: "Comments", type: "textarea" },
+                ]}
+                addRow={addRow}
+                extraFields={[]}
+                deleteRow={deleteRow}
+                handleMarkerChange={handleMarkerChange}
+            />
 
-
-            {/* Getting Around table */}
-            <div className="relative overflow-x-auto shadow-md rounded-lg mt-10">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-[var(--color-stale-blue)]">
-                    <caption className="items-center justify-between p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-[var(--color-light-blue)] dark:text-[var(--color-stale-blue)] dark:bg-[var(--color-navy)]">
-                        <div className="flex flex-col">
-                            <div className="flex flex-row">
-                                <button onClick={() => setShowGettingAround(prev => !prev)}>
-                                    {showGettingAround ?
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1" />
-                                        </svg> :
-                                        <svg className="w-6 h-6 mr-5 text-gray-800 dark:text-[var(--color-stale-blue)]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeidth="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7" />
-                                        </svg>
-                                    }
-                                </button>
-                                <span>Getting Around</span>
-                            </div>
-                            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-[var(--color-stale-blue)]"
-                            >Airports, train statios, bus stops and such.</p>
-                        </div>
-                    </caption>
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
-                        <tr>
-                            <th className="px-6 py-3">Name</th>
-                            <th className="px-6 py-3">Address</th>
-                            <th className="px-6 py-3">Day</th>
-                            <th className="px-6 py-3">External URL</th>
-                            <th className="px-6 py-3">Comments</th>
-                            <th className="px-6 py-3">Coordinates</th>
-                            <th className="px-6 py-3">
-                                <span className="sr-only">Delete</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    {showGettingAround && (
-                        <tbody>
-                            {gettingAround
-                                .filter(around => !around.deleted)
-                                .map((item, index) => (
-                                    <tr key={index} className="bg-[var(--color-light-blue)] border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="name"
-                                                rows={1}
-                                                value={item.name ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="address"
-                                                type="text"
-                                                value={item.address ?? ""}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="day"
-                                                type="text"
-                                                value={item.day}
-                                                className="table-input-field"
-                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <input
-                                                name="url"
-                                                type="text"
-                                                value={item.url ?? ""}
-                                                className="table-input-field text-xs"
-                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            <textarea
-                                                name="comments"
-                                                value={item.comments ?? ""}
-                                                className="table-input-field min-w-50"
-                                                onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
-                                            />
-                                        </td>
-                                        <td className="table-input-box">
-                                            {showLatLon ?
-                                                <input
-                                                    name="latLong"
-                                                    type="text"
-                                                    value={item.latLong ?? ""}
-                                                    onChange={(event) => handleMarkerChange("gettingAround", index, event.target.name, event.target.value, event.target.type)}
-                                                    className="table-input-field text-xs"
-                                                />
-                                                :
-                                                <button onClick={() => { setShowLatLon(true) }} className="table-input-field cursor-pointer" >Show</button>
-                                            }
-                                        </td>
-                                        <td className="px-6 py-4 text-right sticky right-0 bg-[var(--color-light-blue)] dark:bg-[var(--color-dark-blue)] z-10">
-                                            <button
-                                                onClick={() => deleteRow(item.id, setGettingAround)}
-                                                className="font-medium text-[var(--color-crimson)] dark:text-red-400 hover:underline cursor-pointer">
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    )}
-                </table>
-                <button
-                    onClick={() => addRow("gettingAround", setGettingAround)}
-                    className="add-row-button">
-                    <div className="flex flex-row items-center">
-                        < FaPlus />
-                        <span> Add Getting Around Item</span>
-                    </div>
-                </button>
-            </div>
-
+            {/* Getting Around Table */}
+            <CategoryTable
+                category="gettingAround"
+                data={gettingAround}
+                setData={setGettingAround}
+                show={showGettingAround}
+                setShow={setShowGettingAround}
+                showLatLon={showLatLon}
+                setShowLatLon={setShowLatLon}
+                columns={[
+                    { name: "name", label: "Name", type: "textarea" },
+                    { name: "address", label: "Address", type: "text" },
+                    { name: "day", label: "Day", type: "text" },
+                    { name: "url", label: "External URL", type: "text" },
+                    { name: "comments", label: "Comments", type: "textarea" },
+                ]}
+                addRow={addRow}
+                extraFields={[]}
+                deleteRow={deleteRow}
+                handleMarkerChange={handleMarkerChange}
+            />
 
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row">
