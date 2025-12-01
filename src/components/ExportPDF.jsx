@@ -93,10 +93,10 @@ export default function ExportPDF({ stays, eatDrink, explore, essentials, gettin
 
             // EXPLORE
             printCategory("Explore",
-                ["Name", "Address", "Website", "Comments"],
+                ["Name", "Price", "Address", "Website", "Comments"],
                 explore
                     .filter(e => matchDay(e, day) && !e.deleted)
-                    .map(e => [e.name, e.address, e.url, e.comments])
+                    .map(e => [e.name, e.price, e.address, e.url, e.comments])
             );
 
             // ESSENTIALS
