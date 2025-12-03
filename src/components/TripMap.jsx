@@ -825,15 +825,15 @@ export default function TripMap() {
     return (
         <div className="mt-15">
             <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
-                <div className="relative w-full flex justify-center items-center">
+                <div className="relative w-full flex flex-col sm:flex-row sm:justify-center sm:items-center">
 
                     <input
                         type="text"
                         value={tripName}
                         onChange={(e) => handleTripNameChange(e.target.value)}
-                        className="text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
+                        className="w-full sm:w-5/10 text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                     />
-                    <div className="absolute right-0">
+                    <div className="sm:absolute sm:right-0 w-full sm:w-auto flex justify-center sm:justify-end">
                         {(tripDate !== "" || isPicking) ? (
                             <input
                                 type="date"
@@ -845,7 +845,7 @@ export default function TripMap() {
                         ) : (
                             <button
                                 onClick={() => setIsPicking(true)}
-                                className="general-button w-auto bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)] mr-15"
+                                className="general-button w-auto bg-[var(--color-pastel-orange)] text-[var(--color-dark-azure)] sm:mr-15"
                             >Add Date</button>
                         )
                         }
@@ -1039,7 +1039,7 @@ export default function TripMap() {
                                     <br />
                                     <button
                                         onClick={() => handleSelectSuggestion(s)}
-                                        className="text-sm bg-zinc-900 text-white px-2 py-1 rounded mt-2"
+                                        className="general-button w-1/4 px-2 py-1 my-2"
                                     >
                                         {selectedSuggestions.some(sel => sel.originalId === s.id) ? "Added" : "Add"}
                                     </button>

@@ -67,7 +67,7 @@ export default function FormAI() {
 
     return (
         <div className="m-25 mx-15">
-            <div className="flex flex-col justify-center items-left dark:text-[var(--color-stale-blue)]">
+            <div className="flex flex-col justify-center items-left dark:text-[#dddddd]">
                 <h1 className="text-5xl font-bold">Discover new destinations with AI</h1>
                 <h3 className="mt-4 mb-10">
                     Select your preferences and get personalized <br />

@@ -216,15 +216,15 @@ export default function TripDetails() {
     return (
 
         <div className="m-25 mt-15 mx-15">
-            <div className="flex flex-col justify-center items-center dark:text-[var(--color-stale-blue)]">
-                <div className="relative w-full flex justify-center items-center">
+            <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
+                <div className="relative w-full flex flex-col sm:flex-row sm:justify-center sm:items-center">
                     <input
                         type="text"
                         value={tripName}
                         onChange={(e) => handleTripNameChange(e.target.value)}
-                        className="text-center text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
+                        className="w-full sm:w-5/10 text-center text-4xl font-bold bg-transparent border-b-1 border-gray-300 dark:border-[#a9a9a9] focus:outline-none focus:border-b-2 text-center"
                     />
-                    <div className="absolute right-0">
+                    <div className="sm:absolute sm:right-0 w-full sm:w-auto flex justify-center sm:justify-end">
                         {(tripDate !== "" || isPicking) ? (
                             <input
                                 type="date"

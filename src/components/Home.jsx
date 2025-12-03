@@ -6,7 +6,7 @@ import secondSecondaryImage from "../assets/images/home-pinned-map.jpg"
 export default function Home() {
     return (
         <div className="m-25 mx-15">
-            <div className="flex flex-col justify-center items-left dark:text-[var(--color-stale-blue)]">
+            <div className="flex flex-col justify-center items-left dark:text-[#dddddd]">
                 <h1 className="text-5xl font-bold">Plan and organize your trips</h1>
                 <h3 className="my-4">
                     Discover new destinations with AI suggestions. <br />

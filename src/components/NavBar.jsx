@@ -27,7 +27,7 @@ export default function NavBar() {
                                 <Link
                                     to="/profile"
                                     className="relative md:mr-5 inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-white rounded-full dark:bg-gray-600">
-                                    <span className="font-bold text-[var(--color-crimson)] dark:text-[var(--color-stale-blue)]">{user?.username?.[0] ?? ""}</span>
+                                    <span className="font-bold text-[var(--color-crimson)] dark:text-[#dddddd]">{user?.username?.[0] ?? ""}</span>
                                 </Link>
                                 <button
                                     onClick={() => {

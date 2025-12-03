@@ -62,7 +62,7 @@ export default function Profile() {
     return (
         <div className="max-w-3xl mx-auto p-6 my-15">
             <div className="shadow-md rounded-2xl p-6 bg-[var(--color-light-blue)] dark:bg-[var(--color-darker-blue)]">
-                <h1 className="text-2xl font-semibold mb-2 dark:text-[var(--color-stale-blue)]">My Profile</h1>
+                <h1 className="text-2xl font-semibold mb-2 dark:text-[#dddddd]">My Profile</h1>
                 <p className="text-sm mb-6  dark:text-[var(--color-stale-blue)]">View and update your account details.</p>
 
                 {!editing ? (

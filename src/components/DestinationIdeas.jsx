@@ -27,7 +27,7 @@ export default function DestinationIdeas() {
 
     return (
         <div className="my-20 md:mx-15 mx-5">
-            <div className="flex flex-col justify-center items-center dark:text-[var(--color-light-blue)]">
+            <div className="flex flex-col justify-center items-center dark:text-[#dddddd]">
                 <h1 className="text-4xl font-bold">Your Destination Ideas</h1>
                 <h3 className="mt-4 mb-15">Explore these personalized travel suggestions curated just for you</h3>
             </div>
