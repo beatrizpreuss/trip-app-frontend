@@ -1,12 +1,36 @@
-# React + Vite
+# ✈️ WanderWise — Travel Organizer App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+WanderWise is a full-stack travel planner that lets users organize trips,
+visualize locations on an interactive map, and receive AI-powered suggestions
+for destinations and points of interest.
 
-Currently, two official plugins are available:
+This repository contains the **frontend** portion of the project.
+🔗 **Backend Repo:** [https://github.com/beatrizpreuss/trip-app-backend]
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 💻 Frontend Overview
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The frontend is responsible for:
+- User interface and trip planning workflow
+- Interactive map display using React Leaflet & MapTiler
+- Fetching and displaying data from the backend API
+- Handling user authentication with JWT tokens provided by the backend
+
+---
+
+## 🏗️ Tech Stack
+
+- **React**
+- **JavaScript**, **HTML**, **Tailwind CSS**
+- **React Leaflet** + **MapTiler** for map visualization
+- **Fetch API** for API communication
+
+---
+
+## 📂 Project Purpose
+
+This repo includes:
+- Components for trip creation and editing  
+- Map views for pinpoints and visualization  
+- Integration with backend AI suggestions and saved trips
