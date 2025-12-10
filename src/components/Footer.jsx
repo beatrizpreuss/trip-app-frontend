@@ -4,8 +4,8 @@ export default function Footer() {
     
     return (
         <footer className="bg-[var(--color-stale-blue)] shadow-sm-4">
-            <div className="w-full mx-auto px-11 md:py-8">
-                <div className="sm:flex sm:items-center sm:justify-between">
+            <div className="w-full mx-auto px-11 py-8">
+                <div className="flex sm:items-center justify-between">
                     <a href="/" className="flex items-center mb-4 sm:mb-0 ">
                         <img src={Logo} className="logo w-30" />
                     </a>
