@@ -13,6 +13,7 @@ import eatDrinkIconImage from "../assets/images/drinks.png"
 import exploreIconImage from "../assets/images/camera.png"
 import essentialsIconImage from "../assets/images/plus.png"
 import gettingAroundIconImage from "../assets/images/train.png"
+import searchIconImage from "../assets/images/marker.svg"
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
 import SaveButton from "./SaveButton"
 import MapSuggestions from "./MapSuggestions"
@@ -228,6 +229,8 @@ export default function TripMap() {
         useEffect(() => {
             const provider = new OpenStreetMapProvider() //geocode provider
 
+            const searchIcon = createIcon(searchIconImage)
+
             const searchControl = new GeoSearchControl({ //create the search bar
                 provider,
                 style: "bar",
@@ -235,7 +238,7 @@ export default function TripMap() {
                 showPopup: true,
                 zoomToResult: true,
                 marker: {
-                    icon: new L.Icon.Default(),
+                    icon: searchIcon,
                     draggable: false
                 }
             })
