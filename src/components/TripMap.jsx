@@ -345,7 +345,7 @@ export default function TripMap() {
     // React could create a new function object for addMarker, which makes AddMarkerOnClick see it as a new function and run again.
     // With useCallback, when the component re-renders, this function is being kept as the same object in memory, not triggering AddMarkerOnClick
     const addMarkerCallback = useCallback((event) => {
-        const { latlng, category } = event
+        const { latlng, category, label, address } = event
         const lat = latlng.lat
         const lng = latlng.lng // gets lat and long from the map and turns it into latLong
 
@@ -358,7 +358,7 @@ export default function TripMap() {
         let newMarker = {
             id: `temp-${Date.now()}`, // Temporary id, just until the data is sent to the backend
             latLong,
-            address: "",
+            address: address || "",
             day: [1],
             comments: "",
             deleted: false
@@ -367,27 +367,27 @@ export default function TripMap() {
         switch (category) {
             case "stay":
                 setShowStays(true)
-                newMarker = { ...newMarker, name: event.label || "New stay item", status: "planned", price: "unknown" }
+                newMarker = { ...newMarker, name: label || "New stay item", status: "planned", price: "unknown" }
                 setStays([...stays, newMarker])
                 break
             case "eatDrink":
                 setShowEatDrink(true)
-                newMarker = { ...newMarker, name: event.label || "New eat & drink item" }
+                newMarker = { ...newMarker, name: label || "New eat & drink item" }
                 setEatDrink([...eatDrink, newMarker])
                 break
             case "explore":
                 setShowExplore(true)
-                newMarker = { ...newMarker, name: event.label || "New explore item" }
+                newMarker = { ...newMarker, name: label || "New explore item" }
                 setExplore([...explore, newMarker])
                 break
             case "essentials":
                 setShowEssentials(true)
-                newMarker = { ...newMarker, name: event.label || "New essentials item" }
+                newMarker = { ...newMarker, name: label || "New essentials item" }
                 setEssentials([...essentials, newMarker])
                 break
             case "gettingAround":
                 setGettingAround(true)
-                newMarker = { ...newMarker, name: event.label || "New getting around item" }
+                newMarker = { ...newMarker, name: label || "New getting around item" }
                 setGettingAround([...gettingAround, newMarker])
                 break
             default:
@@ -556,12 +556,17 @@ export default function TripMap() {
                 .bindTooltip(result.label || "Search result", { permanent: false, direction: "top" })
                 .openTooltip()
 
+            const labelParts = result.label.split(",")
+            const placeName = labelParts[0]?.trim() || "Unknown"
+            const placeAddress = labelParts.slice(1).join(",").trim() || ""
+
             // Upon click
             const onClick = () => {
                 openCategoryPopup({
-                    map, lat, lng, label: result.label, onConfirm: (category) => {
+                    map, lat, lng, label: placeName, onConfirm: (category) => {
                         if (map.hasLayer(tempMarker)) map.removeLayer(tempMarker) // Remove temporary marker
-                        addMarkerCallback({ latlng: { lat, lng }, category, label: result.label }) // Call addMarkerCallback
+                        addMarkerCallback({ latlng: { lat, lng }, category, label: placeName, address: placeAddress }) // Call addMarkerCallback
+                        console.log(result.label)
                         setHasChanges(true)
                         setSearchResult(null) // clear search result
                     }
