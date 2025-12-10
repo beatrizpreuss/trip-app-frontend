@@ -13,6 +13,7 @@ import eatDrinkIconImage from "../assets/images/drinks.png"
 import exploreIconImage from "../assets/images/camera.png"
 import essentialsIconImage from "../assets/images/plus.png"
 import gettingAroundIconImage from "../assets/images/train.png"
+import markerSvg from "../assets/images/marker.svg?url"
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch"
 import SaveButton from "./SaveButton"
 import MapSuggestions from "./MapSuggestions"
@@ -547,7 +548,9 @@ export default function TripMap() {
             const lat = result.location.y ?? result.y
             const lng = result.location.x ?? result.x
 
-            const tempMarker = L.marker([lat, lng]).addTo(map)
+            const tempMarker = L.marker([lat, lng], {
+                icon: createIcon(markerSvg)
+              }).addTo(map)
 
             tempMarker
                 .bindTooltip(result.label || "Search result", { permanent: false, direction: "top" })
