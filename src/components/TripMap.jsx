@@ -23,7 +23,7 @@ import MapTips from "./MapTips.jsx"
 import DraggableMarker from "./DraggableMarker.jsx" //Marker component that has general rendering for clean code and asks permission before moving a marker on drag
 
 const { BaseLayer } = LayersControl
-const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY
+const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY // on the deployed version in vercel, it needs to be added as an environmental variable
 
 
 export default function TripMap() {
