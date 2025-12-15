@@ -48,29 +48,31 @@ Follow these steps to run the frontend locally.
 - npm (comes with Node.js)
 
 2️⃣ Clone the Repository
-
-- git clone https://github.com/beatrizpreuss/trip-app-frontend.git
-- cd trip-app-frontend
-
+```
+git clone https://github.com/beatrizpreuss/trip-app-frontend.git
+cd trip-app-frontend
+```
 3️⃣ Install Dependencies
-
-- npm install
-
+```
+npm install
+```
 4️⃣ Environment Variables
 
 - Create a .env file in the root of the project and add the following:
-
+```
 VITE_BACKEND_URL=http://localhost:5000
 VITE_MAPTILER_KEY=your_maptiler_api_key
-
+```
 ⚠️ These values must match your backend setup and MapTiler account.
 
 5️⃣ Run the Development Server
-
-- npm run dev
-
-The app will be available at: http://localhost:5173
-
+```
+npm run dev
+```
+The app will be available at: 
+```
+http://localhost:5173
+```
 ---
 
 ## 🔐 Authentication Notes
