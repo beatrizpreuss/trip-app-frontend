@@ -8,8 +8,6 @@ export default function CategoryTable({
     setData,
     show,
     setShow,
-    showLatLon = false,
-    setShowLatLon,
     columns,       // array of { name, label, type }
     addRow,
     extraFields,
@@ -53,10 +51,11 @@ export default function CategoryTable({
 
                 <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-[var(--color-darker-blue)] dark:text-[var(--color-stale-blue)]">
                     <tr>
-                        {columns.map(col => (
-                            <th key={col.name} className="px-6 py-3">{col.label}</th>
-                        ))}
-                        {showLatLon && <th className="px-6 py-3">Coordinates</th>}
+                        <th className="px-6 py-3"><span className="sr-only">Details</span></th>
+                        {columns.filter(col => {
+                            if (['address', 'url', 'coordinates'].includes(col.name)) return false
+                            return true
+                        }).map(col => <th key={col.name} className="px-6 py-3">{col.label}</th>)}
                         <th className="px-6 py-3"><span className="sr-only">Delete</span></th>
                     </tr>
                 </thead>
@@ -65,7 +64,74 @@ export default function CategoryTable({
                     <tbody>
                         {data.filter(item => !item.deleted).map(item => (
                             <tr key={item.id} className="bg-[var(--color-light-blue)] border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
-                                {columns.map(col => (
+                                {/* See more column */}
+                                <td className="pl-3">
+                                    <button
+                                        className="cursor-pointer "
+                                        onClick={() => {
+                                            setData(data => {
+                                                return data.map(dataItem => {
+                                                    if (dataItem.id == item.id) {
+                                                        return { ...dataItem, showPopup: true }
+                                                    } else {
+                                                        return dataItem
+                                                    }
+                                                })
+                                            })
+                                        }}>
+                                        See more
+                                    </button>
+                                </td>
+
+                                {/*  popup logic */}
+                                {item.showPopup && <div className="p-5 rounded fixed z-6000 top-1/2 left-1/2 bg-[var(--color-light-blue)] w-3/4 -translate-x-1/2 -translate-y-1/2">
+                                
+                                        <button onClick={() => {
+                                            setData(data => {
+                                                return data.map(dataItem => {
+                                                    return { ...dataItem, showPopup: false }
+                                                })
+                                            })
+                                        }}>X</button>
+                                        {columns.map(col => (
+                                            <div key={col.name} className="table-input-box py-2">
+                                                <h3 className="font-bold pr-2">{col.label}: </h3>
+                                                {col.type === "textarea" ? (
+                                                    <textarea
+                                                        name={col.name}
+                                                        rows={2}
+                                                        value={item[col.name] ?? ""}
+                                                        className="table-input-field min-w-50"
+                                                        onChange={(e) => handleMarkerChange(category, item.id, col.name, e.target.value)}
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        name={col.name}
+                                                        type={col.type}
+                                                        value={item[col.name] ?? ""}
+                                                        className="table-input-field"
+                                                        onChange={(e) => handleMarkerChange(category, item.id, col.name, e.target.value)}
+                                                    />
+                                                )}
+                                            </div>
+                                        ))}
+                                        <div className="table-input-box py-2">
+                                            <h3 className="font-bold pr-2">Coordinates: </h3>
+                                            <input
+                                                name="latLong"
+                                                type="text"
+                                                value={item.latLong ?? ""}
+                                                className="table-input-field text-s"
+                                                onChange={e => handleMarkerChange(category, item.id, "latLong", e.target.value)}
+                                            />
+
+                                        </div>
+                                    
+                                </div>}
+                                {columns.filter(col => {
+                                    if (['address', 'url', 'coordinates'].includes(col.name)) return false
+                                    return true
+                                }).map(col => (
                                     <td key={col.name} className="table-input-box">
                                         {col.type === "textarea" ? (
                                             <textarea
@@ -86,25 +152,7 @@ export default function CategoryTable({
                                         )}
                                     </td>
                                 ))}
-                                {/* Special case for Lat/Lon */}
-                                <td className="table-input-box">
-                                    {showLatLon ? (
-                                        <input
-                                            name="latLong"
-                                            type="text"
-                                            value={item.latLong ?? ""}
-                                            className="table-input-field text-xs"
-                                            onChange={e => handleMarkerChange(category, item.id, "latLong", e.target.value)}
-                                        />
-                                    ) : (
-                                        <button
-                                            className="table-input-field cursor-pointer"
-                                            onClick={() => setShowLatLon(true)}
-                                        >
-                                            Show
-                                        </button>
-                                    )}
-                                </td>
+
                                 <td className="px-6 py-4 text-right sticky right-0 bg-[var(--color-light-blue)] dark:bg-[var(--color-dark-blue)] z-10">
                                     <button
                                         onClick={() => deleteRow(item.id, setData)}

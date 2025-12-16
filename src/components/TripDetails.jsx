@@ -25,7 +25,6 @@ export default function TripDetails() {
     const [showEssentials, setShowEssentials] = useState(true)
     const [showGettingAround, setShowGettingAround] = useState(true)
 
-    const [showLatLon, setShowLatLon] = useState(false)
 
     // used to track unsaved changes to make the Save Changes button another color
     const [hasChanges, setHasChanges] = useState(false)
@@ -178,7 +177,6 @@ export default function TripDetails() {
                 if (data.getting_around) setGettingAround(mapCategoryForFrontend(data.getting_around))
 
                 setHasChanges(false)
-                setShowLatLon(false)
             })
             .catch(err => console.error("Error saving data", err))
     }
@@ -261,8 +259,6 @@ export default function TripDetails() {
                 setData={setStays}
                 show={showStays}
                 setShow={setShowStays}
-                showLatLon={showLatLon}
-                setShowLatLon={setShowLatLon}
                 columns={[
                     { name: "name", label: "Name", type: "textarea" },
                     { name: "status", label: "Status", type: "text" },
@@ -286,8 +282,6 @@ export default function TripDetails() {
                 setData={setEatDrink}
                 show={showEatDrink}
                 setShow={setShowEatDrink}
-                showLatLon={showLatLon}
-                setShowLatLon={setShowLatLon}
                 columns={[
                     { name: "name", label: "Name", type: "textarea" },
                     { name: "address", label: "Address", type: "text" },
@@ -308,8 +302,6 @@ export default function TripDetails() {
                 setData={setExplore}
                 show={showExplore}
                 setShow={setShowExplore}
-                showLatLon={showLatLon}
-                setShowLatLon={setShowLatLon}
                 columns={[
                     { name: "name", label: "Name", type: "textarea" },
                     { name: "price", label: "Price", type: "text" },
@@ -331,8 +323,6 @@ export default function TripDetails() {
                 setData={setEssentials}
                 show={showEssentials}
                 setShow={setShowEssentials}
-                showLatLon={showLatLon}
-                setShowLatLon={setShowLatLon}
                 columns={[
                     { name: "name", label: "Name", type: "textarea" },
                     { name: "address", label: "Address", type: "text" },
@@ -353,8 +343,6 @@ export default function TripDetails() {
                 setData={setGettingAround}
                 show={showGettingAround}
                 setShow={setShowGettingAround}
-                showLatLon={showLatLon}
-                setShowLatLon={setShowLatLon}
                 columns={[
                     { name: "name", label: "Name", type: "textarea" },
                     { name: "address", label: "Address", type: "text" },
