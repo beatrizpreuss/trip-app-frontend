@@ -1,6 +1,7 @@
 // This component is used in TripDetails and renders the tables for all categories
 
 import { FaTrash, FaPlus } from "react-icons/fa"
+import { CgMoreO } from "react-icons/cg"
 
 export default function CategoryTable({
     category,
@@ -55,7 +56,32 @@ export default function CategoryTable({
                         {columns.filter(col => {
                             if (['address', 'url', 'coordinates'].includes(col.name)) return false
                             return true
-                        }).map(col => <th key={col.name} className="px-6 py-3">{col.label}</th>)}
+                        }).map(col => <th key={col.name} className="px-6 py-3">
+                            {col.name === "day" ? (
+                                <span className="relative inline-flex items-center gap-1 group">
+                                  <span>{col.label}</span>
+                            
+                                  {/* Info icon */}
+                                  <svg
+                                    className="w-4 h-4 text-gray-400 cursor-pointer"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path d="M9 9h2v6H9V9zm0-4h2v2H9V5zm1-5a10 10 0 100 20 10 10 0 000-20z" />
+                                  </svg>
+                            
+                                  {/* Tooltip */}
+                                  <span className="normal-case font-normal pointer-events-none absolute z-[9999] bottom-full left-1/2 -translate-x-1/2 
+                                    mb-2 whitespace-nowrap rounded bg-gray-700 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100
+                                  ">
+                                    Enter a single day (e.g., 1) or multiple days separated by commas (e.g., 1,2,3,4).
+                                  </span>
+                                </span>
+                              ) : (
+                                col.label
+                              )}
+                            
+                            </th>)}
                         <th className="px-6 py-3"><span className="sr-only">Delete</span></th>
                     </tr>
                 </thead>
@@ -65,9 +91,10 @@ export default function CategoryTable({
                         {data.filter(item => !item.deleted).map(item => (
                             <tr key={item.id} className="bg-[var(--color-light-blue)] border-b dark:bg-[var(--color-dark-blue)] dark:border-gray-700 border-gray-200">
                                 {/* See more column */}
-                                <td className="pl-3">
+                                <td className="pl-6">
                                     <button
-                                        className="cursor-pointer "
+                                        title="See more"
+                                        className="text-lg cursor-pointer"
                                         onClick={() => {
                                             setData(data => {
                                                 return data.map(dataItem => {
@@ -79,12 +106,14 @@ export default function CategoryTable({
                                                 })
                                             })
                                         }}>
-                                        See more
+                                        <CgMoreO />
                                     </button>
                                 </td>
 
                                 {/*  popup logic */}
-                                {item.showPopup && <div className="p-5 rounded fixed z-6000 top-1/2 left-1/2 bg-[var(--color-light-blue)] w-3/4 -translate-x-1/2 -translate-y-1/2">
+                                {item.showPopup && (
+                                    <td colSpan={columns.length + 2}>
+                                    <div className="p-5 rounded fixed z-6000 top-1/2 left-1/2 shadow-lg bg-[var(--color-light-blue)] w-3/4 -translate-x-1/2 -translate-y-1/2 max-h-[100vh] overflow-y-auto">
                                 
                                         <button onClick={() => {
                                             setData(data => {
@@ -126,8 +155,11 @@ export default function CategoryTable({
                                             />
 
                                         </div>
+                                        
                                     
-                                </div>}
+                                </div>
+                                </td>)}
+                            
                                 {columns.filter(col => {
                                     if (['address', 'url', 'coordinates'].includes(col.name)) return false
                                     return true
